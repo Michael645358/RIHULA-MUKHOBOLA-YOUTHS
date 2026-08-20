@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Member Login</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="rihula-modern-design.css">
+<link rel="stylesheet" href="rihula-v3-ui.css">
+</head>
+<body>
+
+<div class="login-box">
+    <div>
+        <img src="images/logo.jpg" alt="Logo" width="100">
+    </div>
+
+    <h2>Member Login</h2>
+
+    <p style="margin-bottom:15px;">
+        <a href="admin-login.html">Admin Login</a>
+    </p>
+
+    <div class="security-notice">
+        <h3>Secure Member Login</h3>
+        <p>
+            This login page is only for registered members of
+            RIHULA MUKHOBOLA ASSOCIATION.
+        </p>
+    </div>
+
+    <div class="input-group">
+      <input
+    type="text"
+    id="loginId"
+    placeholder="📧 Email or 📱 Phone number"
+    autocomplete="username">
+    </div>
+
+    <div class="input-group">
+        <input
+            type="password"
+            id="password"
+            placeholder="🔒 Password"
+            autocomplete="current-password">
+    </div>
+
+    <button onclick="login()" class="login-btn">Login</button>
+
+    <div class="links">
+        <a href="forgot-password.html">Forgot Password?</a>
+        <br><br>
+        <a href="activate-account.html">Activate Existing Member Account</a>
+        <br><br>
+        <a href="register.html">Register Here</a>
+    </div>
+</div>
+
+<script src="popups.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+
+<script>
+async function redirectMember(member) {
+    localStorage.setItem("loggedUser", JSON.stringify(member));
+
+    try {
+        await db
+            .from("members")
+            .update({
+                last_seen: new Date().toISOString(),
+                online: true
+            })
+            .eq("id", member.id);
+    } catch (e) {
+        console.warn("Could not update member presence:", e);
+    }
+
+    // Member login is always a member session, even when the account
+    // also has admin privileges. Admin access is controlled separately
+    // by the PIN on admin-login.html.
+    window.location.href = "member.html";
+}
+
+function normalizeKenyanPhone(phone) {
+    if (!phone) return "";
+
+    let value = String(phone).trim();
+
+    // Remove spaces, dashes and brackets
+    value = value.replace(/[\s\-()]/g, "");
+
+    // +254712345678 → 0712345678
+    if (value.startsWith("+254")) {
+        value = "0" + value.substring(4);
+    }
+
+    // 254712345678 → 0712345678
+    else if (value.startsWith("254")) {
+        value = "0" + value.substring(3);
+    }
+
+    return value;
+}
+async function login() {
+    const loginId = document.getElementById("loginId").value.trim();
+    const password = document.getElementById("password").value;
+
+    if (!loginId || !password) {
+        showPopup("Enter your email/phone and password.", "warning");
+        return;
+    }
+
+    try {
+        let email = loginId.toLowerCase();
+
+        /*
+         * If the member entered a phone number,
+         * find the email linked to that phone.
+         */
+        if (!loginId.includes("@")) {
+
+            const phone = normalizeKenyanPhone(loginId);
+
+            if (!phone) {
+                showPopup(
+                    "Enter a valid email address or Kenyan phone number.",
+                    "warning"
+                );
+                return;
+            }
+
+            const { data: membersByPhone, error: phoneError } =
+                await db
+                    .from("members")
+                    .select("email, phone");
+
+            if (phoneError) {
+                console.error("PHONE LOOKUP ERROR:", phoneError);
+                showPopup(
+                    "Could not find the member account.",
+                    "error"
+                );
+                return;
+            }
+
+            const memberByPhone = membersByPhone?.find(member =>
+                normalizeKenyanPhone(member.phone) === phone
+            );
+
+            if (!memberByPhone || !memberByPhone.email) {
+                showPopup(
+                    "No member account was found with that phone number.",
+                    "warning"
+                );
+                return;
+            }
+
+            email = memberByPhone.email.toLowerCase();
+        }
+
+        /*
+         * Use the SAME Supabase password for both
+         * email login and phone login.
+         */
+        const { data: authData, error: authError } =
+            await db.auth.signInWithPassword({
+                email,
+                password
+            });
+
+        if (authError) {
+            console.error("LOGIN ERROR:", authError);
+            showPopup("Invalid email/phone or password.", "error");
+            return;
+        }
+
+        if (!authData || !authData.user) {
+            showPopup("Login failed.", "error");
+            return;
+        }
+
+        /*
+         * Load the RIHULA member record linked
+         * to the authenticated Supabase account.
+         */
+        const { data: member, error: memberError } =
+            await db
+                .from("members")
+                .select("*")
+                .eq("auth_id", authData.user.id)
+                .maybeSingle();
+
+        if (memberError) {
+            console.error("MEMBER LOOKUP ERROR:", memberError);
+            await db.auth.signOut();
+
+            showPopup(
+                "Your member account could not be loaded.",
+                "error"
+            );
+            return;
+        }
+
+        if (!member) {
+            await db.auth.signOut();
+
+            showPopup(
+                "This account is not linked to a RIHULA member.",
+                "warning"
+            );
+            return;
+        }
+
+        if (member.status === "pending") {
+            localStorage.setItem(
+                "loggedUser",
+                JSON.stringify(member)
+            );
+
+            window.location.href = "pending-members.html";
+            return;
+        }
+
+        await redirectMember(member);
+
+    } catch (error) {
+        console.error("LOGIN ERROR:", error);
+
+        showPopup(
+            "Unexpected login error. Please try again.",
+            "error"
+        );
+    }
+}
+</script>
+<script src="v22.js"></script>
+<script src="rihula-v3-ui.js"></script>
+</body>
+</html>

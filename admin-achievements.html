@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIHULA Admin - Achievements</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="admin-dashboard-3.css">
+<link rel="stylesheet" href="admin-achievements.css">
+<link rel="stylesheet" href="rihula-modern-design.css">
+</head>
+<body class="admin-dashboard-page">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="admin-auth.js"></script>
+<script>
+document.documentElement.style.visibility = "hidden";
+(async function () {
+    const admin = await RihulaAdmin.requireAdmin();
+    if (admin) document.documentElement.style.visibility = "visible";
+})();
+</script>
+
+<div class="admin-shell">
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-brand">
+            <img src="images/logo.jpg" alt="RIHULA Logo">
+            <div><strong>RIHULA</strong><span>Admin Panel</span></div>
+        </div>
+        <nav class="admin-nav">
+            <a href="admin.html" class="admin-nav-item"><span>📊</span><span>Dashboard</span></a>
+            <a href="all-members.html" class="admin-nav-item"><span>👥</span><span>All Members</span></a>
+            <a href="pending-members.html" class="admin-nav-item"><span>⏳</span><span>Pending Members</span></a>
+            <a href="online-members.html" class="admin-nav-item"><span>🟢</span><span>Online Members</span></a>
+            <a href="record-contribution.html" class="admin-nav-item"><span>💰</span><span>Record Contribution</span></a>
+            <a href="leaderboard.html" class="admin-nav-item"><span>🏆</span><span>Leaderboard</span></a>
+            <a href="admin-achievements.html" class="admin-nav-item active"><span>🎖️</span><span>Achievements</span></a>
+            <a href="edit-member.html" class="admin-nav-item"><span>✏️</span><span>Edit Member</span></a>
+            <a href="edit-contribution.html" class="admin-nav-item"><span>📝</span><span>Edit Contribution</span></a>
+            <a href="announcements.html" class="admin-nav-item"><span>📢</span><span>Announcements</span></a>
+        </nav>
+        <div class="admin-sidebar-bottom">
+            <a href="login.html" class="admin-nav-item admin-member-login-link"><span>👤</span><span>Login as Member</span></a>
+            <a href="index.html" class="admin-nav-item"><span>🌐</span><span>View Website</span></a>
+            <button type="button" class="admin-nav-item admin-logout" onclick="adminLogout()"><span>🚪</span><span>Logout</span></button>
+        </div>
+    </aside>
+
+    <div class="admin-main">
+        <header class="admin-topbar">
+            <button type="button" class="admin-menu-btn" onclick="toggleAdminSidebar()" aria-label="Open menu">☰</button>
+            <div class="admin-page-heading">
+                <span class="admin-eyebrow">RIHULA MUKHOBOLA ASSOCIATION</span>
+                <h1>Achievements</h1>
+                <p>Monitor member achievement progress and unlocked rewards.</p>
+            </div>
+        </header>
+
+        <main class="admin-content">
+            <section class="admin-panel-card admin-achievements-card">
+                <div class="admin-card-heading">
+                    <div>
+                        <span class="admin-card-kicker">Member Rewards</span>
+                        <h3>🏆 Achievement Overview</h3>
+                    </div>
+                    <span class="admin-card-icon">🏆</span>
+                </div>
+                <p class="admin-muted">Achievement progress is based on net savings: contributions minus withdrawals.</p>
+                <div class="admin-achievement-summary">
+                    <div class="admin-achievement-summary-item"><span>Unlocked Achievements</span><strong id="adminUnlockedAchievements">0</strong></div>
+                    <div class="admin-achievement-summary-item"><span>Members With Achievements</span><strong id="adminAchievementMembers">0</strong></div>
+                    <div class="admin-achievement-summary-item"><span>Top Achiever</span><strong id="adminTopAchiever">—</strong></div>
+                </div>
+                <div id="adminAchievementsContainer" class="admin-achievements-list">
+                    <div class="admin-empty-state"><span>⏳</span><p>Loading member achievements...</p></div>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<script src="popups.js"></script>
+<script src="v22.js"></script>
+<script src="admin-achievements.js"></script>
+<script src="withdrawal-fix.js"></script>
+<script src="finance.js"></script>
+</body>
+</html>

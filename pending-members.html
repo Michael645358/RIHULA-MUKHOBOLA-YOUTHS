@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pending Members</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="rihula-modern-design.css">
+<link rel="stylesheet" href="rihula-v3-ui.css">
+</head>
+<body>
+
+<header>
+<h1>Pending Members</h1>
+<button class="btn" onclick="location.href='admin.html'">← Back</button>
+</header>
+
+<section class="admin-panel">
+<div class="admin-card">
+
+<h2>Pending Members</h2>
+
+<div id="pendingMembersBody">
+<p></p>
+</div>
+
+</div>
+</section>
+
+<script src="popups.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="admin-auth.js"></script>
+<script>
+document.documentElement.style.visibility = "hidden";
+document.addEventListener("DOMContentLoaded", async () => { const admin = await RihulaAdmin.requireAdmin(); if (admin) document.documentElement.style.visibility = "visible"; });
+</script>
+<script src="script.js"></script>
+
+<script>
+window.onload = function () {
+    loadPendingMembers();
+};
+</script>
+
+<script src="v22.js"></script>
+<script src="rihula-v3-ui.js"></script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIHULA Achievements</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="rihula-modern-design.css">
+<link rel="stylesheet" href="achievements.css">
+<link rel="stylesheet" href="rihula-v3-ui.css">
+</head>
+<body class="achievements-page">
+<header class="achievements-hero">
+  <div><span>RIHULA MUKHOBOLA ASSOCIATION</span><h1>🏆 Achievements</h1><p>Milestones earned from your current net savings and leaderboard position.</p></div>
+  <button class="btn" onclick="history.back()">← Back</button>
+</header>
+<main class="achievements-wrap">
+  <section class="achievement-summary"><span>Current Net Savings</span><strong id="achievementNet">KSh 0</strong><span>Current Rank</span><strong id="achievementRank">—</strong></section>
+  <section id="achievementsContainer" class="achievements-list page-achievements"></section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="finance.js"></script>
+<script src="achievements.js"></script>
+<script>
+(async function(){
+ const user=JSON.parse(localStorage.getItem('loggedUser')||'null');
+ if(!user?.phone){ location.href='login.html'; return; }
+ try{
+   const finance=await window.rihulaFinance.netFor(user.phone);
+   const {data}=await db.rpc('get_member_rank',{p_phone:String(user.phone)});
+   const rank=Number(data||0);
+   document.getElementById('achievementNet').textContent=window.rihulaFinance.fmt(finance.net);
+   document.getElementById('achievementRank').textContent=rank?'#'+rank:'—';
+ }catch(e){document.getElementById('achievementsContainer').innerHTML='<div class="achievement-empty">Unable to load achievements.</div>'; console.error(e);}
+})();
+</script>
+<script src="rihula-v3-ui.js"></script>
+</body>
+</html>

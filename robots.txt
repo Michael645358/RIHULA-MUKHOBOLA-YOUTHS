@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://michael645358.github.io/RIHULA-MUKHOBOLA/sitemap.xml

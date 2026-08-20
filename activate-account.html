@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activate Member Account</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="rihula-modern-design.css">
+<link rel="stylesheet" href="rihula-v3-ui.css">
+</head>
+<body>
+
+<div class="login-box">
+    <img src="images/logo.jpg" alt="Logo" width="100">
+
+    <h2>Activate Your Account</h2>
+    <p>
+        Existing members can activate their account without registering again.
+    </p>
+
+    <br>
+
+    <div class="input-group">
+        <input type="tel" id="phone"
+               placeholder="📱 Existing Phone Number">
+    </div>
+
+    <div class="input-group">
+        <input type="password" id="oldPassword"
+               placeholder="🔒 Existing Password">
+    </div>
+
+    <div class="input-group">
+        <input type="email" id="email"
+               placeholder="📧 New Email Address"
+               autocomplete="email">
+    </div>
+
+    <div class="input-group">
+        <input type="password" id="newPassword"
+               placeholder="🔐 Create New Password"
+               autocomplete="new-password">
+    </div>
+
+    <div class="input-group">
+        <input type="password" id="confirmPassword"
+               placeholder="🔐 Confirm New Password"
+               autocomplete="new-password">
+    </div>
+
+    <button onclick="activateAccount()" class="login-btn">
+        Activate Account
+    </button>
+
+    <br><br>
+    <a href="login.html">← Back to Login</a>
+</div>
+
+<script src="popups.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+
+<script>
+async function activateAccount() {
+    const phone = document.getElementById("phone").value.trim();
+    const oldPassword = document.getElementById("oldPassword").value;
+    const email = document.getElementById("email").value.trim().toLowerCase();
+    const newPassword = document.getElementById("newPassword").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+
+    if (!phone) {
+        showPopup("Enter your existing phone number.", "warning");
+        return;
+    }
+
+    if (!oldPassword) {
+        showPopup("Enter your existing password.", "warning");
+        return;
+    }
+
+    if (!email || !email.includes("@")) {
+        showPopup("Enter a valid email address.", "warning");
+        return;
+    }
+
+    if (newPassword.length < 6) {
+        showPopup("New password must be at least 6 characters.", "warning");
+        return;
+    }
+
+    if (newPassword !== confirmPassword) {
+        showPopup("New passwords do not match.", "warning");
+        return;
+    }
+
+    try {
+        /* Make sure the old member exists before creating Auth */
+        const { data: oldMember, error: memberCheckError } = await db
+            .from("members")
+            .select("id, phone, email, auth_id")
+            .eq("phone", phone)
+            .maybeSingle();
+
+        if (memberCheckError) {
+            showPopup(
+                "Could not check member record:\n\n" +
+                memberCheckError.message,
+                "error"
+            );
+            return;
+        }
+
+        if (!oldMember) {
+            showPopup("No member was found with that phone number.", "error");
+            return;
+        }
+
+        if (oldMember.auth_id) {
+            showPopup(
+                "This member already has an email account. Use Email Login or Forgot Password.",
+                "warning"
+            );
+            return;
+        }
+
+        /* Create Supabase Auth account */
+        const { data: authData, error: authError } =
+    await db.auth.signUp({
+        email: email,
+        password: newPassword,
+        options: {
+            emailRedirectTo:
+                new URL("auth-callback.html", window.location.href).href
+        }
+    });
+
+        if (authError) {
+            console.error("ACTIVATION AUTH ERROR:", authError);
+            showPopup(
+                "Could not create the email account:\n\n" +
+                authError.message,
+                "error"
+            );
+            return;
+        }
+
+        if (!authData || !authData.user) {
+            showPopup("Could not create the login account.", "error");
+            return;
+        }
+
+        /* Link Auth user to the existing member */
+        const { data: result, error: rpcError } =
+            await db.rpc("activate_old_member", {
+                p_phone: phone,
+                p_old_password: oldPassword,
+                p_email: email,
+                p_auth_id: authData.user.id
+            });
+
+        if (rpcError) {
+            console.error("ACTIVATION LINK ERROR:", rpcError);
+            showPopup(
+                "The email account was created, but linking failed:\n\n" +
+                rpcError.message +
+                "\n\nRun the V2.1 database fix SQL included with this project.",
+                "error"
+            );
+            return;
+        }
+
+        if (!result || !result.success) {
+            showPopup(
+                (result && result.message) ||
+                "The existing member could not be activated.",
+                "error"
+            );
+            return;
+        }
+
+        await db.auth.signOut();
+
+        showPopup(
+            "Account activated successfully!\n\n" +
+            "Your existing savings and contribution history were preserved.\n\n" +
+            "You can now log in using your email and new password.",
+            "success"
+        );
+
+        setTimeout(() => {
+            window.location.href = "login.html";
+        }, 1200);
+
+    } catch (error) {
+        console.error("ACTIVATION ERROR:", error);
+        showPopup(
+            "Unexpected activation error:\n\n" + error.message,
+            "error"
+        );
+    }
+}
+</script>
+<script src="v22.js"></script>
+<script src="rihula-v3-ui.js"></script>
+</body>
+</html>

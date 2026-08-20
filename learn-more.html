@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Learn More - RIHULA MUKHOBOLA ASSOCIATION</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+.learn-more-page {
+    padding: 40px 8%;
+    background: #f5f8f6;
+}
+
+.learn-more-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.learn-more-header h1 {
+    color: #075e2b;
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.learn-more-header p {
+    color: #666;
+    font-size: 17px;
+}
+
+.info-section {
+    max-width: 1100px;
+    margin: 0 auto 45px;
+}
+
+.info-section h2 {
+    text-align: center;
+    color: #075e2b;
+    font-size: 30px;
+    margin-bottom: 25px;
+}
+
+.info-section p {
+    color: #555;
+    line-height: 1.8;
+    font-size: 16px;
+    text-align: center;
+}
+
+.learn-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+.learn-stat {
+    background: white;
+    padding: 25px 15px;
+    border-radius: 18px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,.08);
+}
+
+.learn-stat span {
+    font-size: 35px;
+}
+
+.learn-stat h3 {
+    color: #087f3e;
+    font-size: 28px;
+    margin: 12px 0 5px;
+}
+
+.learn-stat p {
+    margin: 0;
+}
+
+.explore-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.explore-card {
+    background: white;
+    padding: 25px;
+    border-radius: 18px;
+    text-align: center;
+    text-decoration: none;
+    color: #333;
+    box-shadow: 0 5px 20px rgba(0,0,0,.08);
+}
+
+.explore-card span {
+    font-size: 38px;
+}
+
+.explore-card h3 {
+    color: #087f3e;
+    margin: 12px 0;
+}
+
+.explore-card p {
+    margin: 0;
+}
+
+.join-box {
+    background: #087f3e;
+    color: white;
+    padding: 40px 25px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 900px;
+    margin: auto;
+}
+
+.join-box h2 {
+    color: white;
+}
+
+.join-box p {
+    color: white;
+}
+
+.learn-btn {
+    display: inline-block;
+    background: white;
+    color: #087f3e;
+    padding: 12px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.back-home {
+    text-align: center;
+    margin-top: 35px;
+}
+
+.back-home a {
+    color: #087f3e;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+@media (max-width: 700px) {
+
+    .learn-more-page {
+        padding: 30px 5%;
+    }
+
+    .learn-more-header h1 {
+        font-size: 30px;
+    }
+
+    .learn-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .explore-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 450px) {
+
+    .learn-stats,
+    .explore-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+<link rel="stylesheet" href="rihula-modern-design.css">
+<link rel="stylesheet" href="rihula-v3-ui.css">
+</head>
+
+<body>
+
+<header class="modern-header">
+
+    <div class="logo-area">
+
+        <img src="images/logo.jpg" alt="Logo">
+
+        <div class="brand">
+
+            <h1>RIHULA MUKHOBOLA</h1>
+
+            <p>Together We Prosper</p>
+
+        </div>
+
+    </div>
+
+    <nav class="desktop-nav">
+
+        <a href="index.html">Home</a>
+
+        <a href="about.html">About</a>
+
+        <a href="leadership.html">Leadership</a>
+
+        <a href="news.html">News</a>
+
+        <a href="gallery.html">Gallery</a>
+
+        <a href="login.html" class="login-btn">
+            Login
+        </a>
+
+    </nav>
+
+</header>
+
+
+<main class="learn-more-page">
+
+    <div class="learn-more-header">
+
+        <h1>RIHULA MUKHOBOLA ASSOCIATION</h1>
+
+        <p>
+            Together We Prosper Through Unity, Leadership and Development.
+        </p>
+
+    </div>
+
+
+    <section class="info-section">
+
+        <h2>Association Statistics</h2>
+
+        <p>
+            See our growth, achievements and community spirit at a glance.
+        </p>
+
+        <div class="learn-stats">
+
+            <div class="learn-stat">
+
+                <span>👥</span>
+
+                <h3 id="memberCount">0</h3>
+
+                <p>Total Members</p>
+
+            </div>
+
+
+            <div class="learn-stat">
+
+                <span>💰</span>
+
+                <h3 id="totalContributions">
+                    KSh 0
+                </h3>
+
+                <p>Total Contributions</p>
+
+            </div>
+
+
+            <div class="learn-stat">
+
+                <span>🏆</span>
+
+                <h3>5+</h3>
+
+                <p>Years Together</p>
+
+            </div>
+
+
+            <div class="learn-stat">
+
+                <span>❤️</span>
+
+                <h3>100%</h3>
+
+                <p>Community Spirit</p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="info-section">
+
+        <h2>Explore Our Association</h2>
+
+        <div class="explore-grid">
+
+            <a href="about.html" class="explore-card">
+
+                <span>👥</span>
+
+                <h3>About Us</h3>
+
+                <p>
+                    Learn about our association,
+                    mission and activities.
+                </p>
+
+            </a>
+
+
+            <a href="leadership.html" class="explore-card">
+
+                <span>👨‍💼</span>
+
+                <h3>Leadership</h3>
+
+                <p>
+                    Meet the people leading
+                    our association.
+                </p>
+
+            </a>
+
+
+            <a href="news.html" class="explore-card">
+
+                <span>📢</span>
+
+                <h3>News</h3>
+
+                <p>
+                    Read our latest announcements
+                    and updates.
+                </p>
+
+            </a>
+
+
+            <a href="gallery.html" class="explore-card">
+
+                <span>🖼️</span>
+
+                <h3>Gallery</h3>
+
+                <p>
+                    View community events
+                    and activities.
+                </p>
+
+            </a>
+
+
+            <a href="contact.html" class="explore-card">
+
+                <span>📞</span>
+
+                <h3>Contact</h3>
+
+                <p>
+                    Get in touch with
+                    our association.
+                </p>
+
+            </a>
+
+
+            <a href="login.html" class="explore-card">
+
+                <span>🔐</span>
+
+                <h3>Member Login</h3>
+
+                <p>
+                    Access your member
+                    account.
+                </p>
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <section class="info-section">
+
+        <div class="join-box">
+
+            <h2>Join Our Community</h2>
+
+            <p>
+                Become part of RIHULA MUKHOBOLA ASSOCIATION
+                and enjoy the benefits of unity, savings,
+                leadership and community development.
+                Together we build a stronger future for everyone.
+            </p>
+
+            <a href="register.html" class="learn-btn">
+                Join Now
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <div class="back-home">
+
+        <a href="index.html">
+            ← Back to Home
+        </a>
+
+    </div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="script.js"></script>
+
+<script src="finance.js"></script>
+<script src="rihula-v3-ui.js"></script>
+</body>
+</html>

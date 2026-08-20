@@ -1,0 +1,26 @@
+/* RIHULA ADMIN ACHIEVEMENTS - isolated styles only */
+.admin-achievements-card{margin-top:22px}
+.admin-achievement-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0 20px}
+.admin-achievement-summary-item{padding:16px;border:1px solid var(--admin-border,#e1ebe5);border-radius:16px;background:var(--admin-bg,#f4f8f5)}
+.admin-achievement-summary-item span{display:block;color:var(--admin-muted,#718078);font-size:12px;margin-bottom:6px}
+.admin-achievement-summary-item strong{display:block;color:var(--admin-ink,#14231a);font-size:20px}
+.admin-achievements-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.admin-achievement-member{border:1px solid var(--admin-border,#e1ebe5);border-radius:18px;padding:16px;background:#fff}
+.admin-achievement-member-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.admin-achievement-member-name{display:flex;align-items:center;gap:10px;min-width:0}
+.admin-achievement-avatar{width:42px;height:42px;flex:0 0 42px;display:grid;place-items:center;border-radius:13px;background:var(--admin-green-soft,#eaf7ef);font-size:20px}
+.admin-achievement-member-name strong,.admin-achievement-member-name small{display:block}
+.admin-achievement-member-name strong{color:var(--admin-ink,#14231a);font-size:15px}
+.admin-achievement-member-name small{margin-top:3px;color:var(--admin-muted,#718078);font-size:12px}
+.admin-achievement-net{color:var(--admin-green,#087f3e);white-space:nowrap;font-size:15px}
+.admin-achievement-progress-row{display:flex;justify-content:space-between;gap:12px;margin-top:16px;color:var(--admin-muted,#718078);font-size:12px}
+.admin-achievement-progress{height:8px;margin-top:7px;overflow:hidden;border-radius:999px;background:#edf2ee}
+.admin-achievement-progress span{display:block;height:100%;border-radius:inherit;background:var(--admin-green,#087f3e)}
+.admin-achievement-next{margin:8px 0 12px;color:var(--admin-muted,#718078);font-size:12px}
+.admin-achievement-badges{display:flex;flex-wrap:wrap;gap:7px}
+.admin-achievement-badge{display:inline-flex;align-items:center;gap:4px;padding:6px 9px;border-radius:999px;font-size:11px;line-height:1.2}
+.admin-achievement-badge.is-unlocked{color:var(--admin-green-dark,#075e2b);background:var(--admin-green-soft,#eaf7ef);border:1px solid #cce9d7}
+.admin-achievement-badge.is-locked{color:#7c8580;background:#f4f6f5;border:1px solid #e4e9e6}
+.admin-achievement-error p{color:#a33b32}
+@media(max-width:900px){.admin-achievements-list{grid-template-columns:1fr}}
+@media(max-width:620px){.admin-achievement-summary{grid-template-columns:1fr}.admin-achievement-member-top{align-items:flex-start;flex-direction:column}.admin-achievement-net{padding-left:52px}}

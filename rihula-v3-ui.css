@@ -1,0 +1,172 @@
+/* =========================================================
+   RIHULA V3 — FRONT-END EXPERIENCE LAYER
+   Additive stylesheet: keeps existing HTML/classes intact.
+   No database/Supabase changes required.
+   ========================================================= */
+:root{
+  --r3-green:#0f6b4f;
+  --r3-green-2:#0b8a62;
+  --r3-deep:#073f32;
+  --r3-gold:#d7a84b;
+  --r3-bg:#f4f8f6;
+  --r3-surface:rgba(255,255,255,.92);
+  --r3-text:#10231d;
+  --r3-muted:#66756f;
+  --r3-border:#dfeae5;
+  --r3-shadow:0 18px 50px rgba(8,63,50,.10);
+  --r3-radius:22px;
+}
+html{background:var(--r3-bg)}
+body{background:radial-gradient(circle at 10% 0%,rgba(15,107,79,.08),transparent 30%),linear-gradient(180deg,#f7fbf9 0%,var(--r3-bg) 55%,#eef5f2 100%);color:var(--r3-text)}
+body::selection{background:rgba(15,107,79,.18)}
+
+/* premium surface treatment */
+.card,.dashboard-card,.stat-card,.panel,.box,.content-card,.member-card,.admin-panel-card,.admin-stat-card,
+.personal-summary-card,.featured-update,.achievements-section,.dashboard-notifications,.goal-main-card,.goal-summary{
+  border-color:var(--r3-border)!important;
+  box-shadow:var(--r3-shadow)!important;
+}
+
+/* universal page polish */
+main,.container,.content,.dashboard-container,.page-container{position:relative}
+h1,h2,h3,h4{letter-spacing:-.025em}
+a{color:var(--r3-green)}
+
+/* brand */
+.logo-area img,.logo img,.admin-brand img,.pochi-brand img{box-shadow:0 10px 28px rgba(7,63,50,.16)!important}
+.brand p,.admin-eyebrow,.admin-card-kicker{color:var(--r3-green)!important}
+
+/* buttons */
+button,.btn,.button,.admin-primary-btn,.admin-tool,.login-btn{font-weight:750!important}
+button,.btn,.button,.admin-primary-btn,.login-btn{
+  background:linear-gradient(135deg,var(--r3-green),var(--r3-green-2))!important;
+  box-shadow:0 10px 24px rgba(15,107,79,.18)!important;
+}
+.btn-outline{border-color:rgba(255,255,255,.72)!important}
+
+/* member hero */
+.pochi-hero{
+  position:relative;overflow:hidden;
+  background:linear-gradient(145deg,#073f32 0%,#0f6b4f 52%,#0b8a62 100%)!important;
+  border-radius:0 0 30px 30px!important;
+  box-shadow:0 20px 55px rgba(7,63,50,.22)!important;
+}
+.pochi-hero::before,.pochi-hero::after{
+  content:"";position:absolute;border-radius:50%;pointer-events:none;
+  background:rgba(255,255,255,.07);filter:blur(1px)
+}
+.pochi-hero::before{width:220px;height:220px;right:-90px;top:-80px}
+.pochi-hero::after{width:150px;height:150px;left:-70px;bottom:-90px}
+.pochi-hero-top,.pochi-welcome,.collection-card{position:relative;z-index:1}
+.member-online-dot{color:#c9f7df!important}
+.collection-card{background:rgba(255,255,255,.12)!important;border:1px solid rgba(255,255,255,.18)!important;backdrop-filter:blur(14px)}
+
+/* quick actions */
+.rihula-actions{gap:14px!important}
+.rihula-action{
+  background:rgba(255,255,255,.94)!important;border:1px solid var(--r3-border)!important;
+  color:var(--r3-text)!important;box-shadow:0 10px 30px rgba(8,63,50,.07)!important;
+  min-height:84px!important;position:relative;overflow:hidden
+}
+.rihula-action::after{content:"";position:absolute;inset:auto 0 0;height:3px;background:linear-gradient(90deg,var(--r3-green),var(--r3-gold));opacity:.0;transition:.2s}
+.rihula-action:hover::after{opacity:1}
+.action-icon{color:var(--r3-green)!important;font-weight:900}
+
+/* savings card */
+.personal-summary-card{background:linear-gradient(145deg,#ffffff,#f4fbf7)!important}
+.summary-pill{background:#e1f5eb!important;color:#0f6b4f!important}
+.summary-progress{height:11px!important;background:#e5eee9!important;border-radius:999px!important;overflow:hidden}
+#progressFill{background:linear-gradient(90deg,var(--r3-green),var(--r3-gold))!important;border-radius:999px}
+
+/* headings */
+.dashboard-section-heading,.featured-heading{align-items:center}
+.featured-heading button{background:transparent!important;color:var(--r3-green)!important;box-shadow:none!important;padding:6px 10px}
+
+/* achievement cards */
+.achievement-item{background:linear-gradient(145deg,#fff,#f7fbf9)!important;border-color:var(--r3-border)!important}
+.achievement-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:15px;background:#e8f6ef}
+
+/* notifications/activity */
+.r3-notification{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--r3-border)}
+.r3-notification:last-child{border-bottom:0}
+.r3-notification-icon{width:40px;height:40px;display:grid;place-items:center;border-radius:13px;background:#e9f6f0;flex:0 0 auto}
+.r3-notification small,.r3-muted{color:var(--r3-muted)}
+.r3-unread{position:relative}
+.r3-unread::after{content:"";position:absolute;top:12px;right:12px;width:8px;height:8px;border-radius:50%;background:#e0aa42;box-shadow:0 0 0 4px rgba(224,170,66,.12)}
+
+/* modern utility row injected by v3-ui.js */
+.r3-utility-bar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:0 auto 18px;max-width:1200px;padding:0 14px}
+.r3-utility-group{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.r3-chip{display:inline-flex;align-items:center;gap:7px;padding:8px 11px;border-radius:999px;background:#fff;border:1px solid var(--r3-border);color:#53645e;font-size:12px;font-weight:800}
+.r3-chip strong{color:var(--r3-green)}
+.r3-icon-button{width:40px;height:40px;border:1px solid var(--r3-border)!important;background:#fff!important;color:var(--r3-deep)!important;box-shadow:none!important;border-radius:13px!important;padding:0!important}
+
+/* mobile bottom navigation */
+.r3-bottom-nav{display:none}
+@media(max-width:760px){
+  body.r3-member-page{padding-bottom:88px}
+  .r3-bottom-nav{position:fixed;left:10px;right:10px;bottom:10px;z-index:9999;display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:8px;border:1px solid rgba(255,255,255,.75);border-radius:22px;background:rgba(255,255,255,.88);backdrop-filter:blur(18px);box-shadow:0 18px 45px rgba(7,63,50,.22)}
+  .r3-bottom-nav button{background:transparent!important;color:#63716c!important;box-shadow:none!important;border:0!important;padding:7px 2px!important;font-size:10px!important;display:flex;flex-direction:column;gap:3px;align-items:center}
+  .r3-bottom-nav button.active{color:var(--r3-green)!important;background:#e8f6ef!important;border-radius:15px}
+  .r3-bottom-nav .r3-nav-icon{font-size:18px;line-height:1}
+  .r3-utility-bar{padding:0 12px}
+}
+
+/* admin modernization */
+.admin-dashboard-page .admin-sidebar{background:linear-gradient(180deg,#073f32,#0b5d46)!important}
+.admin-dashboard-page .admin-brand strong,.admin-dashboard-page .admin-brand span{color:#fff!important}
+.admin-dashboard-page .admin-nav-item{border-radius:13px!important}
+.admin-dashboard-page .admin-nav-item.active{background:rgba(255,255,255,.14)!important}
+.admin-topbar{backdrop-filter:blur(16px);background:rgba(255,255,255,.88)!important}
+.admin-status{border-color:#cce8da!important;color:var(--r3-green)!important;background:#f0faf5!important}
+.admin-status i{background:#16a36d!important;box-shadow:0 0 0 5px rgba(22,163,109,.10)!important}
+.admin-welcome{border:1px solid #d8ebe2!important;background:linear-gradient(135deg,#ffffff,#eef9f3)!important;box-shadow:var(--r3-shadow)!important}
+.admin-stat-card{overflow:hidden;position:relative}
+.admin-stat-card::after{content:"";position:absolute;right:-30px;bottom:-40px;width:120px;height:120px;border-radius:50%;background:rgba(15,107,79,.07)}
+.admin-tool:hover{transform:translateY(-3px);border-color:#b9dccb!important;box-shadow:0 14px 32px rgba(8,63,50,.10)!important}
+
+/* forms */
+input:focus,select:focus,textarea:focus{border-color:var(--r3-green)!important;box-shadow:0 0 0 4px rgba(15,107,79,.10)!important}
+
+/* global page reveal */
+.r3-reveal{opacity:0;transform:translateY(10px);transition:opacity .5s ease,transform .5s ease}
+.r3-reveal.r3-visible{opacity:1;transform:none}
+
+/* toast */
+.r3-toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);z-index:10000;opacity:0;pointer-events:none;max-width:min(92vw,430px);padding:13px 16px;border-radius:15px;background:#10231d;color:#fff;box-shadow:0 18px 45px rgba(0,0,0,.22);font-weight:700;font-size:14px;transition:.25s}
+.r3-toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* install/update prompt */
+.r3-install-card{position:fixed;left:14px;right:14px;bottom:18px;z-index:9998;display:none;align-items:center;gap:12px;padding:14px 16px;border:1px solid #d7e8df;border-radius:20px;background:rgba(255,255,255,.96);box-shadow:0 20px 55px rgba(7,63,50,.18);backdrop-filter:blur(16px)}
+.r3-install-card.show{display:flex}
+.r3-install-card .r3-install-copy{flex:1}
+.r3-install-card strong{display:block}
+.r3-install-card small{color:var(--r3-muted)}
+.r3-install-card button{border:0;padding:9px 12px;border-radius:11px;color:#fff}
+
+/* dark mode */
+html.r3-dark body{background:#071713;color:#e8f3ee}
+html.r3-dark .card,html.r3-dark .dashboard-card,html.r3-dark .stat-card,html.r3-dark .panel,html.r3-dark .member-card,
+html.r3-dark .personal-summary-card,html.r3-dark .featured-update,html.r3-dark .achievements-section,html.r3-dark .dashboard-notifications,
+html.r3-dark .r3-chip,html.r3-dark .r3-icon-button,html.r3-dark .r3-install-card,html.r3-dark .rihula-action{background:#0d211b!important;color:#e8f3ee!important;border-color:#23483b!important}
+html.r3-dark input,html.r3-dark select,html.r3-dark textarea{background:#0d211b!important;color:#e8f3ee!important;border-color:#315647!important}
+html.r3-dark .r3-muted,html.r3-dark .r3-notification small,html.r3-dark .achievement-item p{color:#a6bbb3!important}
+html.r3-dark .r3-bottom-nav{background:rgba(10,31,25,.9);border-color:#315647}
+
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}.r3-reveal{opacity:1;transform:none}}
+@media print{.r3-bottom-nav,.r3-install-card,.r3-utility-bar,.r3-toast{display:none!important}.pochi-hero{box-shadow:none!important}}
+
+/* V3 member spotlight + quick tools */
+.r3-member-spotlight{max-width:1200px;margin:0 auto 18px;padding:24px;border-radius:24px;display:flex;align-items:center;justify-content:space-between;gap:20px;background:linear-gradient(135deg,#082f26,#0f6b4f 65%,#118d66);color:#fff;box-shadow:0 18px 45px rgba(7,63,50,.16);overflow:hidden;position:relative}
+.r3-member-spotlight::after{content:"";position:absolute;width:190px;height:190px;border:28px solid rgba(215,168,75,.16);border-radius:50%;right:-65px;top:-85px}
+.r3-spotlight-kicker{font-size:11px;letter-spacing:.14em;font-weight:900;opacity:.72}
+.r3-member-spotlight h2{margin:6px 0 5px;font-size:clamp(24px,5vw,34px)}
+.r3-member-spotlight p{margin:0;max-width:600px;color:rgba(255,255,255,.78)}
+.r3-spotlight-orb{position:relative;z-index:1;width:58px;height:58px;border-radius:20px;display:grid;place-items:center;background:rgba(255,255,255,.13);font-size:28px;border:1px solid rgba(255,255,255,.18)}
+.r3-quick-panel{margin:0 0 20px}
+.r3-quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.r3-quick-grid button{background:#fff!important;color:var(--r3-text)!important;border:1px solid var(--r3-border)!important;box-shadow:0 10px 28px rgba(8,63,50,.06)!important;padding:17px;text-align:left;display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-items:center}
+.r3-quick-grid button span{grid-row:span 2;font-size:25px;width:45px;height:45px;border-radius:14px;background:#e8f6ef;display:grid;place-items:center}
+.r3-quick-grid strong{font-size:14px}.r3-quick-grid small{color:var(--r3-muted);font-size:11px;margin-top:2px}
+@media(max-width:760px){.r3-member-spotlight{margin-left:12px;margin-right:12px;padding:20px}.r3-quick-panel{padding:0 12px}.r3-quick-grid{grid-template-columns:1fr 1fr}.r3-quick-grid button{padding:14px}}
+@media(max-width:420px){.r3-member-spotlight{align-items:flex-start}.r3-spotlight-orb{display:none}.r3-quick-grid{gap:9px}.r3-quick-grid button{grid-template-columns:auto 1fr}}

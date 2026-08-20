@@ -1,0 +1,182 @@
+
+/* =========================================================
+   RIHULA MODERN UI — DESIGN OVERRIDE
+   Added as a final stylesheet so existing functionality/JS
+   can remain intact.
+   ========================================================= */
+
+:root{
+  --rihula-primary:#2563eb;
+  --rihula-primary-dark:#1d4ed8;
+  --rihula-accent:#14b8a6;
+  --rihula-bg:#f5f7fb;
+  --rihula-card:#ffffff;
+  --rihula-text:#172033;
+  --rihula-muted:#6b7280;
+  --rihula-border:#e7eaf0;
+  --rihula-shadow:0 10px 30px rgba(15,23,42,.08);
+  --rihula-radius:18px;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--rihula-bg);
+  color:var(--rihula-text);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+/* Header / navigation */
+header,.header,.topbar,.navbar,.site-header{
+  border-bottom:1px solid rgba(231,234,240,.9);
+  box-shadow:0 4px 18px rgba(15,23,42,.05);
+  background:rgba(255,255,255,.94);
+  backdrop-filter:blur(12px);
+}
+.logo-area{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.logo-area img,.logo img{
+  border-radius:14px;
+  object-fit:cover;
+  box-shadow:0 4px 12px rgba(15,23,42,.12);
+}
+
+/* Main containers */
+main,.container,.content,.dashboard-container,.page-container{
+  max-width:1200px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+/* Cards */
+.card,.dashboard-card,.stat-card,.panel,.box,.content-card,.member-card{
+  background:var(--rihula-card);
+  border:1px solid var(--rihula-border);
+  border-radius:var(--rihula-radius);
+  box-shadow:var(--rihula-shadow);
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+}
+.card:hover,.dashboard-card:hover,.stat-card:hover,.panel:hover,.member-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 16px 36px rgba(15,23,42,.10);
+}
+
+/* Stats */
+.stats,.stats-grid,.dashboard-stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:18px;
+}
+.stat-card{
+  position:relative;
+  overflow:hidden;
+  padding:22px;
+}
+.stat-card::before{
+  content:"";
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:4px;
+  background:linear-gradient(180deg,var(--rihula-primary),var(--rihula-accent));
+}
+.stat-card h2,.stat-card h3{
+  margin:6px 0;
+  font-size:clamp(24px,4vw,34px);
+}
+.stat-card p{
+  margin:0;
+  color:var(--rihula-muted);
+}
+
+/* Buttons */
+button,.btn,a.btn,.button{
+  border-radius:12px;
+  transition:transform .15s ease,box-shadow .15s ease,background .15s ease;
+}
+button:hover,.btn:hover,a.btn:hover,.button:hover{
+  transform:translateY(-1px);
+}
+button,.btn-primary,.primary-btn{
+  background:linear-gradient(135deg,var(--rihula-primary),var(--rihula-primary-dark));
+  color:#fff;
+  border:0;
+  box-shadow:0 7px 18px rgba(37,99,235,.22);
+}
+
+/* Forms */
+input,select,textarea{
+  width:100%;
+  border:1px solid #dfe3ea;
+  border-radius:12px;
+  background:#fff;
+  color:var(--rihula-text);
+  padding:12px 14px;
+  outline:none;
+  transition:border-color .15s,box-shadow .15s;
+}
+input:focus,select:focus,textarea:focus{
+  border-color:var(--rihula-primary);
+  box-shadow:0 0 0 4px rgba(37,99,235,.10);
+}
+
+/* Tables */
+table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  overflow:hidden;
+  background:#fff;
+  border:1px solid var(--rihula-border);
+  border-radius:16px;
+}
+th{
+  background:#f8fafc;
+  color:#475569;
+  font-size:.85rem;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+th,td{padding:14px 16px;border-bottom:1px solid var(--rihula-border)}
+tr:last-child td{border-bottom:0}
+tbody tr:hover{background:#f8fbff}
+
+/* Badges */
+.badge,.status,.status-badge{
+  display:inline-flex;
+  align-items:center;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:.78rem;
+  font-weight:700;
+  background:#eef2ff;
+}
+
+/* Mobile */
+@media(max-width:700px){
+  header,.header,.topbar,.navbar{
+    padding:10px 14px;
+  }
+  main,.container,.content,.dashboard-container,.page-container{
+    width:calc(100% - 24px);
+    padding-left:0;
+    padding-right:0;
+  }
+  .stats,.stats-grid,.dashboard-stats{
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+  .card,.dashboard-card,.stat-card,.panel,.box,.content-card,.member-card{
+    border-radius:15px;
+  }
+  th,td{padding:11px 9px;font-size:.86rem}
+}
+@media(max-width:430px){
+  .stats,.stats-grid,.dashboard-stats{grid-template-columns:1fr}
+}
+
+/* Finance leaderboard + achievements */
+.leaderboard-heading{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:18px}.leaderboard-heading h2{margin-bottom:4px}.leaderboard-heading p{margin:0;color:#667085}.achievement-item{display:flex;align-items:center;gap:14px;padding:15px;border:1px solid #e7ebf0;border-radius:16px;background:#fff}.achievement-icon{font-size:28px}.achievement-item p{margin:3px 0 0;color:#667085}.achievement-empty{padding:18px;text-align:center;color:#667085;border-radius:16px;background:#f8fafc}

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Announcements</title>
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="rihula-modern-design.css">
+<link rel="stylesheet" href="rihula-v3-ui.css">
+</head>
+<body>
+
+<header>
+
+<div class="logo-area">
+
+<img src="images/logo.jpg" alt="Logo">
+
+<div>
+<h1>Announcements</h1>
+<p>RIHULA MUKHOBOLA ASSOCIATION</p>
+</div>
+
+</div>
+
+</header>
+
+<section class="admin-panel">
+
+<!-- Post Announcement -->
+<div class="admin-card">
+
+<h2>Post Announcement</h2>
+
+<input
+type="text"
+id="announcementTitle"
+placeholder="Announcement Title">
+
+<textarea
+id="announcementMessage"
+placeholder="Announcement Message"></textarea>
+
+<button
+class="btn"
+onclick="addAnnouncement()">
+Post Announcement
+</button>
+
+</div>
+
+<!-- Send Notification -->
+<div class="admin-card">
+
+<h2>Send Notification</h2>
+
+<input
+type="text"
+id="notificationTitle"
+placeholder="Notification Title">
+
+<textarea
+id="notificationMessage"
+placeholder="Notification Message"></textarea>
+
+<button
+class="btn"
+onclick="sendNotification()">
+Send Notification
+</button>
+
+</div>
+
+<!-- Existing Announcements -->
+<div class="admin-card">
+
+<h2>Manage Announcements</h2>
+
+<div id="announcementsList">
+<p></p>
+</div>
+
+<br>
+
+<button
+class="btn"
+onclick="location.href='admin.html'">
+← Back to Dashboard
+</button>
+
+</div>
+
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="admin-auth.js"></script>
+<script>
+document.documentElement.style.visibility = "hidden";
+document.addEventListener("DOMContentLoaded", async () => { const admin = await RihulaAdmin.requireAdmin(); if (admin) document.documentElement.style.visibility = "visible"; });
+</script>
+<script src="script.js"></script>
+
+<script>
+window.onload = function () {
+    loadAnnouncementsList();
+};
+
+async function sendNotification() {
+
+    const title = document
+        .getElementById("notificationTitle")
+        .value.trim();
+
+    const message = document
+        .getElementById("notificationMessage")
+        .value.trim();
+
+    if (!title || !message) {
+        showPopup("Please enter both a title and a message.", "warning");
+        return;
+    }
+
+    // Save notification
+    const { error } = await db
+        .from("notifications")
+        .insert([{
+            title,
+            message
+        }]);
+
+    if (error) {
+        showPopup(error.message, "error");
+        return;
+    }
+
+    // Send OneSignal Push
+    const res = await fetch(
+        "https://qkjymwjhtzidbwpeusoh.supabase.co/functions/v1/smart-function",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                title,
+                message
+            })
+        }
+    );
+
+    const result = await res.json();
+    console.log(result);
+
+    document.getElementById("notificationTitle").value = "";
+    document.getElementById("notificationMessage").value = "";
+
+    showPopup("Notification sent to all subscribed members.", "success", "Notification sent");
+}
+</script>
+
+<script src="popups.js"></script>
+
+<script src="v22.js"></script>
+<script src="rihula-v3-ui.js"></script>
+</body>
+</html>

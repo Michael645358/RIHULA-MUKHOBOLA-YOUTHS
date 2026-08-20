@@ -1,0 +1,29 @@
+RIHULA MUKHOBOLA ASSOCIATION — V2.2 IMPROVED
+
+This build is based on the supplied RIHULA V2.2 project.
+
+Improvements included:
+- Modern responsive visual layer and mobile touch improvements.
+- Fixed malformed index footer/markup.
+- Added shared Kenyan phone normalization for 07..., 01..., 7..., 1..., +254..., +254 spaces/dashes.
+- Added 👁️ show/hide controls to password fields.
+- Fixed missing chat message-menu state/functionality.
+- Copy Message now has a clipboard fallback.
+- Profile photo upload now resets the button after failures.
+- Safer AI message rendering using textContent.
+- Preserved existing Supabase/Brevo/Auth flow and existing database schema.
+- Existing profile-photo, chat, contribution and admin features were retained.
+
+IMPORTANT:
+- Do not overwrite the currently deployed V2.1 until this build is tested.
+- No Supabase database migration is included in this UI build.
+- Passwords should ultimately be managed only by Supabase Auth; the legacy members.password column is retained only for compatibility with the current phone-login/activation flow.
+
+
+RIHULA V2.3 MODERN UI UPGRADE — 2026-08-13
+- Added modern glass header and navigation.
+- Added refreshed hero presentation and responsive typography.
+- Added cleaner cards, forms, tables, stats, quick actions and footer.
+- Improved mobile layout and touch targets.
+- Added accessibility support for reduced motion.
+- Existing JavaScript, Supabase flow and database structure were preserved.

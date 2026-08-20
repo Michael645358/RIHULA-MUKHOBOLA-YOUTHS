@@ -1,0 +1,42 @@
+async function sendNotification() {
+
+    const title = document.getElementById("notificationTitle").value.trim();
+    const message = document.getElementById("notificationMessage").value.trim();
+
+    if (!title || !message) {
+        alert("Please enter both title and message.");
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            "https://ubyuscrigxgvchfofeyx.supabase.co/functions/v1/smart-function",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    title,
+                    message
+                })
+            }
+        );
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert("✅ Push notification sent!");
+            console.log(result);
+        } else {
+            alert("❌ " + JSON.stringify(result));
+        }
+
+    } catch (err) {
+        alert(err.message);
+    }
+
+    document.getElementById("notificationTitle").value = "";
+    document.getElementById("notificationMessage").value = "";
+}

@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIHULA Admin Dashboard</title>
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="admin-dashboard.css">
+<link rel="stylesheet" href="rihula-modern-design.css">
+<link rel="stylesheet" href="rihula-v3-ui.css">
+</head>
+
+<body class="admin-dashboard-page">
+
+<script>
+if (sessionStorage.getItem("adminVerified") !== "true") {
+    window.location.href = "admin-login.html";
+}
+</script>
+
+<div class="admin-shell">
+
+    <aside class="admin-sidebar" id="adminSidebar">
+
+        <div class="admin-brand">
+            <img src="images/logo.jpg" alt="RIHULA Logo">
+            <div>
+                <strong>RIHULA</strong>
+                <span>Admin Panel</span>
+            </div>
+        </div>
+
+        <nav class="admin-nav">
+
+            <a href="admin.html" class="admin-nav-item active">
+                <span>📊</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="add-member.html" class="admin-nav-item">
+                <span>➕</span>
+                <span>Add Member</span>
+            </a>
+
+            <a href="all-members.html" class="admin-nav-item">
+                <span>👥</span>
+                <span>All Members</span>
+            </a>
+
+            <a href="pending-members.html" class="admin-nav-item">
+                <span>⏳</span>
+                <span>Pending Members</span>
+            </a>
+
+            <a href="online-members.html" class="admin-nav-item">
+                <span>🟢</span>
+                <span>Online Members</span>
+            </a>
+
+            <a href="record-contribution.html" class="admin-nav-item">
+                <span>💰</span>
+                <span>Record Contribution</span>
+            </a>
+
+            <a href="leaderboard.html" class="admin-nav-item">
+                <span>🏆</span>
+                <span>Leaderboard</span>
+            </a>
+
+            <a href="edit-member.html" class="admin-nav-item">
+                <span>✏️</span>
+                <span>Edit Member</span>
+            </a>
+
+            <a href="edit-contribution.html" class="admin-nav-item">
+                <span>📝</span>
+                <span>Edit Contribution</span>
+            </a>
+
+            <a href="announcements.html" class="admin-nav-item">
+                <span>📢</span>
+                <span>Announcements</span>
+            </a>
+
+        </nav>
+
+        <div class="admin-sidebar-bottom">
+            <a href="index.html" class="admin-nav-item">
+                <span>🌐</span>
+                <span>View Website</span>
+            </a>
+
+            <button type="button" class="admin-nav-item admin-logout" onclick="adminLogout()">
+                <span>🚪</span>
+                <span>Logout</span>
+            </button>
+        </div>
+
+    </aside>
+
+    <div class="admin-main">
+
+        <header class="admin-topbar">
+
+            <button
+                type="button"
+                class="admin-menu-btn"
+                onclick="toggleAdminSidebar()"
+                aria-label="Open menu">
+                ☰
+            </button>
+
+            <div class="admin-page-heading">
+                <span class="admin-eyebrow">RIHULA MUKHOBOLA ASSOCIATION</span>
+                <h1>Admin Dashboard</h1>
+            </div>
+
+            <div class="admin-top-actions">
+                <span class="admin-status">
+                    <i></i> System Online
+                </span>
+
+                <button
+                    type="button"
+                    class="admin-icon-btn"
+                    onclick="refreshAdminDashboard()"
+                    aria-label="Refresh dashboard">
+                    ↻
+                </button>
+
+                <button
+                    type="button"
+                    class="admin-avatar"
+                    onclick="adminLogout()"
+                    aria-label="Logout">
+                    A
+                </button>
+            </div>
+
+        </header>
+
+
+        <main class="admin-content">
+
+            <section class="admin-welcome">
+
+                <div>
+                    <span class="admin-welcome-label">Good day, Admin 👋</span>
+                    <h2>Manage your association from one place.</h2>
+                    <p>
+                        Monitor members, savings, approvals and community activity
+                        from your RIHULA control centre.
+                    </p>
+                </div>
+
+                <a href="add-member.html" class="admin-primary-btn">
+                    <span>＋</span> Add Member
+                </a>
+
+            </section>
+
+
+            <section class="admin-stats-grid">
+
+                <article class="admin-stat-card members">
+                    <div class="admin-stat-icon">👥</div>
+                    <div>
+                        <span>Total Members</span>
+                        <strong id="totalMembers">0</strong>
+                    </div>
+                </article>
+
+                <article class="admin-stat-card pending">
+                    <div class="admin-stat-icon">⏳</div>
+                    <div>
+                        <span>Pending Members</span>
+                        <strong id="pendingMembers">0</strong>
+                    </div>
+                </article>
+
+                <article class="admin-stat-card savings">
+                    <div class="admin-stat-icon">💰</div>
+                    <div>
+                        <span>Total Savings</span>
+                        <strong id="totalSavings">KSh 0</strong>
+                    </div>
+                </article>
+
+                <article class="admin-stat-card online">
+                    <div class="admin-stat-icon">🟢</div>
+                    <div>
+                        <span>Online Members</span>
+                        <strong id="onlineMembers">0</strong>
+                    </div>
+                </article>
+
+            </section>
+
+
+            <section class="admin-two-column">
+
+                <article class="admin-panel-card goal-card">
+
+                    <div class="admin-card-heading">
+                        <div>
+                            <span class="admin-card-kicker">Savings target</span>
+                            <h3>Group Savings Goal</h3>
+                        </div>
+                        <span class="admin-card-icon">🎯</span>
+                    </div>
+
+                    <div class="goal-amount" id="adminCurrentGroupGoal">
+                        KSh 0
+                    </div>
+
+                    <p class="admin-muted">
+                        Set the amount your association wants to reach.
+                    </p>
+
+                    <div class="goal-form">
+                        <label for="adminGroupGoalInput">New group goal</label>
+
+                        <div class="goal-input-row">
+                            <input
+                                type="number"
+                                id="adminGroupGoalInput"
+                                min="1"
+                                step="1"
+                                placeholder="Enter amount">
+
+                            <button
+                                type="button"
+                                id="updateGroupGoalBtn"
+                                class="admin-primary-btn">
+                                Save Goal
+                            </button>
+                        </div>
+                    </div>
+
+                </article>
+
+
+                <article class="admin-panel-card">
+
+                    <div class="admin-card-heading">
+                        <div>
+                            <span class="admin-card-kicker">Quick access</span>
+                            <h3>Common Actions</h3>
+                        </div>
+                        <span class="admin-card-icon">⚡</span>
+                    </div>
+
+                    <div class="admin-mini-actions">
+
+                        <a href="add-member.html">
+                            <span>➕</span>
+                            <strong>Add Member</strong>
+                            <small>Register a member</small>
+                        </a>
+
+                        <a href="record-contribution.html">
+                            <span>💰</span>
+                            <strong>Add Savings</strong>
+                            <small>Record contribution</small>
+                        </a>
+
+                        <a href="pending-members.html">
+                            <span>⏳</span>
+                            <strong>Approvals</strong>
+                            <small>Review pending members</small>
+                        </a>
+
+                        <a href="announcements.html">
+                            <span>📢</span>
+                            <strong>Announcement</strong>
+                            <small>Post an update</small>
+                        </a>
+
+                    </div>
+
+                </article>
+
+            </section>
+
+
+            <section class="admin-panel-card admin-tools-card">
+
+                <div class="admin-card-heading">
+                    <div>
+                        <span class="admin-card-kicker">Management</span>
+                        <h3>Administration Tools</h3>
+                    </div>
+                    <span class="admin-card-icon">🛠️</span>
+                </div>
+
+                <div class="admin-tools-grid">
+
+                    <a href="all-members.html" class="admin-tool">
+                        <span>👥</span>
+                        <strong>All Members</strong>
+                        <small>View and manage members</small>
+                    </a>
+
+                    <a href="pending-members.html" class="admin-tool">
+                        <span>⏳</span>
+                        <strong>Pending Members</strong>
+                        <small>Approve new registrations</small>
+                    </a>
+
+                    <a href="online-members.html" class="admin-tool">
+                        <span>🟢</span>
+                        <strong>Online Members</strong>
+                        <small>See active members</small>
+                    </a>
+
+                    <a href="leaderboard.html" class="admin-tool">
+                        <span>🏆</span>
+                        <strong>Leaderboard</strong>
+                        <small>View savings rankings</small>
+                    </a>
+
+                    <a href="edit-member.html" class="admin-tool">
+                        <span>✏️</span>
+                        <strong>Edit Member</strong>
+                        <small>Update member details</small>
+                    </a>
+
+                    <a href="edit-contribution.html" class="admin-tool">
+                        <span>📝</span>
+                        <strong>Edit Contribution</strong>
+                        <small>Correct a contribution</small>
+                    </a>
+
+                </div>
+
+            </section>
+
+
+            <section class="admin-two-column">
+
+                <article class="admin-panel-card">
+
+                    <div class="admin-card-heading">
+                        <div>
+                            <span class="admin-card-kicker">Activity</span>
+                            <h3>Recent Admin Activity</h3>
+                        </div>
+                        <span class="admin-card-icon">🕘</span>
+                    </div>
+
+                    <div id="recentActivity" class="admin-activity-list">
+                        <div class="admin-empty-state">
+                            <span>⏳</span>
+                            <p>Loading recent activity...</p>
+                        </div>
+                    </div>
+
+                </article>
+
+
+                <article class="admin-panel-card system-card">
+
+                    <div class="admin-card-heading">
+                        <div>
+                            <span class="admin-card-kicker">Security</span>
+                            <h3>Admin Session</h3>
+                        </div>
+                        <span class="admin-card-icon">🔐</span>
+                    </div>
+
+                    <div class="system-status-row">
+                        <span>Dashboard access</span>
+                        <strong class="status-good">Verified</strong>
+                    </div>
+
+                    <div class="system-status-row">
+                        <span>Database connection</span>
+                        <strong id="databaseStatus" class="status-good">Checking...</strong>
+                    </div>
+
+                    <div class="system-status-row">
+                        <span>Last refreshed</span>
+                        <strong id="lastRefresh">Just now</strong>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="admin-secondary-btn"
+                        onclick="adminLogout()">
+                        🚪 Sign Out
+                    </button>
+
+                </article>
+
+            </section>
+
+        </main>
+
+        <footer class="admin-footer">
+            RIHULA MUKHOBOLA ASSOCIATION · Admin Dashboard
+        </footer>
+
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="admin-auth.js"></script>
+<script>
+document.documentElement.style.visibility = "hidden";
+document.addEventListener("DOMContentLoaded", async () => { const admin = await RihulaAdmin.requireAdmin(); if (admin) document.documentElement.style.visibility = "visible"; });
+</script>
+<script src="popups.js"></script>
+<script src="admin.js"></script>
+
+<script>
+function adminLogout() {
+    sessionStorage.removeItem("adminVerified");
+    localStorage.removeItem("adminAccess");
+    window.location.href = "admin-login.html";
+}
+
+function toggleAdminSidebar() {
+    document.getElementById("adminSidebar").classList.toggle("open");
+}
+
+function formatMoney(value) {
+    return "KSh " + Number(value || 0).toLocaleString();
+}
+
+async function loadAdminOverview() {
+
+    const databaseStatus = document.getElementById("databaseStatus");
+
+    try {
+
+        const [
+            membersResult,
+            pendingResult,
+            contributionsResult,
+            onlineResult
+        ] = await Promise.all([
+            db.from("members").select("phone", { count: "exact", head: true }),
+            db.from("members").select("phone", { count: "exact", head: true }).eq("status", "pending"),
+            db.from("contributions").select("amount"),
+            db.from("members").select("phone", { count: "exact", head: true }).eq("online", true)
+        ]);
+
+        if (membersResult.error) throw membersResult.error;
+
+        const totalMembers = membersResult.count || 0;
+        const pendingMembers = pendingResult.count || 0;
+        const onlineMembers = onlineResult.count || 0;
+
+        let totalSavings = 0;
+
+        (contributionsResult.data || []).forEach(item => {
+            totalSavings += Number(item.amount || 0);
+        });
+
+        document.getElementById("totalMembers").textContent = totalMembers;
+        document.getElementById("pendingMembers").textContent = pendingMembers;
+        document.getElementById("onlineMembers").textContent = onlineMembers;
+        document.getElementById("totalSavings").textContent = formatMoney(totalSavings);
+
+        databaseStatus.textContent = "Connected";
+        databaseStatus.className = "status-good";
+
+    } catch (error) {
+
+        console.error("Dashboard overview error:", error);
+
+        databaseStatus.textContent = "Connection error";
+        databaseStatus.className = "status-bad";
+
+    }
+}
+
+async function loadRecentActivity() {
+
+    const container = document.getElementById("recentActivity");
+
+    try {
+
+        const { data, error } = await db
+            .from("activity_logs")
+            .select("*")
+            .order("created_at", { ascending: false })
+            .limit(6);
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+            container.innerHTML = `
+                <div class="admin-empty-state">
+                    <span>📋</span>
+                    <p>No admin activity recorded yet.</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = data.map(item => {
+
+            const date = item.created_at
+                ? new Date(item.created_at).toLocaleString()
+                : "Unknown time";
+
+            return `
+                <div class="admin-activity-item">
+                    <span class="activity-dot"></span>
+                    <div>
+                        <strong>${escapeAdminHtml(item.action || "Admin activity")}</strong>
+                        <small>${escapeAdminHtml(date)}</small>
+                    </div>
+                </div>
+            `;
+
+        }).join("");
+
+    } catch (error) {
+
+        console.warn("Activity log unavailable:", error);
+
+        container.innerHTML = `
+            <div class="admin-empty-state">
+                <span>📋</span>
+                <p>Activity log is not available yet.</p>
+            </div>
+        `;
+    }
+}
+
+function escapeAdminHtml(value) {
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+function setRefreshTime() {
+    document.getElementById("lastRefresh").textContent =
+        new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+}
+
+async function refreshAdminDashboard() {
+
+    const button = document.querySelector(".admin-icon-btn");
+
+    if (button) {
+        button.classList.add("spinning");
+    }
+
+    await Promise.all([
+        loadAdminOverview(),
+        loadRecentActivity(),
+        typeof loadAdminGroupGoal === "function"
+            ? loadAdminGroupGoal()
+            : Promise.resolve()
+    ]);
+
+    setRefreshTime();
+
+    if (button) {
+        setTimeout(() => button.classList.remove("spinning"), 450);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    loadAdminOverview();
+    loadRecentActivity();
+    setRefreshTime();
+
+    const goalButton = document.getElementById("updateGroupGoalBtn");
+
+    if (goalButton && typeof updateGroupGoal === "function") {
+        goalButton.addEventListener("click", updateGroupGoal);
+    }
+
+    if (typeof loadAdminGroupGoal === "function") {
+        loadAdminGroupGoal();
+    }
+
+});
+</script>
+
+<script src="v22.js"></script>
+
+<script src="finance.js"></script>
+<script src="rihula-v3-ui.js"></script>
+</body>
+</html>

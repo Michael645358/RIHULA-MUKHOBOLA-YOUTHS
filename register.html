@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Member Registration | RIHULA</title>
+
+    <link rel="stylesheet" href="auth-pages.css">
+<link rel="stylesheet" href="rihula-modern-design.css">
+<link rel="stylesheet" href="rihula-v3-ui.css">
+</head>
+
+<body class="auth-page">
+
+<div class="auth-wrapper">
+
+    <main class="auth-card">
+
+        <img
+            src="images/logo.jpg"
+            class="auth-logo"
+            alt="RIHULA Mukhobola Youths Association Logo"
+        >
+
+        <header class="auth-header">
+
+            <h1>Member Registration</h1>
+
+            <p>
+                Create your RIHULA member account and join
+                our community.
+            </p>
+
+        </header>
+
+        <form
+            class="auth-form"
+            id="registrationForm"
+            novalidate
+        >
+
+            <div class="form-row">
+
+                <div class="form-field">
+
+                    <label for="firstName">
+                        First Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="firstName"
+                        placeholder="Enter first name"
+                        autocomplete="given-name"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-field">
+
+                    <label for="lastName">
+                        Last Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="lastName"
+                        placeholder="Enter last name"
+                        autocomplete="family-name"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+            <div class="form-field">
+
+                <label for="phone">
+                    Phone Number
+                </label>
+
+                <input
+                    type="tel"
+                    id="phone"
+                    placeholder="07XXXXXXXX"
+                    autocomplete="tel"
+                    inputmode="tel"
+                    required
+                >
+
+            </div>
+
+            <div class="form-field">
+
+                <label for="email">
+                    Email Address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="example@email.com"
+                    autocomplete="email"
+                    required
+                >
+
+            </div>
+
+            <div class="form-field">
+
+                <label for="password">
+                    Create Password
+                </label>
+
+                <div class="password-wrapper">
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Create a password"
+                        autocomplete="new-password"
+                        minlength="6"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        data-target="password"
+                        aria-label="Show password"
+                    >
+                        👁
+                    </button>
+
+                </div>
+
+                <div
+                    id="passwordStrength"
+                    class="password-strength"
+                >
+                    Minimum 6 characters
+                </div>
+
+            </div>
+
+            <div class="form-field">
+
+                <label for="confirmPassword">
+                    Confirm Password
+                </label>
+
+                <div class="password-wrapper">
+
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        placeholder="Repeat your password"
+                        autocomplete="new-password"
+                        minlength="6"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        data-target="confirmPassword"
+                        aria-label="Show password"
+                    >
+                        👁
+                    </button>
+
+                </div>
+
+            </div>
+
+            <button
+                type="submit"
+                class="auth-button"
+                id="registerButton"
+            >
+                Create Member Account
+            </button>
+
+        </form>
+
+        <div class="auth-footer">
+
+            Already registered?
+
+            <a href="login.html">
+                Login
+            </a>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script src="popups.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase.js"></script>
+
+<script src="v22.js"></script>
+
+<script>
+(function () {
+
+    const form = document.getElementById("registrationForm");
+    const button = document.getElementById("registerButton");
+    const password = document.getElementById("password");
+    const confirmPassword = document.getElementById("confirmPassword");
+    const strength = document.getElementById("passwordStrength");
+
+    /* Password visibility */
+
+    document.querySelectorAll(".password-toggle").forEach(toggle => {
+
+        toggle.addEventListener("click", () => {
+
+            const targetId = toggle.dataset.target;
+            const input = document.getElementById(targetId);
+
+            if (input.type === "password") {
+                input.type = "text";
+                toggle.textContent = "🙈";
+                toggle.setAttribute(
+                    "aria-label",
+                    "Hide password"
+                );
+            } else {
+                input.type = "password";
+                toggle.textContent = "👁";
+                toggle.setAttribute(
+                    "aria-label",
+                    "Show password"
+                );
+            }
+
+        });
+
+    });
+
+    /* Password strength */
+
+    password.addEventListener("input", () => {
+
+        const value = password.value;
+
+        if (!value) {
+            strength.textContent = "Minimum 6 characters";
+            strength.className = "password-strength";
+            return;
+        }
+
+        if (value.length < 6) {
+
+            strength.textContent =
+                "Weak password";
+
+            strength.className =
+                "password-strength weak";
+
+        } else if (value.length < 10) {
+
+            strength.textContent =
+                "Medium password";
+
+            strength.className =
+                "password-strength medium";
+
+        } else {
+
+            strength.textContent =
+                "Strong password";
+
+            strength.className =
+                "password-strength strong";
+
+        }
+
+    });
+
+    /* Registration */
+
+    form.addEventListener("submit", async function (event) {
+
+        event.preventDefault();
+
+        const firstName =
+            document.getElementById("firstName")
+                .value.trim();
+
+        const lastName =
+            document.getElementById("lastName")
+                .value.trim();
+
+        const rawPhone =
+            document.getElementById("phone")
+                .value.trim();
+
+        const email =
+            document.getElementById("email")
+                .value.trim()
+                .toLowerCase();
+
+        const passwordValue =
+            password.value;
+
+        const confirmValue =
+            confirmPassword.value;
+
+        if (!firstName || !lastName) {
+            showPopup(
+                "Please enter your first and last name.",
+                "warning"
+            );
+            return;
+        }
+
+        let phone;
+
+        try {
+            phone = normalizeKenyanPhone(rawPhone);
+        } catch (error) {
+            phone = rawPhone.replace(/\s+/g, "");
+        }
+
+        if (!phone) {
+            showPopup(
+                "Please enter your phone number.",
+                "warning"
+            );
+            return;
+        }
+
+        if (!email || !email.includes("@")) {
+            showPopup(
+                "Please enter a valid email address.",
+                "warning"
+            );
+            return;
+        }
+
+        if (passwordValue.length < 6) {
+            showPopup(
+                "Password must contain at least 6 characters.",
+                "warning"
+            );
+            return;
+        }
+
+        if (passwordValue !== confirmValue) {
+            showPopup(
+                "Passwords do not match.",
+                "warning"
+            );
+            return;
+        }
+
+        button.disabled = true;
+        button.classList.add("button-loading");
+        button.textContent = "Creating Account";
+
+        try {
+
+            /* Check phone */
+
+            const {
+                data: existingPhone,
+                error: phoneCheckError
+            } = await db
+                .from("members")
+                .select("id")
+                .eq("phone", phone)
+                .maybeSingle();
+
+            if (phoneCheckError) {
+                throw phoneCheckError;
+            }
+
+            if (existingPhone) {
+
+                showPopup(
+                    "This phone number is already registered.",
+                    "warning"
+                );
+
+                return;
+            }
+
+            /* Check email */
+
+            const {
+                data: existingEmail,
+                error: emailCheckError
+            } = await db
+                .from("members")
+                .select("id")
+                .eq("email", email)
+                .maybeSingle();
+
+            if (emailCheckError) {
+                throw emailCheckError;
+            }
+
+            if (existingEmail) {
+
+                showPopup(
+                    "This email address is already registered.",
+                    "warning"
+                );
+
+                return;
+            }
+
+            /* Create Supabase Auth account */
+
+            const {
+                data: authData,
+                error: authError
+            } = await db.auth.signUp({
+                email: email,
+                password: passwordValue
+            });
+
+            if (authError) {
+                throw authError;
+            }
+
+            if (!authData || !authData.user) {
+                throw new Error(
+                    "The login account could not be created."
+                );
+            }
+
+            const fullName =
+                `${firstName} ${lastName}`;
+
+            /*
+             * IMPORTANT:
+             * Do NOT save the password in members.password.
+             * Supabase Auth securely manages the password.
+             */
+
+            const {
+                error: memberError
+            } = await db
+                .from("members")
+                .insert([{
+                    name: fullName,
+                    phone: phone,
+                    email: email,
+                    auth_id: authData.user.id,
+                    role: "member",
+                    status: "pending"
+                }]);
+
+            if (memberError) {
+                throw memberError;
+            }
+
+            await db.auth.signOut();
+
+            showPopup(
+                "Registration successful!\n\n" +
+                "Your membership is now pending approval. " +
+                "You can log in after your account has been approved.",
+                "success"
+            );
+
+            setTimeout(() => {
+                window.location.href = "login.html";
+            }, 1800);
+
+        } catch (error) {
+
+            console.error(
+                "REGISTRATION ERROR:",
+                error
+            );
+
+            showPopup(
+                error.message ||
+                "Something went wrong during registration.",
+                "error"
+            );
+
+        } finally {
+
+            button.disabled = false;
+            button.classList.remove("button-loading");
+            button.textContent = "Create Member Account";
+
+        }
+
+    });
+
+})();
+</script>
+
+<script src="rihula-v3-ui.js"></script>
+</body>
+</html>

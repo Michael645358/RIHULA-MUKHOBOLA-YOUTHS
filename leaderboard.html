@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Savings Leaderboard</title>
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="rihula-modern-design.css">
+<link rel="stylesheet" href="rihula-v3-ui.css">
+</head>
+<body>
+
+<header>
+    <h1>🏆 Savings Leaderboard</h1>
+
+    <button class="btn" onclick="location.href='admin.html'">
+        ← Back
+    </button>
+</header>
+
+<section class="admin-panel">
+
+<div class="admin-card">
+
+<div class="leaderboard-heading"><div><h2>Leaderboard</h2><p>Rank is based on net savings: contributions minus withdrawals.</p></div><button class="btn" onclick="loadLeaderboard()">↻ Refresh</button></div>
+
+<div id="leaderboardContainer">
+
+<p></p>
+
+</div>
+
+</div>
+
+</section>
+
+<script src="popups.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="script.js"></script>
+
+<script>
+loadLeaderboard();
+</script>
+
+<script src="v22.js"></script>
+<script src="finance.js"></script>
+<script src="rihula-v3-ui.js"></script>
+</body>
+</html>

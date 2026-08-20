@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Member Dashboard</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script src="popups.js"></script>
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+
+<script>
+window.OneSignalDeferred = window.OneSignalDeferred || [];
+OneSignalDeferred.push(async function(OneSignal) {
+  await OneSignal.init({
+    appId: "9785cd9a-e4e0-432b-b63c-8115c8a3b833"
+  });
+});
+</script>
+
+<link rel="stylesheet" href="rihula-modern-design.css">
+<link rel="stylesheet" href="rihula-v3-ui.css">
+</head>
+<body>
+
+<div id="dashboardScreen">
+
+<!-- RIHULA mobile-style dashboard header -->
+<section class="pochi-hero">
+    <div class="pochi-hero-top">
+        <div class="pochi-brand">
+            <img id="dashboardLogo" src="images/logo.jpg" alt="RIHULA">
+            <div>
+                <h1>RIHULA MUKHOBOLA</h1>
+                <p>Members Dashboard</p>
+            </div>
+        </div>
+        <button class="hero-icon-btn" onclick="showProfile()" aria-label="Open profile">⋯</button>
+    </div>
+
+    <div class="pochi-welcome">
+        <div class="member-top">
+            <img id="profileImage" src="images/logo.jpg" class="member-avatar" alt="Profile">
+            <div>
+                <div id="welcomeName" class="pochi-welcome-text">Welcome Member</div>
+                <span class="member-online-dot">● Member account</span>
+            </div>
+        </div>
+        <button onclick="logout()" class="pochi-logout">Logout</button>
+    </div>
+
+    <div class="collection-card">
+        <div class="collection-title">Total collected</div>
+        <div class="collection-periods">
+            <div>
+                <span>Today</span>
+                <strong id="collectedToday">KSh 0</strong>
+            </div>
+            <div>
+                <span>This week</span>
+                <strong id="collectedWeek">KSh 0</strong>
+            </div>
+            <div>
+                <span>This month</span>
+                <strong id="collectedMonth">KSh 0</strong>
+            </div>
+        </div>
+        <button class="insights-btn" onclick="showGroupGoal()">View Group Insights</button>
+    </div>
+</section>
+
+<!-- Dashboard tabs -->
+<div class="pochi-tabs">
+    <button class="pochi-tab active" onclick="showDashboard()">RIHULA Savings</button>
+    <button class="pochi-tab" onclick="showGroupGoal()">Group Goal</button>
+</div>
+
+<!-- Main dashboard content -->
+<section class="dashboard-content">
+
+    <div class="dashboard-section-heading">
+        <div>
+            <h2>Do more with your RIHULA account</h2>
+            <p>Manage savings, members and association activities.</p>
+        </div>
+    </div>
+
+    <section class="rihula-actions">
+        <button class="rihula-action" onclick="showContribute()">
+            <span class="action-icon">▣</span>
+            <span>Contribute</span>
+        </button>
+
+        <button class="rihula-action" onclick="showHistory()">
+            <span class="action-icon">⇩</span>
+            <span>My Savings history</span>
+        </button>
+
+        <button class="rihula-action" onclick="showGroupGoal()">
+            <span class="action-icon">◎</span>
+            <span>Group Goal</span>
+        </button>
+
+        <button class="rihula-action" onclick="showGroupMembers()">
+            <span class="action-icon">⊙</span>
+            <span>Members</span>
+        </button>
+
+        <button class="rihula-action" onclick="showLeaders()">
+            <span class="action-icon">♙</span>
+            <span>Leadership</span>
+        </button>
+
+        <button class="rihula-action" onclick="showAnnouncements()">
+            <span class="action-icon">▤</span>
+            <span>Announcements</span>
+        </button>
+
+        <button class="rihula-action" onclick="showChat()">
+            <span class="action-icon">◌</span>
+            <span>Community Chat</span>
+        </button>
+
+        <button class="rihula-action" onclick="showProfile()">
+            <span class="action-icon">◯</span>
+            <span>My Account</span>
+        </button>
+    </section>
+
+    <!-- Personal savings summary -->
+    <section class="r3-member-spotlight">
+        <div class="r3-spotlight-copy">
+            <span class="r3-spotlight-kicker">YOUR RIHULA SPACE</span>
+            <h2>Save. Grow. Belong.</h2>
+            <p>Everything you need for your membership, savings and community life in one place.</p>
+        </div>
+        <div class="r3-spotlight-orb">✦</div>
+    </section>
+
+    <section class="r3-quick-panel">
+        <div class="featured-heading">
+            <div><h2>Quick tools</h2><p>Useful actions without leaving your dashboard.</p></div>
+        </div>
+        <div class="r3-quick-grid">
+            <button type="button" onclick="showHistory()"><span>📜</span><strong>Statement</strong><small>View my history</small></button>
+            <button type="button" onclick="showGroupGoal()"><span>🎯</span><strong>Group Goal</strong><small>Track progress</small></button>
+            <button type="button" onclick="location.href='achievements.html'"><span>🏆</span><strong>Badges</strong><small>See achievements</small></button>
+            <button type="button" onclick="showAnnouncements()"><span>🔔</span><strong>Updates</strong><small>Latest news</small></button>
+        </div>
+    </section>
+
+    <section class="personal-summary-card">
+        <div class="summary-head">
+            <div>
+                <span class="summary-label">My savings</span>
+                <h2 id="mySavings">KSh 0</h2>
+            </div>
+            <span class="summary-pill">Active member</span>
+        </div>
+
+        <div class="summary-progress-row">
+            <div>
+                <span>My goal</span>
+                <strong id="goalAmount">KSh 0 / KSh 5,000</strong>
+            </div>
+            <strong id="progressText">0%</strong>
+        </div>
+
+        <div class="summary-progress">
+            <div id="progressFill"></div>
+        </div>
+    </section>
+
+    <!-- Latest announcement styled like a featured deal -->
+    <section class="featured-update">
+        <div class="featured-heading">
+            <h2>RIHULA Updates 🔥</h2>
+            <button onclick="showAnnouncements()">View all</button>
+        </div>
+        <div class="featured-card">
+            <div class="featured-icon">📢</div>
+            <div>
+                <span class="featured-label">Latest announcement</span>
+                <h3 id="dashboardAnnouncementTitle">Welcome to RIHULA Mukhobola</h3>
+                <p id="dashboardAnnouncementMessage">Stay updated with contributions, meetings and association news.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Achievements -->
+    <section class="achievements-section">
+        <div class="featured-heading">
+            <h2>🏆 Achievements</h2>
+            <button onclick="location.href='achievements.html'">View all</button>
+        </div>
+        <div id="achievementsContainer" class="achievements-list">
+            <div class="achievement-empty">Loading achievements...</div>
+        </div>
+    </section>
+
+    <!-- Rank -->
+    <section class="rankings dashboard-rank">
+        <div class="rank-card">
+            <span class="summary-label">Contribution ranking</span>
+            <h3 id="myRank">#0</h3>
+            <p>Your current position among all members</p>
+        </div>
+    </section>
+
+    <section class="announcements dashboard-notifications">
+        <h2>Notifications</h2>
+        <div id="notificationsContainer">
+            <p>No notifications available.</p>
+        </div>
+    </section>
+
+</section>
+</div>
+<div id="historyScreen" style="display:none;">
+
+    <button onclick="showDashboard()" class="btn">
+        ← Back
+    </button>
+
+    <h2>My Contribution History</h2>
+
+    <div id="historyOnlyContainer"></div>
+
+</div>
+
+<div id="announcementsScreen" style="display:none;">
+
+    <button onclick="showDashboard()" class="btn">
+        ← Back
+    </button>
+
+    <h2>Latest Announcements</h2>
+
+    <div id="announcementsOnlyContainer"></div>
+
+</div>
+
+<div id="profileScreen" style="display:none;">
+
+    <button onclick="showDashboard()" class="btn">
+        ← Back
+    </button>
+
+    <h2>My Profile</h2>
+
+    <div class="card">
+
+        <img id="profileScreenImage"
+     src="images/logo.jpg"
+     class="profile-photo">
+
+<div class="upload-section">
+
+<input
+    type="file"
+    id="photoUpload"
+    accept="image/*"
+    hidden
+    onchange="uploadProfilePhoto()">
+
+<button type="button"
+        id="uploadPhotoButton"
+        onclick="document.getElementById('photoUpload').click()"
+        class="btn upload-btn">
+    📷 Upload Profile Photo
+</button>
+
+<p class="upload-hint">Tap to choose a photo. It uploads automatically.</p>
+
+</div>
+    <h3 id="passwordnName"></h3>
+
+        <p id="profileScreenPhone"></p>
+
+        <p>
+            <span id="profileScreenStatus"
+                  class="status-badge">
+            </span>
+        </p>
+       <hr>
+<div class="profile-card password-card">
+
+    <h3>🔐 Change Password</h3>
+
+    <div class="password-input">
+        <input
+            type="password"
+            id="currentPassword"
+            placeholder="Current Password">
+
+        <button
+            type="button"
+            onclick="toggleSinglePassword('currentPassword', this)">
+            👁
+        </button>
+    </div>
+
+
+    <div class="password-input">
+        <input
+            type="password"
+            id="newPassword"
+            placeholder="New Password">
+
+        <button
+            type="button"
+            onclick="toggleSinglePassword('newPassword', this)">
+            👁
+        </button>
+    </div>
+
+
+    <div class="password-input">
+        <input
+            type="password"
+            id="confirmPassword"
+            placeholder="Confirm New Password">
+
+        <button
+            type="button"
+            onclick="toggleSinglePassword('confirmPassword', this)">
+            👁
+        </button>
+    </div>
+
+
+    <button
+        onclick="changePassword()"
+        class="btn password-update-btn">
+        🔐 Update Password
+    </button>
+
+</div>
+<hr>
+<div class="profile-card">
+<h3>Recovery Information</h3>
+
+<input
+    type="text"
+    id="answer1"
+    placeholder="Village where you were born">
+
+<input
+    type="text"
+    id="answer2"
+    placeholder="Primary School Attended">
+
+<input
+    type="text"
+    id="idNumber"
+    placeholder="National ID Number">
+
+<button onclick="saveRecoveryInfo()" class="btn">
+    Save Recovery Information
+</button>
+
+</div>
+
+<hr>
+<div class="profile-card">
+<h3>My Savings Goal</h3>
+
+<input
+    type="number"
+    id="goalInput"
+    placeholder="Enter Goal Amount">
+
+<button onclick="saveGoal()" class="btn">
+    Save Goal
+</button>
+</div>
+
+</div>
+
+</div>
+<div id="leadersScreen" style="display:none;">
+
+    <button onclick="showDashboard()" class="btn modern-back">
+← Dashboard
+</button>
+
+    <h2>Leadership Team</h2>
+
+    <div class="card">
+
+    <img src="images/chairman.jpg" class="leader-photo">
+
+    <h3>Chairman</h3>
+
+    <div class="leader-buttons">
+
+    <a href="tel:+254758211030"
+       class="leader-btn">
+       📞 Call
+    </a>
+
+    <a href="https://wa.me/254758211030"
+       class="leader-btn">
+       💬 WhatsApp
+    </a>
+
+</div>
+
+</div>
+
+    <div class="card">
+
+    <img src="images/secretary.jpg" class="leader-photo">
+
+    <h3>Secretary</h3>
+
+    <div class="leader-buttons">
+
+        <a href="tel:0758034140" class="leader-btn">
+            📞 Call
+        </a>
+
+        <a href="https://wa.me/254758034140" class="leader-btn">
+            💬 WhatsApp
+        </a>
+
+    </div>
+
+</div>
+
+<div class="card">
+
+    <img src="images/treasurer.jpg"
+         class="leader-photo">
+
+    <h3>Treasurer</h3>
+
+<div class="leader-buttons">
+
+    <a href="tel:0703927760"
+       class="leader-btn">
+       📞 Call
+    </a>
+
+    <a href="https://wa.me/254703927760"
+       class="leader-btn">
+       💬 WhatsApp
+    </a>
+
+</div>
+
+</div>
+
+        <div class="card">
+
+    <img src="images/organiser.jpg"
+         class="leader-photo">
+
+    <h3>Organiser</h3>
+
+    <div class="leader-buttons">
+
+    <a href="tel:0758438824"
+       class="leader-btn">
+       📞 Call
+    </a>
+
+    <a href="https://wa.me/254758438824"
+       class="leader-btn">
+       💬 WhatsApp
+    </a>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div id="groupMembersScreen" style="display:none;">
+
+    <button onclick="showDashboard()" class="btn">
+        ← Back
+    </button>
+
+    <h2>Association Members</h2>
+    
+<input
+    type="text"
+    id="memberSearch"
+    placeholder="🔍 Search member..."
+    onkeyup="filterMembers()"
+    class="search-box">
+
+    <div id="membersContainer">
+
+        <p></p>
+
+    </div>
+
+</div>
+<!-- GROUP GOAL SCREEN -->
+<div id="groupGoalScreen" class="modern-group-goal">
+
+    <div class="group-goal-topbar">
+        <button onclick="showDashboard()" class="group-back-btn">
+            ← Back
+        </button>
+
+        <h2>🎯 Group Goal</h2>
+    </div>
+
+
+    <!-- Main Goal -->
+    <div class="goal-main-card">
+
+        <div class="goal-icon">
+            🎯
+        </div>
+
+        <div class="goal-label">
+            RIHULA GROUP GOAL
+        </div>
+
+        <h1 id="groupGoalAmount">
+            KSh 0
+        </h1>
+
+        <p>Target amount</p>
+
+    </div>
+
+
+    <!-- Financial Summary -->
+    <div class="goal-summary">
+
+        <div class="goal-stat">
+            <span class="goal-stat-icon">💰</span>
+
+            <span class="goal-stat-label">
+                Collected
+            </span>
+
+            <strong id="groupGoalCollected">
+                KSh 0
+            </strong>
+        </div>
+
+
+        <div class="goal-stat">
+            <span class="goal-stat-icon">📉</span>
+
+            <span class="goal-stat-label">
+                Remaining
+            </span>
+
+            <strong id="groupGoalRemaining">
+                KSh 0
+            </strong>
+        </div>
+
+    </div>
+
+
+    <!-- Progress -->
+    <div class="goal-progress-card">
+
+        <div class="goal-progress-header">
+
+            <div>
+                <span>📊</span>
+                <strong>Progress</strong>
+            </div>
+
+            <strong id="groupGoalPercent">
+                0%
+            </strong>
+
+        </div>
+
+
+        <div class="goal-progress-track">
+
+            <div
+                id="groupGoalProgress"
+                class="goal-progress-fill">
+            </div>
+
+        </div>
+
+
+        <p id="groupGoalComplete">
+            0% Complete
+        </p>
+
+    </div>
+
+
+    <!-- Contribution Days -->
+    <div class="contribution-days-card">
+
+        <h3>📅 Contribution Days</h3>
+
+        <p>
+            Members contribute every
+        </p>
+
+    <div class="contribution-days">
+
+    <div class="contribution-day">
+        <span>WED</span>
+        <strong>Wednesday</strong>
+        <small id="wednesdayAmount">KSh 0 collected</small>
+    </div>
+
+    <div class="contribution-day">
+        <span>SAT</span>
+        <strong>Saturday</strong>
+        <small id="saturdayAmount">KSh 0 collected</small>
+    </div>
+
+</div>
+
+        <small>
+            Every contribution helps RIHULA reach the group goal.
+        </small>
+
+    </div>
+
+</div>
+<div id="contributeScreen" style="display:none;">
+
+    <button onclick="showDashboard()" class="btn">
+        ← Back
+    </button>
+
+    <h2>Make Contribution</h2>
+
+    <a href="images/mpesa-poster.jpg" target="_blank">
+    <img
+        src="images/mpesa-poster.jpg"
+        alt="M-Pesa Poster"
+        class="mpesa-poster">
+</a>
+        
+        <div class="mpesa-actions">
+
+    <button onclick="copyMpesaNumber()" class="btn">
+        📋 Copy Number
+    </button>
+
+    <a href="tel:0743361713" class="btn">
+        📞 Call Treasurer
+    </a>
+
+    <a href="https://wa.me/254743361713" class="btn">
+        💬 WhatsApp
+    </a>
+
+</div>
+
+</div>
+        
+<div id="chatScreen" class="chat-screen" style="display:none;">
+
+    <div class="chat-topbar">
+        <button onclick="showDashboard()" class="back-btn">←</button>
+        <span>Community Chat</span>
+    </div>
+
+    <div id="onlineMembers" class="online-members"></div>
+
+    <div id="chatMessages" class="chat-container">
+    </div>
+
+    <div class="chat-input-area">
+    <button id="recordBtn" onclick="startRecording()">🎤</button>
+
+    <textarea id="chatMessage"></textarea>
+
+    <button onclick="sendMessage()" class="send-btn">➤</button>
+</div>
+
+</div>
+
+<div id="aiScreen" style="display:none;">
+
+    <button onclick="showDashboard()" class="btn">
+        ← Back
+    </button>
+
+    <h2>AI Assistant</h2>
+
+    <div id="aiMessages" class="chat-container"></div>
+
+    <div class="chat-input-area">
+
+        <textarea
+            id="aiInput"
+            placeholder="Ask me anything...">
+        </textarea>
+
+        <button onclick="askAI()">
+            Send
+        </button>
+
+    </div>
+</div>
+
+
+    
+<nav class="bottom-nav">
+
+<div onclick="showDashboard()" class="nav-item">
+🏠
+<span>Home</span>
+</div>
+
+<div onclick="showHistory()" class="nav-item">
+💰
+<span>Savings</span>
+</div>
+
+<div onclick="showChat()" class="nav-item chat-nav">
+💬
+<span>Chat</span>
+<span id="unreadBadge" class="unread-badge">0</span>
+</div>
+
+<div onclick="showProfile()" class="nav-item">
+👤
+<span>Profile</span>
+</div>
+
+</nav>
+
+<div id="messageMenu" class="message-menu">
+
+    <div onclick="deleteSelectedMessage()">
+        🗑 Delete Message
+    </div>
+
+    <div onclick="copySelectedMessage()">
+        📋 Copy Message
+    </div>
+
+    <div onclick="closeMessageMenu()">
+        ❌ Cancel
+    </div>
+
+</div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="ai.js"></script>
+<script src="member.js"></script>
+
+<div id="memberStatusPopup" class="member-status-popup">
+
+    <div class="member-status-card">
+
+        <img id="popupPhoto" class="popup-photo">
+
+        <h3 id="popupName"></h3>
+
+        <p id="popupStatus"></p>
+
+        <button onclick="closeMemberStatus()">Close</button>
+
+    </div>
+
+</div>
+
+<script src="v22.js"></script>
+<script src="finance.js"></script>
+<script src="achievements.js"></script>
+<script src="rihula-v3-ui.js"></script>
+</body>
+</html>

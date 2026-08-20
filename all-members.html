@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All Members | RIHULA Admin</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="admin-dashboard-3.css">
+<link rel="stylesheet" href="all-member-modern.css">
+<link rel="stylesheet" href="rihula-v3-ui.css">
+</head>
+
+<body class="admin-dashboard-page members-page">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="admin-auth.js"></script>
+
+<div class="admin-shell">
+<aside class="admin-sidebar" id="adminSidebar">
+  <div class="admin-brand">
+    <img src="images/logo.jpg" alt="RIHULA Logo">
+    <div><strong>RIHULA</strong><span>MUKHOBOLA ASSOCIATION</span></div>
+  </div>
+  <nav class="admin-nav">
+    <a href="admin.html" class="admin-nav-item"><span>📊</span><span>Dashboard</span></a>
+    <a href="all-members.html" class="admin-nav-item active"><span>👥</span><span>All Members</span></a>
+    <a href="pending-members.html" class="admin-nav-item"><span>⏳</span><span>Pending Members</span></a>
+    <a href="online-members.html" class="admin-nav-item"><span>🟢</span><span>Online Members</span></a>
+    <a href="record-contribution.html" class="admin-nav-item"><span>💰</span><span>Contributions</span></a>
+    <a href="leaderboard.html" class="admin-nav-item"><span>🏆</span><span>Leaderboard</span></a>
+    <a href="announcements.html" class="admin-nav-item"><span>📢</span><span>Announcements</span></a>
+  </nav>
+  <div class="admin-sidebar-bottom">
+    <a href="index.html" class="admin-nav-item"><span>🌐</span><span>View Website</span></a>
+    <button type="button" class="admin-nav-item admin-logout" onclick="adminLogout()"><span>🚪</span><span>Logout</span></button>
+  </div>
+</aside>
+
+<div class="admin-main">
+<header class="admin-topbar">
+  <button type="button" class="admin-menu-btn" onclick="toggleAdminSidebar()">☰</button>
+  <div class="admin-page-heading">
+    <span class="admin-eyebrow">RIHULA MUKHOBOLA ASSOCIATION</span>
+    <h1>All Members</h1>
+  </div>
+  <div class="admin-top-actions">
+    <span class="admin-status"><i></i> System Online</span>
+    <button type="button" class="admin-icon-btn" onclick="AM.load()">↻</button>
+    <button type="button" class="admin-avatar">A</button>
+  </div>
+</header>
+
+<main class="admin-content">
+<section class="members-heading">
+  <div>
+    <span class="members-label">MEMBER MANAGEMENT</span>
+    <h2>All Members</h2>
+    <p>Manage registered members of RIHULA MUKHOBOLA ASSOCIATION.</p>
+  </div>
+  <a href="add-member.html" class="admin-primary-btn">＋ Add Member</a>
+</section>
+
+<section class="member-stats">
+  <div class="member-stat"><div class="stat-icon green">👥</div><div><span>Total Members</span><strong id="memberTotal">0</strong><small>All registered members</small></div></div>
+  <div class="member-stat"><div class="stat-icon green">✓</div><div><span>Approved</span><strong id="approvedTotal">0</strong><small>Active members</small></div></div>
+  <div class="member-stat"><div class="stat-icon purple">⏳</div><div><span>Pending</span><strong id="pendingTotal">0</strong><small>Awaiting approval</small></div></div>
+  <div class="member-stat"><div class="stat-icon gold">💰</div><div><span>Net Saved</span><strong id="membersSavings">KSh 0</strong><small>Total net savings</small></div></div>
+</section>
+
+<section class="member-toolbar">
+  <label class="member-search"><span>🔍</span><input id="memberSearch" type="search" placeholder="Search by name or phone..." oninput="AM.filter()"><button type="button" onclick="AM.clearSearch()">×</button></label>
+  <select id="roleFilter" onchange="AM.filter()">
+    <option value="">All Roles</option><option value="member">Member</option><option value="chairman">Chairman</option><option value="secretary">Secretary</option><option value="treasurer">Treasurer</option><option value="organiser">Organiser</option>
+  </select>
+  <select id="statusFilter" onchange="AM.filter()">
+    <option value="">All Status</option><option value="approved">Approved</option><option value="pending">Pending</option><option value="rejected">Rejected</option>
+  </select>
+  <button class="filter-btn" type="button" onclick="AM.filter()">⚙ Filter</button>
+</section>
+
+<section class="members-container">
+  <div class="members-container-header">
+    <div><h3>Registered Members</h3><p id="membersResult">Loading members...</p></div>
+    <button class="refresh-members" type="button" onclick="AM.load()">↻ Refresh</button>
+  </div>
+
+  <div class="members-table-scroll">
+    <div class="members-table">
+      <div class="members-table-head">
+        <div>#</div><div>Member</div><div>Phone</div><div>Role</div><div>Status</div>
+        <div>Contributed</div><div>Withdrawn</div><div>Net Savings</div><div>Rank</div><div>Achievement</div><div>Actions</div>
+      </div>
+      <div id="membersBody" class="modern-members-list"></div>
+    </div>
+  </div>
+
+  <div class="members-bottom">
+    <span id="membersFooterText">Showing 0 members</span>
+    <div class="pagination"><button id="prevPage" onclick="AM.page(-1)">‹</button><span id="pageLabel">1</span><button id="nextPage" onclick="AM.page(1)">›</button><select id="pageSize" onchange="AM.changePageSize()"><option>10</option><option selected>20</option><option>50</option></select></div>
+  </div>
+</section>
+
+<section class="achievement-legend">
+  <h3>Achievement Legend</h3>
+  <div class="legend-grid">
+    <span>🌱 <b>KSh 1,000</b> Saver</span><span>⭐ <b>KSh 5,000</b> Saver</span><span>💎 <b>KSh 10,000</b> Champion</span><span>🏅 <b>KSh 25,000</b> Builder</span><span>🥇 <b>#1</b> Leader</span><span>🥈 <b>#2</b> Leader</span><span>🥉 <b>#3</b> Leader</span>
+  </div>
+</section>
+</main>
+
+<footer class="admin-footer">© 2026 RIHULA MUKHOBOLA ASSOCIATION. All rights reserved.</footer>
+</div>
+</div>
+
+<div class="am-modal" id="historyModal" aria-hidden="true">
+  <div class="am-modal-backdrop" onclick="AM.closeHistory()"></div>
+  <div class="am-modal-card">
+    <div class="am-modal-head"><div><small>MEMBER HISTORY</small><h3 id="historyTitle">History</h3></div><button onclick="AM.closeHistory()">×</button></div>
+    <div id="historyBody" class="history-body">Loading...</div>
+  </div>
+</div>
+
+<div class="am-toast" id="amToast"></div>
+
+<script>
+const AM = (() => {
+  let all = [];
+  let filtered = [];
+  let currentPage = 1;
+  let pageSize = 20;
+  let finance = new Map();
+
+  const money = n => "KSh " + Number(n || 0).toLocaleString("en-KE");
+  const cleanPhone = p => String(p || "").replace(/\D/g, "");
+  const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const js = v => String(v ?? "").replace(/\\/g,"\\\\").replace(/'/g,"\\'").replace(/\n/g,"\\n");
+  const initials = n => {
+    const a = String(n || "RM").trim().split(/\s+/);
+    return (a.length > 1 ? a[0][0] + a[a.length-1][0] : a[0].slice(0,2)).toUpperCase();
+  };
+  const cap = v => v ? v.charAt(0).toUpperCase()+v.slice(1) : "";
+
+  function achievement(rank, net) {
+    if (rank === 1) return ["🥇 #1 Leader","gold"];
+    if (rank === 2) return ["🥈 #2 Leader","silver"];
+    if (rank === 3) return ["🥉 #3 Leader","bronze"];
+    if (net >= 25000) return ["🏅 KSh 25,000 Builder","builder"];
+    if (net >= 10000) return ["💎 KSh 10,000 Champion","champion"];
+    if (net >= 5000) return ["⭐ KSh 5,000 Saver","saver"];
+    if (net >= 1000) return ["🌱 KSh 1,000 Saver","starter"];
+    return ["—","none"];
+  }
+
+  async function loadFinance() {
+    const {data, error} = await window.db.rpc("get_finance_leaderboard");
+    if (error) throw error;
+    finance = new Map((data || []).map(r => [cleanPhone(r.member_phone), r]));
+  }
+
+  function financeFor(member) {
+    const r = finance.get(cleanPhone(member.phone)) || {};
+    const contributed = Number(r.contributions ?? 0);
+    const withdrawn = Number(r.withdrawals ?? 0);
+    const net = Number(r.net_savings ?? Math.max(0, contributed - withdrawn));
+    return { contributed, withdrawn, net, rank: Number(r.member_rank || 0) };
+  }
+
+  async function load() {
+    const body = document.getElementById("membersBody");
+    body.innerHTML = '<div class="members-loading"><div class="loading-spinner"></div><p>Loading members...</p></div>';
+    if (!window.db) return fail("Supabase client is not initialized. Check supabase.js.");
+    try {
+      const {data, error} = await window.db.from("members").select("*");
+      if (error) throw error;
+      await loadFinance();
+      all = (data || []).sort((a,b) => {
+        const ra = financeFor(a), rb = financeFor(b);
+        if (ra.rank && rb.rank) return ra.rank - rb.rank;
+        return rb.net - ra.net || String(a.name||"").localeCompare(String(b.name||""));
+      });
+      updateStats();
+      currentPage = 1;
+      filter();
+    } catch (e) {
+      console.error(e);
+      fail(e.message || "Unable to load members.");
+    }
+  }
+
+  function updateStats() {
+    document.getElementById("memberTotal").textContent = all.length;
+    document.getElementById("approvedTotal").textContent = all.filter(m => String(m.status||"").toLowerCase()==="approved").length;
+    document.getElementById("pendingTotal").textContent = all.filter(m => String(m.status||"").toLowerCase()==="pending").length;
+    const total = [...finance.values()].reduce((s,r) => s + Number(r.net_savings || 0), 0);
+    document.getElementById("membersSavings").textContent = money(total);
+  }
+
+  function filter() {
+    const q = document.getElementById("memberSearch").value.toLowerCase().trim();
+    const role = document.getElementById("roleFilter").value.toLowerCase();
+    const status = document.getElementById("statusFilter").value.toLowerCase();
+    filtered = all.filter(m => {
+      const name = String(m.name||"").toLowerCase(), phone = String(m.phone||"").toLowerCase();
+      return (!q || name.includes(q) || phone.includes(q)) &&
+        (!role || String(m.role||"").toLowerCase()===role) &&
+        (!status || String(m.status||"").toLowerCase()===status);
+    });
+    const pages = Math.max(1, Math.ceil(filtered.length/pageSize));
+    if (currentPage > pages) currentPage = pages;
+    render();
+  }
+
+  function render() {
+    const body = document.getElementById("membersBody");
+    const start = (currentPage-1)*pageSize;
+    const rows = filtered.slice(start,start+pageSize);
+    document.getElementById("membersResult").textContent = `${filtered.length} member${filtered.length===1?"":"s"} found`;
+    document.getElementById("membersFooterText").textContent = filtered.length ? `Showing ${start+1} to ${Math.min(start+pageSize,filtered.length)} of ${filtered.length} members` : "Showing 0 members";
+    document.getElementById("pageLabel").textContent = currentPage;
+    document.getElementById("prevPage").disabled = currentPage <= 1;
+    document.getElementById("nextPage").disabled =
+    currentPage >= Math.ceil(filtered.length/pageSize);
+
+    if (!rows.length) {
+      body.innerHTML = '<div class="members-empty"><div>👥</div><h3>No members found</h3><p>Try changing your search or filters.</p></div>';
+      return;
+    }
+
+    body.innerHTML = rows.map((m,i) => {
+      const f = financeFor(m), rank = f.rank, [ach, achClass] = achievement(rank,f.net);
+      const status = String(m.status||"pending").toLowerCase();
+      const role = String(m.role||"member").toLowerCase();
+      const joined = m.created_at ? new Date(m.created_at).toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"}) : "—";
+      const rankDisplay = rank===1?"🥇":rank===2?"🥈":rank===3?"🥉":rank?`#${rank}`:"—";
+      return `
+      <article class="modern-member-card">
+        <div class="member-number">${start+i+1}</div>
+        <div class="member-main-info"><div class="member-avatar">${esc(initials(m.name))}</div><div><h3>${esc(m.name||"Unnamed Member")}</h3><small>📅 ${esc(joined)}</small></div></div>
+        <div class="member-phone-column"><span class="mobile-label">Phone</span>☎ ${esc(m.phone||"—")}</div>
+        <div><span class="mobile-label">Role</span><strong class="role-badge role-${esc(role)}">${esc(cap(role))}</strong></div>
+        <div><span class="mobile-label">Status</span><strong class="status-badge status-${esc(status)}"><i></i>${esc(cap(status))}</strong></div>
+        <div class="money-column"><span class="mobile-label">Contributed</span><strong>${money(f.contributed)}</strong></div>
+        <div class="money-column withdrawn"><span class="mobile-label">Withdrawn</span><strong>${money(f.withdrawn)}</strong></div>
+        <div class="money-column net-savings"><span class="mobile-label">Net Savings</span><strong>${money(f.net)}</strong></div>
+        <div class="rank-column"><span class="mobile-label">Rank</span><strong class="rank-value ${rank<=3?'top-rank':''}">${rankDisplay}</strong></div>
+        <div class="achievement-column"><span class="mobile-label">Achievement</span><span class="achievement achievement-${achClass}">${esc(ach)}</span></div>
+        <div class="member-actions-modern">
+          <button class="history-btn" onclick="AM.history('${js(m.phone)}','${js(m.name)}')">History</button>
+          <button class="edit-btn" onclick="AM.edit('${js(m.phone)}')">Edit</button>
+          <button class="delete-btn" onclick="AM.remove('${js(m.id || "")}','${js(m.phone)}','${js(m.name)}')">🗑</button>
+        </div>
+      </article>`;
+    }).join("");
+  }
+
+  function page(delta) {
+    const max = Math.max(
+        1,
+        Math.ceil(filtered.length / pageSize)
+    );
+
+    currentPage = Math.min(
+        max,
+        Math.max(1, currentPage + delta)
+    );
+
+    render();
+}
+  function changePageSize() {
+    pageSize = Number(
+        document.getElementById("pageSize").value
+    );
+
+    currentPage = 1;
+
+    render();
+}
+  function clearSearch() { document.getElementById("memberSearch").value=""; filter(); }
+
+  async function history(phone,name) {
+    document.getElementById("historyTitle").textContent = name || "Member";
+    document.getElementById("historyModal").setAttribute("aria-hidden","false");
+    const b=document.getElementById("historyBody");
+    b.innerHTML="<div class='members-loading'><div class='loading-spinner'></div><p>Loading history...</p></div>";
+    try {
+      const [{data:c,error:ce},{data:w,error:we}] = await Promise.all([
+        window.db.from("contributions").select("*").eq("member_phone",phone).order("created_at",{ascending:false}),
+        window.db.from("withdrawals").select("*").eq("member_phone",phone).order("created_at",{ascending:false})
+      ]);
+      if (ce) throw ce; if (we) throw we;
+      const items=[
+        ...(c||[]).map(x=>({type:"Contribution",amount:Number(x.amount||0),date:x.created_at})),
+        ...(w||[]).map(x=>({type:"Withdrawal",amount:Number(x.amount||0),date:x.created_at}))
+      ].sort((a,b)=>new Date(b.date)-new Date(a.date));
+      b.innerHTML = items.length ? items.map(x=>`<div class="history-row"><span>${x.type==="Contribution"?"➕":"➖"} ${x.type}<small>${new Date(x.date).toLocaleString()}</small></span><strong class="${x.type==="Withdrawal"?"out":""}">${x.type==="Withdrawal"?"-":"+"}${money(x.amount)}</strong></div>`).join("") : "<div class='history-empty'>No contribution or withdrawal history found.</div>";
+    } catch(e) { b.innerHTML=`<div class="history-empty">Unable to load history: ${esc(e.message)}</div>`; }
+  }
+  function closeHistory(){document.getElementById("historyModal").setAttribute("aria-hidden","true");}
+  function edit(phone){window.location.href="edit-member.html?phone="+encodeURIComponent(phone);}
+  async function remove(id,phone,name){
+    if(!confirm(`Delete ${name || phone}? This cannot be undone.`)) return;
+    try {
+      let q=window.db.from("members").delete();
+      q=id ? q.eq("id",id) : q.eq("phone",phone);
+      const {error}=await q;
+      if(error) throw error;
+      toast("Member deleted.");
+      await load();
+    } catch(e){ toast(e.message||"Delete failed."); }
+  }
+  function fail(msg){document.getElementById("membersBody").innerHTML=`<div class="members-error"><div>⚠️</div><h3>Unable to load members</h3><p>${esc(msg)}</p><button onclick="AM.load()">Try Again</button></div>`;}
+  function toast(msg){const t=document.getElementById("amToast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3000);}
+  return {load,filter,clearSearch,page,changePageSize,history,closeHistory,edit,remove};
+})();
+document.addEventListener("DOMContentLoaded", () => AM.load());
+</script>
+<script src="rihula-v3-ui.js"></script>
+</body>
+</html>

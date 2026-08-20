@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Online Members</title>
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="rihula-modern-design.css">
+<link rel="stylesheet" href="rihula-v3-ui.css">
+</head>
+<body>
+
+<header>
+<div class="logo-area">
+    <img src="images/logo.jpg" alt="Logo">
+
+    <div>
+        <h1>Online Members</h1>
+        <p>RIHULA MUKHOBOLA ASSOCIATION</p>
+    </div>
+</div>
+</header>
+
+<section class="admin-panel">
+
+<div class="admin-card">
+
+<h2>🟢 Members Currently Online</h2>
+
+<div id="onlineMembersList">
+
+</div>
+
+</div>
+
+</section>
+
+<script src="popups.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="admin-auth.js"></script>
+<script>
+document.documentElement.style.visibility = "hidden";
+document.addEventListener("DOMContentLoaded", async () => { const admin = await RihulaAdmin.requireAdmin(); if (admin) document.documentElement.style.visibility = "visible"; });
+</script>
+<script src="script.js"></script>
+
+<script>
+loadOnlineCount();
+</script>
+
+<script src="v22.js"></script>
+<script src="rihula-v3-ui.js"></script>
+</body>
+</html>

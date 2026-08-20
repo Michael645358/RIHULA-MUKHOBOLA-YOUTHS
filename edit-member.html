@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Contribution</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="rihula-modern-design.css">
+<link rel="stylesheet" href="rihula-v3-ui.css">
+</head>
+<body>
+
+<header>
+
+<h1>Edit Contribution</h1>
+
+<button class="btn" onclick="location.href='admin.html'">
+← Back to Dashboard
+</button>
+
+</header>
+
+<section class="admin-panel">
+
+<div class="admin-card">
+
+<h2>Edit Contribution</h2>
+
+<input
+type="tel"
+id="editContributionPhone"
+placeholder="Phone Number">
+
+<input
+type="number"
+id="editContributionAmount"
+placeholder="New Amount">
+
+<button
+class="btn"
+onclick="editContribution()">
+Update Contribution
+</button>
+
+</div>
+
+</section>
+
+<script src="popups.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="admin-auth.js"></script>
+<script>
+document.documentElement.style.visibility = "hidden";
+document.addEventListener("DOMContentLoaded", async () => { const admin = await RihulaAdmin.requireAdmin(); if (admin) document.documentElement.style.visibility = "visible"; });
+</script>
+<script src="script.js"></script>
+
+<script src="v22.js"></script>
+<script src="rihula-v3-ui.js"></script>
+</body>
+</html>
