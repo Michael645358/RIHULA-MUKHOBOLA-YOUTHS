@@ -11,7 +11,7 @@ async function sendNotification() {
     try {
 
         const response = await fetch(
-            "https://ubyuscrigxgvchfofeyx.supabase.co/functions/v1/smart-function",
+            "https://qezbkcixzhdtntflljgy.supabase.co/functions/v1/smart-function",
             {
                 method: "POST",
                 headers: {

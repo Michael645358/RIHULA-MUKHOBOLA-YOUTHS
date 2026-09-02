@@ -2,239 +2,536 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Member Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#06130f">
+<title>RIHULA | Member Login</title>
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="rihula-modern-design.css">
 <link rel="stylesheet" href="rihula-v3-ui.css">
+<style>
+/* =========================================================
+   RIHULA — MODERN MEMBER LOGIN
+   Inspired by the supplied glass / neon reference image.
+   Existing authentication logic is kept intact.
+   ========================================================= */
+:root{
+  --login-bg:#030806;
+  --login-panel:rgba(10,25,21,.76);
+  --login-border:rgba(117,255,216,.25);
+  --login-green:#35f0bd;
+  --login-green-2:#13c99a;
+  --login-text:#f5fffb;
+  --login-muted:#9fb6ae;
+}
+
+body{
+  min-height:100vh;
+  margin:0;
+  background:
+    radial-gradient(circle at 15% 15%, rgba(27,214,164,.14), transparent 30%),
+    radial-gradient(circle at 85% 80%, rgba(20,112,91,.18), transparent 35%),
+    linear-gradient(145deg,#020504 0%,#06120e 52%,#020605 100%);
+  color:var(--login-text);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  overflow-x:hidden;
+}
+
+.login-page{
+  min-height:100vh;
+  min-height:100svh;
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  position:relative;
+  isolation:isolate;
+}
+
+.login-page::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-2;
+  opacity:.42;
+  background-image:
+    radial-gradient(rgba(112,255,220,.14) 1px,transparent 1px),
+    radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);
+  background-size:34px 34px,57px 57px;
+  background-position:0 0,17px 22px;
+}
+
+.login-page::after{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  width:420px;
+  height:420px;
+  border-radius:50%;
+  background:rgba(35,244,190,.08);
+  filter:blur(90px);
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+}
+
+.login-shell{
+  width:min(960px,100%);
+  display:grid;
+  grid-template-columns:minmax(290px,.92fr) minmax(340px,1.08fr);
+  min-height:560px;
+  border:1px solid rgba(123,255,224,.27);
+  border-radius:34px;
+  overflow:hidden;
+  background:rgba(6,18,14,.68);
+  box-shadow:0 30px 100px rgba(0,0,0,.55),0 0 70px rgba(24,230,177,.08);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  animation:loginEnter .7s cubic-bezier(.2,.8,.2,1) both;
+}
+
+@keyframes loginEnter{
+  from{opacity:0;transform:translateY(22px) scale(.985)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+/* Left visual area */
+.login-visual{
+  position:relative;
+  min-height:560px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:35px;
+  border-right:1px solid rgba(117,255,216,.16);
+  overflow:hidden;
+  background:
+    linear-gradient(180deg,rgba(17,83,65,.42),rgba(2,10,8,.82)),
+    radial-gradient(circle at 50% 36%,rgba(54,255,203,.26),transparent 34%);
+}
+
+.login-visual::before{
+  content:"";
+  position:absolute;
+  width:330px;
+  height:330px;
+  border:1px solid rgba(80,255,211,.12);
+  border-radius:50%;
+  box-shadow:0 0 80px rgba(29,239,187,.12),inset 0 0 70px rgba(29,239,187,.06);
+}
+
+.lamp{
+  position:absolute;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:116px;
+  height:180px;
+  pointer-events:none;
+}
+
+.lamp-wire{
+  position:absolute;
+  top:0;
+  left:50%;
+  width:3px;
+  height:58px;
+  transform:translateX(-50%);
+  background:linear-gradient(#6c827c,#263a34);
+}
+
+.lamp-shade{
+  position:absolute;
+  top:55px;
+  left:50%;
+  width:116px;
+  height:70px;
+  transform:translateX(-50%);
+  clip-path:polygon(25% 0,75% 0,100% 100%,0 100%);
+  background:linear-gradient(180deg,#304a43,#0b1714);
+  border:1px solid rgba(163,255,231,.2);
+  filter:drop-shadow(0 10px 8px rgba(0,0,0,.45));
+}
+
+.lamp-light{
+  position:absolute;
+  top:112px;
+  left:50%;
+  width:82px;
+  height:32px;
+  transform:translateX(-50%);
+  border-radius:50%;
+  background:radial-gradient(ellipse,#dffff7 0 8%,#35f0bd 32%,rgba(53,240,189,.08) 70%);
+  box-shadow:0 0 22px #35f0bd,0 0 75px rgba(53,240,189,.55),0 40px 110px rgba(53,240,189,.24);
+  animation:lampPulse 2.8s ease-in-out infinite;
+}
+
+@keyframes lampPulse{
+  50%{opacity:.78;filter:brightness(.88)}
+}
+
+.visual-content{
+  position:relative;
+  z-index:2;
+  text-align:center;
+  margin-top:95px;
+}
+
+.visual-logo{
+  width:148px;
+  height:148px;
+  object-fit:cover;
+  border-radius:50%;
+  border:2px solid rgba(109,255,220,.58);
+  box-shadow:0 0 0 8px rgba(50,242,190,.07),0 0 35px rgba(50,242,190,.38);
+  background:#07150f;
+}
+
+.visual-title{
+  margin:20px 0 6px;
+  font-size:20px;
+  font-weight:850;
+  letter-spacing:.08em;
+  color:#effff9;
+}
+
+.visual-subtitle{
+  margin:0;
+  color:#a8c4ba;
+  font-size:13px;
+  line-height:1.6;
+}
+
+/* Right form */
+.login-form-panel{
+  padding:58px clamp(28px,5vw,58px) 38px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.login-heading{
+  margin-bottom:28px;
+}
+
+.login-heading h1{
+  margin:0;
+  font-size:clamp(30px,4vw,42px);
+  line-height:1.05;
+  letter-spacing:-.035em;
+  color:#f6fffc;
+}
+
+.login-heading h1 span{
+  color:var(--login-green);
+  text-shadow:0 0 24px rgba(53,240,189,.3);
+}
+
+.login-heading p{
+  margin:10px 0 0;
+  color:var(--login-muted);
+  font-size:14px;
+}
+
+.login-security{
+  margin:0 0 22px;
+  padding:12px 14px;
+  border:1px solid rgba(53,240,189,.13);
+  border-radius:13px;
+  background:rgba(25,72,60,.17);
+  color:#a9c5bc;
+  font-size:12px;
+  line-height:1.5;
+}
+
+.login-security strong{color:#d8fff3}
+
+.login-field{margin:0 0 15px;text-align:left}
+.login-field label{
+  display:block;
+  margin:0 0 7px 2px;
+  color:#9bb9af;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.field-control{position:relative}
+.field-icon{
+  position:absolute;
+  left:14px;
+  top:50%;
+  transform:translateY(-50%);
+  color:#49dcb4;
+  font-size:17px;
+  z-index:2;
+  pointer-events:none;
+}
+
+.login-field input{
+  width:100%;
+  height:50px;
+  margin:0;
+  padding:0 45px 0 43px;
+  border:1px solid rgba(109,255,220,.28);
+  border-radius:11px;
+  background:rgba(11,28,23,.72);
+  color:#effff9;
+  font-size:14px;
+  outline:none;
+  box-shadow:inset 0 0 18px rgba(0,0,0,.16);
+  transition:border-color .2s,box-shadow .2s,background .2s;
+}
+
+.login-field input::placeholder{color:#708b82}
+.login-field input:focus{
+  border-color:#39e9b7;
+  background:rgba(14,37,30,.9);
+  box-shadow:0 0 0 3px rgba(53,240,189,.09),0 0 22px rgba(53,240,189,.08);
+}
+
+.password-toggle{
+  position:absolute;
+  right:5px;
+  top:50%;
+  transform:translateY(-50%);
+  width:39px;
+  height:39px;
+  display:grid;
+  place-items:center;
+  padding:0;
+  border:0;
+  border-radius:9px;
+  background:transparent;
+  color:#94afa6;
+  cursor:pointer;
+  font-size:17px;
+  box-shadow:none;
+}
+.password-toggle:hover{background:rgba(53,240,189,.09);color:#caffef}
+
+.login-help{
+  margin:-4px 0 18px;
+  color:#779189;
+  font-size:11px;
+  line-height:1.45;
+}
+
+.login-btn{
+  width:100%;
+  min-height:52px;
+  margin:4px 0 18px;
+  border:0!important;
+  border-radius:11px!important;
+  background:linear-gradient(135deg,#3cf3bf,#19cfa0)!important;
+  color:#032119!important;
+  font-size:15px!important;
+  font-weight:900!important;
+  letter-spacing:.01em;
+  cursor:pointer;
+  box-shadow:0 10px 28px rgba(36,224,175,.2),0 0 0 1px rgba(255,255,255,.08) inset;
+  transition:transform .2s,box-shadow .2s,filter .2s;
+}
+.login-btn:hover:not(:disabled){transform:translateY(-2px)!important;filter:brightness(1.04);box-shadow:0 15px 35px rgba(36,224,175,.28)}
+.login-btn:disabled{opacity:.65;cursor:not-allowed}
+
+.login-links{
+  text-align:center;
+  font-size:12px;
+  color:#718a82;
+}
+.login-links a{color:#66e8c3!important;text-decoration:none;font-weight:750}
+.login-links a:hover{text-decoration:underline}
+.login-divider{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:16px 0;
+  color:#617a71;
+  font-size:11px;
+}
+.login-divider::before,.login-divider::after{content:"";height:1px;flex:1;background:rgba(128,255,226,.12)}
+
+.register-link{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  min-height:42px;
+  margin-top:3px;
+  padding:9px 16px;
+  border:1px solid rgba(92,241,202,.2);
+  border-radius:10px;
+  background:rgba(35,185,146,.07);
+  color:#aaffea!important;
+  font-weight:800;
+  text-decoration:none!important;
+  transition:background .2s,border-color .2s,transform .2s;
+}
+.register-link:hover{background:rgba(35,185,146,.13);border-color:rgba(92,241,202,.35);transform:translateY(-1px)}
+
+.admin-link{margin-top:17px;text-align:center}
+.admin-link a{color:#708a81!important;font-size:11px;font-weight:650}
+
+@media(max-width:760px){
+  .login-page{padding:14px}
+  .login-shell{display:block;min-height:0;border-radius:26px;max-width:520px}
+  .login-visual{display:none}
+  .login-form-panel{padding:42px 23px 28px}
+  .login-heading{margin-bottom:24px}
+}
+
+@media(max-width:390px){
+  .login-page{padding:9px}
+  .login-shell{border-radius:22px}
+  .login-form-panel{padding:34px 17px 22px}
+  .login-heading h1{font-size:31px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .login-shell,.lamp-light{animation:none}
+  *{scroll-behavior:auto!important}
+}
+</style>
 </head>
 <body>
 
-<div class="login-box">
-    <div>
-        <img src="images/logo.jpg" alt="Logo" width="100">
+<main class="login-page">
+  <section class="login-shell" aria-label="RIHULA member login">
+    <div class="login-visual" aria-hidden="true">
+      <div class="lamp">
+        <span class="lamp-wire"></span>
+        <span class="lamp-shade"></span>
+        <span class="lamp-light"></span>
+      </div>
+
+      <div class="visual-content">
+        <img class="visual-logo" src="images/logo.jpg" alt="RIHULA logo">
+        <div class="visual-title">RIHULA MUKHOBOLA</div>
+        <p class="visual-subtitle">Your community. Your contributions.<br>Your progress.</p>
+      </div>
     </div>
 
-    <h2>Member Login</h2>
+    <div class="login-form-panel">
+      <div class="login-heading">
+        <h1>Welcome <span>Back.</span></h1>
+        <p>Sign in to continue to your RIHULA member account.</p>
+      </div>
 
-    <p style="margin-bottom:15px;">
-        <a href="admin-login.html">Admin Login</a>
-    </p>
+      <div class="login-security">
+        <strong>🔐 Secure Member Login</strong><br>
+        For registered RIHULA members. Use your registered email or Kenyan phone number.
+      </div>
 
-    <div class="security-notice">
-        <h3>Secure Member Login</h3>
-        <p>
-            This login page is only for registered members of
-            RIHULA MUKHOBOLA ASSOCIATION.
-        </p>
-    </div>
+      <div class="login-field">
+        <label for="loginId">Email or phone number</label>
+        <div class="field-control">
+          <span class="field-icon">♙</span>
+          <input type="text" id="loginId" placeholder="Email or 01/07... phone number" autocomplete="username" inputmode="email">
+        </div>
+      </div>
 
-    <div class="input-group">
-      <input
-    type="text"
-    id="loginId"
-    placeholder="📧 Email or 📱 Phone number"
-    autocomplete="username">
-    </div>
+      <div class="login-field">
+        <label for="password">Password</label>
+        <div class="field-control">
+          <span class="field-icon">🔒</span>
+          <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password">
+          <button type="button" class="password-toggle" onclick="togglePassword('password', this)" aria-label="Show password">👁</button>
+        </div>
+      </div>
 
-    <div class="input-group">
-        <input
-            type="password"
-            id="password"
-            placeholder="🔒 Password"
-            autocomplete="current-password">
-    </div>
+      <p class="login-help">Phone numbers are accepted in Kenyan formats such as <strong>01...</strong>, <strong>07...</strong>, <strong>254...</strong> or <strong>+254...</strong>.</p>
 
-    <button onclick="login()" class="login-btn">Login</button>
+      <button onclick="login()" class="login-btn" type="button">SIGN IN <span aria-hidden="true">→</span></button>
 
-    <div class="links">
+      <div class="login-links">
         <a href="forgot-password.html">Forgot Password?</a>
-        <br><br>
-        <a href="activate-account.html">Activate Existing Member Account</a>
-        <br><br>
-        <a href="register.html">Register Here</a>
+        <div class="login-divider"><span>or</span></div>
+        <a href="register.html" class="register-link">New Member? Register Here</a>
+        <div class="admin-link"><a href="admin-login.html">Admin Login</a></div>
+      </div>
     </div>
-</div>
+  </section>
+</main>
 
-<script src="popups.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase.js"></script>
-
+<script src="popups.js?v=20260826-0835"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'"></script>
+<script src="supabase.js?v=20260826-0835"></script>
+<script src="rihula-db-guard.js?v=20260826-0835"></script>
+<script src="custom-auth.js?v=20260902-modern-login"></script>
 <script>
 async function redirectMember(member) {
+    if (typeof window.waitForRihulaDb === "function") await window.waitForRihulaDb();
     localStorage.setItem("loggedUser", JSON.stringify(member));
-
     try {
-        await db
-            .from("members")
-            .update({
-                last_seen: new Date().toISOString(),
-                online: true
-            })
-            .eq("id", member.id);
+        await db.from("members").update({
+            last_seen: new Date().toISOString(),
+            online: true
+        }).eq("id", member.id);
     } catch (e) {
         console.warn("Could not update member presence:", e);
     }
-
-    // Member login is always a member session, even when the account
-    // also has admin privileges. Admin access is controlled separately
-    // by the PIN on admin-login.html.
     window.location.href = "member.html";
 }
 
-function normalizeKenyanPhone(phone) {
-    if (!phone) return "";
-
-    let value = String(phone).trim();
-
-    // Remove spaces, dashes and brackets
-    value = value.replace(/[\s\-()]/g, "");
-
-    // +254712345678 → 0712345678
-    if (value.startsWith("+254")) {
-        value = "0" + value.substring(4);
+function togglePassword(inputId, button) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    if (input.type === "password") {
+        input.type = "text";
+        button.textContent = "🙈";
+        button.setAttribute("aria-label", "Hide password");
+    } else {
+        input.type = "password";
+        button.textContent = "👁";
+        button.setAttribute("aria-label", "Show password");
     }
-
-    // 254712345678 → 0712345678
-    else if (value.startsWith("254")) {
-        value = "0" + value.substring(3);
-    }
-
-    return value;
 }
+
 async function login() {
     const loginId = document.getElementById("loginId").value.trim();
     const password = document.getElementById("password").value;
 
     if (!loginId || !password) {
-        showPopup("Enter your email/phone and password.", "warning");
+        showPopup("Enter your email or phone number and password.", "warning");
         return;
     }
 
+    const button = document.querySelector(".login-btn");
+    if (button) { button.disabled = true; button.innerHTML = "SIGNING IN..."; }
+
     try {
-        let email = loginId.toLowerCase();
+        const member = await RihulaCustomAuth.loginMember(loginId, password);
 
-        /*
-         * If the member entered a phone number,
-         * find the email linked to that phone.
-         */
-        if (!loginId.includes("@")) {
-
-            const phone = normalizeKenyanPhone(loginId);
-
-            if (!phone) {
-                showPopup(
-                    "Enter a valid email address or Kenyan phone number.",
-                    "warning"
-                );
-                return;
-            }
-
-            const { data: membersByPhone, error: phoneError } =
-                await db
-                    .from("members")
-                    .select("email, phone");
-
-            if (phoneError) {
-                console.error("PHONE LOOKUP ERROR:", phoneError);
-                showPopup(
-                    "Could not find the member account.",
-                    "error"
-                );
-                return;
-            }
-
-            const memberByPhone = membersByPhone?.find(member =>
-                normalizeKenyanPhone(member.phone) === phone
-            );
-
-            if (!memberByPhone || !memberByPhone.email) {
-                showPopup(
-                    "No member account was found with that phone number.",
-                    "warning"
-                );
-                return;
-            }
-
-            email = memberByPhone.email.toLowerCase();
-        }
-
-        /*
-         * Use the SAME Supabase password for both
-         * email login and phone login.
-         */
-        const { data: authData, error: authError } =
-            await db.auth.signInWithPassword({
-                email,
-                password
-            });
-
-        if (authError) {
-            console.error("LOGIN ERROR:", authError);
-            showPopup("Invalid email/phone or password.", "error");
+        if (String(member.status || "").toLowerCase() === "pending") {
+            await RihulaCustomAuth.clearSession();
+            showPopup("Your member account is not active yet. Please contact the RIHULA administrator.", "warning");
             return;
         }
 
-        if (!authData || !authData.user) {
-            showPopup("Login failed.", "error");
-            return;
-        }
-
-        /*
-         * Load the RIHULA member record linked
-         * to the authenticated Supabase account.
-         */
-        const { data: member, error: memberError } =
-            await db
-                .from("members")
-                .select("*")
-                .eq("auth_id", authData.user.id)
-                .maybeSingle();
-
-        if (memberError) {
-            console.error("MEMBER LOOKUP ERROR:", memberError);
-            await db.auth.signOut();
-
-            showPopup(
-                "Your member account could not be loaded.",
-                "error"
-            );
-            return;
-        }
-
-        if (!member) {
-            await db.auth.signOut();
-
-            showPopup(
-                "This account is not linked to a RIHULA member.",
-                "warning"
-            );
-            return;
-        }
-
-        if (member.status === "pending") {
-            localStorage.setItem(
-                "loggedUser",
-                JSON.stringify(member)
-            );
-
-            window.location.href = "pending-members.html";
+        if (["blocked", "suspended", "inactive"].includes(String(member.status || "").toLowerCase())) {
+            await RihulaCustomAuth.clearSession();
+            showPopup("Your RIHULA account is currently inactive. Please contact an administrator.", "warning");
             return;
         }
 
         await redirectMember(member);
-
     } catch (error) {
-        console.error("LOGIN ERROR:", error);
-
-        showPopup(
-            "Unexpected login error. Please try again.",
-            "error"
-        );
+        console.error("CUSTOM LOGIN ERROR:", error);
+        showPopup(error.message || "Invalid email/phone number or password.", "error");
+    } finally {
+        if (button) { button.disabled = false; button.innerHTML = "SIGN IN <span aria-hidden=\"true\">→</span>"; }
     }
 }
+
+document.getElementById("password").addEventListener("keydown", function(event) {
+    if (event.key === "Enter") login();
+});
+document.getElementById("loginId").addEventListener("keydown", function(event) {
+    if (event.key === "Enter") document.getElementById("password").focus();
+});
 </script>
-<script src="v22.js"></script>
-<script src="rihula-v3-ui.js"></script>
+<script src="rihula-v3-ui.js?v=20260826-0835"></script>
 </body>
 </html>

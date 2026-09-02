@@ -1,4 +1,3 @@
-const db = window.db;
 
 console.log("RIHULA Chat JS Loaded");
 const user = JSON.parse(localStorage.getItem("loggedUser"));
@@ -20,7 +19,7 @@ function escapeHtml(value) {
 
 function notify(message) {
     if (typeof showPopup === "function") showPopup(message);
-    else alert(message);
+    else if (typeof window.RihulaPopups !== "undefined") window.RihulaPopups.info(message);
 }
 
 function formatTime(value) {
@@ -35,6 +34,13 @@ function isMine(msg) {
 }
 
 async function loadMessages() {
+    try {
+        await window.waitForRihulaDb();
+    } catch (error) {
+        notify("RIHULA database is still connecting. Please try again.");
+        return;
+    }
+
     const container = document.getElementById("chatMessages");
     if (!container) return;
 
@@ -110,7 +116,14 @@ async function copyMessage(text) {
 }
 
 async function deleteMessage(id) {
-    if (!confirm("Delete this message? This cannot be undone.")) return;
+    try {
+        await window.waitForRihulaDb();
+    } catch (error) {
+        notify("RIHULA database is still connecting. Please try again.");
+        return;
+    }
+
+    if (!(await showConfirm("Delete this message? This cannot be undone.", { title: "Delete message", confirmText: "Delete", danger: true }))) return;
 
     const { error } = await db
         .from("messages")
@@ -127,6 +140,13 @@ async function deleteMessage(id) {
 }
 
 async function sendMessage() {
+    try {
+        await window.waitForRihulaDb();
+    } catch (error) {
+        notify("RIHULA database is still connecting. Please try again.");
+        return;
+    }
+
     const input = document.getElementById("chatMessage");
     const button = document.querySelector(".chatInput button");
     const message = input?.value.trim();

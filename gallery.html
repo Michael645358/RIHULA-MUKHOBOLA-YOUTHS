@@ -3,61 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gallery</title>
-
+<title>Gallery | RIHULA MUKHOBOLA</title>
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="rihula-modern-design.css">
 <link rel="stylesheet" href="rihula-v3-ui.css">
+<style>
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;max-width:1180px;margin:28px auto 0}.gallery-card{position:relative;padding:0;border:0;background:transparent;border-radius:20px;overflow:hidden;cursor:pointer;box-shadow:0 10px 28px rgba(0,0,0,.10);aspect-ratio:4/3}.gallery-card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s ease}.gallery-card:hover img{transform:scale(1.04)}.gallery-card-overlay{position:absolute;left:0;right:0;bottom:0;padding:14px;color:#fff;text-align:left;background:linear-gradient(transparent,rgba(0,0,0,.72));font-weight:700}.gallery-status{text-align:center;min-height:24px;color:#66736f}.gallery-viewer{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.90);padding:18px}.gallery-viewer.is-open{display:flex}.gallery-viewer-content{width:min(1100px,100%);height:min(92vh,900px);display:flex;flex-direction:column;gap:12px}.gallery-viewer-top{display:flex;justify-content:space-between;align-items:center;color:#fff}.gallery-viewer-title{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gallery-viewer-actions{display:flex;gap:8px;flex-wrap:wrap}.gallery-viewer-actions button{border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.12);color:#fff;border-radius:12px;padding:9px 12px;font-weight:700;cursor:pointer}.gallery-viewer-stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:auto;border-radius:18px}.gallery-viewer-stage img{max-width:100%;max-height:100%;object-fit:contain;transform-origin:center;transition:transform .18s ease;user-select:none;-webkit-user-drag:none}.gallery-viewer-hint{text-align:center;color:rgba(255,255,255,.72);font-size:.88rem}.gallery-viewer-open{overflow:hidden}
+</style>
 </head>
-
 <body>
-
-<header class="modern-header">
-
-<div class="logo-area">
-<img src="images/logo.jpg">
-
-<div class="brand">
-<h1>RIHULA MUKHOBOLA</h1>
-<p>Together We Prosper</p>
-</div>
-
-</div>
-
-<nav class="desktop-nav">
-<a href="index.html">Home</a>
-<a href="login.html" class="login-btn">Member Login</a>
-</nav>
-
-</header>
-
-<section class="gallery">
-
-<h2>Photo Gallery</h2>
-
-<p class="section-subtitle">
-Moments from our meetings, projects and community activities.
-</p>
-
-<div class="gallery-grid">
-
-<img src="images/gallery1.jpg" alt="Gallery">
-<img src="images/gallery2.jpg" alt="Gallery">
-<img src="images/gallery3.jpg" alt="Gallery">
-<img src="images/gallery4.jpg" alt="Gallery">
-<img src="images/gallery5.jpg" alt="Gallery">
-<img src="images/gallery6.jpg" alt="Gallery">
-
-</div>
-
-</section>
-
-<footer class="footer">
-<p>© 2026 RIHULA MUKHOBOLA ASSOCIATION</p>
-</footer>
-
-<script src="popups.js"></script>
-<script src="v22.js"></script>
-<script src="rihula-v3-ui.js"></script>
+<header class="modern-header"><div class="logo-area"><img src="images/logo.jpg" alt="RIHULA Logo"><div class="brand"><h1>RIHULA MUKHOBOLA</h1><p>Together We Prosper</p></div></div><nav class="desktop-nav"><a href="index.html">Home</a><a href="login.html" class="login-btn">Member Login</a></nav></header>
+<section class="gallery"><h2>Photo Gallery</h2><p class="section-subtitle">Moments from our meetings, projects and community activities.</p><p id="galleryStatus" class="gallery-status">Loading photos…</p><div id="galleryGrid" class="gallery-grid"></div></section>
+<div id="galleryViewer" class="gallery-viewer" aria-hidden="true"><div class="gallery-viewer-content"><div class="gallery-viewer-top"><strong id="galleryViewerTitle" class="gallery-viewer-title">RIHULA Gallery</strong><div class="gallery-viewer-actions"><button id="galleryZoomOut" type="button" aria-label="Zoom out">−</button><button id="galleryZoomReset" type="button">Reset</button><button id="galleryZoomIn" type="button" aria-label="Zoom in">＋</button><button id="galleryDownload" type="button">⬇ Download</button><button id="galleryClose" type="button" aria-label="Close">✕</button></div></div><div class="gallery-viewer-stage"><img id="galleryViewerImage" alt="Gallery photo"></div><div class="gallery-viewer-hint">Tap the photo to zoom • Use + / − for precise zoom • Download saves the photo</div></div></div>
+<footer class="footer"><p>© 2026 RIHULA MUKHOBOLA ASSOCIATION</p></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'"></script>
+<script src="supabase.js?v=20260826-1030"></script>
+<script src="popups.js?v=20260826-1030"></script>
+<script src="gallery.js?v=20260826-1030"></script>
+<script src="v22.js?v=20260826-1030"></script>
+<script src="rihula-v3-ui.js?v=20260826-1030"></script>
 </body>
 </html>

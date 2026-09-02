@@ -396,7 +396,7 @@
                 Together we build a stronger future for everyone.
             </p>
 
-            <a href="register.html" class="learn-btn">
+            <a href="login.html" class="learn-btn">
                 Join Now
             </a>
 
@@ -416,11 +416,302 @@
 </main>
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase.js"></script>
-<script src="script.js"></script>
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"
+    onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'">
+</script>
 
-<script src="finance.js"></script>
-<script src="rihula-v3-ui.js"></script>
+<script src="supabase.js?v=20260826-0835"></script>
+<script src="rihula-db-guard.js?v=20260826-0835"></script>
+<script src="script.js?v=20260826-0835"></script>
+<script src="finance.js?v=20260826-0835"></script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    let attempts = 0;
+    const maxAttempts = 20;
+
+
+    async function loadAssociationStats() {
+
+        /*
+         * Wait until supabase.js has created window.db.
+         */
+        if (!window.db) {
+
+            attempts++;
+
+            if (attempts < maxAttempts) {
+
+                console.log(
+                    "RIHULA: Waiting for Supabase..."
+                );
+
+                setTimeout(loadAssociationStats, 500);
+
+            } else {
+
+                console.warn(
+                    "RIHULA: Supabase was not ready."
+                );
+            }
+
+            return;
+        }
+
+
+        try {
+
+            console.log(
+                "RIHULA: Loading association statistics..."
+            );
+
+
+            /*
+             * ==========================================
+             * TRY PUBLIC STATISTICS RPC
+             * ==========================================
+             */
+
+            let stats = null;
+
+            try {
+
+                const {
+                    data,
+                    error
+                } = await window.db.rpc(
+                    "get_public_association_stats"
+                );
+
+
+                console.log(
+                    "Public Association Stats:",
+                    data
+                );
+
+
+                console.log(
+                    "Statistics Error:",
+                    error
+                );
+
+
+                if (!error && data) {
+
+                    stats = data;
+
+                }
+
+            } catch (rpcError) {
+
+                console.warn(
+                    "RIHULA: Statistics RPC unavailable.",
+                    rpcError
+                );
+
+            }
+
+
+            /*
+             * ==========================================
+             * TOTAL MEMBERS
+             * ==========================================
+             */
+
+            let totalMembers = Number(
+                stats?.total_members || 0
+            );
+
+
+            /*
+             * If RPC did not provide members,
+             * count directly from members table.
+             */
+
+            if (!totalMembers) {
+
+                const {
+                    count,
+                    error
+                } = await window.db
+                    .from("members")
+                    .select("*", {
+                        count: "exact",
+                        head: true
+                    });
+
+
+                console.log(
+                    "Members Count:",
+                    count
+                );
+
+
+                console.log(
+                    "Members Error:",
+                    error
+                );
+
+
+                if (!error) {
+
+                    totalMembers =
+                        Number(count || 0);
+
+                }
+
+            }
+
+
+            /*
+             * ==========================================
+             * TOTAL CONTRIBUTIONS
+             * ==========================================
+             */
+
+            let totalContributions = Number(
+                stats?.total_contributions || 0
+            );
+
+
+            /*
+             * If RPC did not provide contributions,
+             * calculate them directly.
+             */
+
+            if (!totalContributions) {
+
+                const {
+                    data: contributions,
+                    error
+                } = await window.db
+                    .from("contributions")
+                    .select("amount");
+
+
+                console.log(
+                    "Contributions Data:",
+                    contributions
+                );
+
+
+                console.log(
+                    "Contributions Error:",
+                    error
+                );
+
+
+                if (!error && contributions) {
+
+                    totalContributions =
+                        contributions.reduce(
+                            function (total, item) {
+
+                                return total +
+                                    Number(
+                                        item.amount || 0
+                                    );
+
+                            },
+                            0
+                        );
+
+                }
+
+            }
+
+
+            /*
+             * ==========================================
+             * UPDATE MEMBER COUNT
+             * ==========================================
+             */
+
+            const memberElement =
+                document.getElementById(
+                    "memberCount"
+                );
+
+
+            if (memberElement) {
+
+                memberElement.textContent =
+                    totalMembers.toLocaleString(
+                        "en-KE"
+                    );
+
+            }
+
+
+            /*
+             * ==========================================
+             * UPDATE CONTRIBUTIONS
+             * ==========================================
+             */
+
+            const contributionElement =
+                document.getElementById(
+                    "totalContributions"
+                );
+
+
+            if (contributionElement) {
+
+                contributionElement.textContent =
+                    "KSh " +
+                    totalContributions.toLocaleString(
+                        "en-KE"
+                    );
+
+            }
+
+
+            /*
+             * ==========================================
+             * DEBUG INFORMATION
+             * ==========================================
+             */
+
+            console.log(
+                "RIHULA Total Members:",
+                totalMembers
+            );
+
+
+            console.log(
+                "RIHULA Total Contributions:",
+                totalContributions
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "RIHULA statistics error:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /*
+     * Start loading statistics.
+     */
+    loadAssociationStats();
+
+});
+
+
+</script>
+
+
+<!-- Load the UI script ONLY ONCE -->
+<script src="rihula-v3-ui.js?v=20260826-0835"></script>
+
 </body>
 </html>

@@ -1,0 +1,41 @@
+/* RIHULA - Lamp swing + logo shake only */
+
+/* Swing the complete hanging lamp from the top of its cord */
+.login-visual .lamp{
+  transform: translateX(-50%) rotate(-4deg);
+  transform-origin: 50% 0;
+  animation: rihulaLampSwing 4.8s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes rihulaLampSwing{
+  0%,100%{ transform: translateX(-50%) rotate(-4deg); }
+  25%{ transform: translateX(-50%) rotate(4deg); }
+  50%{ transform: translateX(-50%) rotate(-2.5deg); }
+  75%{ transform: translateX(-50%) rotate(3deg); }
+}
+
+/* Gentle RIHULA logo shake/tilt */
+.login-visual .visual-logo{
+  animation: rihulaLogoShake 3.8s ease-in-out infinite;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+@keyframes rihulaLogoShake{
+  0%,70%,100%{ transform: rotate(0deg) translateX(0); }
+  73%{ transform: rotate(-2deg) translateX(-2px); }
+  76%{ transform: rotate(2deg) translateX(2px); }
+  79%{ transform: rotate(-1.5deg) translateX(-1px); }
+  82%{ transform: rotate(1deg) translateX(1px); }
+  85%{ transform: rotate(0deg) translateX(0); }
+}
+
+/* Keep the existing lamp-light pulse from the original design. */
+
+@media (prefers-reduced-motion: reduce){
+  .login-visual .lamp,
+  .login-visual .visual-logo{
+    animation: none !important;
+  }
+}

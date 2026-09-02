@@ -7,6 +7,7 @@
 - [ ] Test member activation and login.
 - [ ] Test contribution creation and contribution history.
 - [ ] Test withdrawal validation against available balance.
+- [ ] Run `PROFILE-PHOTO-STORAGE-FIX.sql` in the current Supabase project.
 - [ ] Test profile photo upload permissions.
 - [ ] Test chat copy/delete permissions.
 - [ ] Test mobile navigation and loading/error states.

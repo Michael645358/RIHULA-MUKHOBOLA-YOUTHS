@@ -1,5 +1,5 @@
-const CACHE='rihula-v3-2026-08-20';
-const CORE=['./','./index.html','./offline.html','./style.css','./rihula-modern-design.css','./rihula-v3-ui.css','./rihula-v3-ui.js','./manifest.json','./images/logo.jpg'];
+const CACHE='rihula-v8-2026-08-26';
+const CORE=['./','./index.html','./offline.html','./style.css','./rihula-modern-design.css','./rihula-v3-ui.css','./rihula-v3-ui.js','./manifest.json','./images/logo.jpg','./images/icon-192.png','./images/icon-512.png'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',event=>{

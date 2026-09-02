@@ -1,0 +1,93 @@
+/* =========================================================
+   RIHULA — LAMP + LOGO ANIMATION
+   Add this stylesheet AFTER the existing login styles.
+   ========================================================= */
+
+/* Hanging lamp: slow, natural side-to-side swing from the cord. */
+.login-visual .lamp{
+  transform-origin:50% 0;
+  animation:rihulaLampSway 5.8s ease-in-out infinite;
+  will-change:transform;
+}
+
+@keyframes rihulaLampSway{
+  0%,100%{transform:translateX(-50%) rotate(-2deg)}
+  18%{transform:translateX(-50%) rotate(1.6deg)}
+  36%{transform:translateX(-50%) rotate(-1.2deg)}
+  55%{transform:translateX(-50%) rotate(1.8deg)}
+  73%{transform:translateX(-50%) rotate(-1deg)}
+}
+
+/* Green bulb: soft breathing glow + occasional tiny flicker. */
+.login-visual .lamp-light{
+  animation:
+    rihulaLampGlow 2.6s ease-in-out infinite,
+    rihulaLampFlicker 7s steps(1,end) infinite;
+  transform-origin:50% 50%;
+  will-change:opacity,filter,box-shadow,transform;
+}
+
+@keyframes rihulaLampGlow{
+  0%,100%{opacity:1;filter:brightness(1);transform:translateX(-50%) scale(1)}
+  50%{opacity:.82;filter:brightness(.86);transform:translateX(-50%) scale(.94)}
+}
+
+@keyframes rihulaLampFlicker{
+  0%,92%,100%{box-shadow:0 0 22px #35f0bd,0 0 75px rgba(53,240,189,.55),0 40px 110px rgba(53,240,189,.24)}
+  93%{box-shadow:0 0 12px #35f0bd,0 0 42px rgba(53,240,189,.32),0 40px 75px rgba(53,240,189,.12)}
+  94%{box-shadow:0 0 28px #35f0bd,0 0 90px rgba(53,240,189,.68),0 40px 125px rgba(53,240,189,.30)}
+  95%{box-shadow:0 0 17px #35f0bd,0 0 60px rgba(53,240,189,.44),0 40px 95px rgba(53,240,189,.18)}
+}
+
+/* Light pool underneath the lamp slowly expands and contracts. */
+.login-visual::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:92px;
+  width:230px;
+  height:300px;
+  transform:translateX(-50%);
+  pointer-events:none;
+  background:radial-gradient(ellipse at 50% 0%,rgba(53,240,189,.28) 0%,rgba(53,240,189,.12) 28%,rgba(53,240,189,.035) 55%,transparent 74%);
+  filter:blur(12px);
+  opacity:.65;
+  transform-origin:50% 0;
+  animation:rihulaLightPool 2.6s ease-in-out infinite;
+}
+
+@keyframes rihulaLightPool{
+  0%,100%{opacity:.58;transform:translateX(-50%) scaleY(.96)}
+  50%{opacity:.82;transform:translateX(-50%) scaleY(1.05)}
+}
+
+/* =========================================================
+   RIHULA LOGO — subtle shake / floating movement
+   The logo stays in place but gently tilts and moves a few px.
+   ========================================================= */
+.login-visual .visual-logo{
+  transform-origin:50% 50%;
+  animation:rihulaLogoShake 3.8s ease-in-out infinite;
+  will-change:transform;
+}
+
+@keyframes rihulaLogoShake{
+  0%,100%{transform:translate3d(0,0,0) rotate(0deg) scale(1)}
+  12%{transform:translate3d(-1px,-1px,0) rotate(-1deg) scale(1.005)}
+  24%{transform:translate3d(1px,0,0) rotate(1deg) scale(1)}
+  36%{transform:translate3d(-1px,1px,0) rotate(-.7deg) scale(1.008)}
+  48%{transform:translate3d(1px,0,0) rotate(.7deg) scale(1)}
+  60%{transform:translate3d(0,-1px,0) rotate(-.4deg) scale(1.004)}
+  72%{transform:translate3d(0,0,0) rotate(0deg) scale(1)}
+  100%{transform:translate3d(0,0,0) rotate(0deg) scale(1)}
+}
+
+/* Accessibility: respect device/browser Reduce Motion settings. */
+@media(prefers-reduced-motion:reduce){
+  .login-visual .lamp,
+  .login-visual .lamp-light,
+  .login-visual .visual-logo,
+  .login-visual::after{
+    animation:none!important;
+  }
+}

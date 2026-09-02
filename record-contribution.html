@@ -3,76 +3,112 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Record Contribution</title>
+<title>Record Contributions | RIHULA Admin</title>
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="rihula-modern-design.css">
 <link rel="stylesheet" href="rihula-v3-ui.css">
+<style>
+.record-contribution-card{max-width:720px;margin:20px auto}.record-intro{margin:0 0 18px;opacity:.78}.member-toolbar{display:flex;gap:10px;align-items:center;margin:12px 0}.add-member-btn{width:100%;border:1px solid #0b8057;background:#087a52;color:#fff;border-radius:12px;padding:13px 16px;font-weight:800;font-size:15px;cursor:pointer}.member-load-status{font-size:13px;opacity:.68;margin:0 0 12px}.selected-members{border:1px solid rgba(8,122,82,.16);border-radius:16px;overflow:hidden;background:rgba(255,255,255,.62)}.selected-empty{padding:25px 18px;text-align:center;opacity:.62}.selected-member-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:13px 12px;border-bottom:1px solid rgba(0,0,0,.07)}.selected-member-row:last-child{border-bottom:0}.selected-member-main{display:flex;align-items:center;gap:10px;min-width:0}.selected-member-avatar,.member-result-avatar{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#e5f6ee;color:#087a52;font-weight:900;flex:0 0 auto}.selected-member-info{min-width:0;display:flex;flex-direction:column}.selected-member-info strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.selected-member-info span{font-size:12px;opacity:.65;margin-top:2px}.selected-member-amount-wrap{display:flex;align-items:center;gap:5px;border:1px solid #d8dce3;border-radius:10px;background:#fff;padding-left:10px}.selected-member-amount-wrap span{font-size:12px;opacity:.6}.selected-member-amount{width:105px;border:0;outline:0;padding:11px 8px;font-size:15px;background:transparent}.remove-member{width:36px;height:36px;border:0;border-radius:10px;background:#fff0f0;color:#b42318;font-size:22px;cursor:pointer}.batch-summary{display:flex;justify-content:space-between;gap:15px;margin:16px 0;padding:15px 16px;border-radius:14px;background:#edf8f3;border:1px solid #d9eee4}.batch-summary strong{display:block}.batch-summary small{opacity:.65}.review-btn{width:100%;padding:14px 16px;border:0;border-radius:12px;background:#087a52;color:#fff;font-size:16px;font-weight:800;cursor:pointer}.review-btn:disabled{opacity:.45;cursor:not-allowed}
+.member-picker{position:fixed;inset:0;z-index:99990;display:none;align-items:flex-end;justify-content:center;background:rgba(10,16,13,.55);backdrop-filter:blur(4px)}.member-picker.open{display:flex}.member-picker-panel{width:min(620px,100%);max-height:82vh;background:#fff;color:#17201b;border-radius:22px 22px 0 0;overflow:hidden;box-shadow:0 -20px 60px rgba(0,0,0,.2);animation:pickerIn .18s ease-out}@keyframes pickerIn{from{transform:translateY(20px);opacity:.7}to{transform:translateY(0);opacity:1}}.member-picker-head{display:flex;align-items:center;justify-content:space-between;padding:17px 18px 12px}.member-picker-head h3{margin:0;font-size:19px}.close-picker{border:0;background:#f0f3f1;border-radius:10px;width:38px;height:38px;font-size:23px;cursor:pointer}.member-search-wrap{padding:0 18px 12px}.member-search{width:100%;box-sizing:border-box;padding:13px 14px;border:1px solid #cfd8d2;border-radius:12px;font-size:16px;outline:none}.member-search:focus{border-color:#087a52;box-shadow:0 0 0 3px rgba(8,122,82,.1)}.member-results{padding:0 10px 15px;max-height:56vh;overflow:auto}.member-result{width:100%;display:flex;align-items:center;gap:11px;text-align:left;background:#fff;border:0;border-bottom:1px solid #edf0ee;padding:12px 8px;cursor:pointer}.member-result:hover{background:#f5faf7}.member-result-text{display:flex;flex-direction:column;min-width:0;flex:1}.member-result-text strong{font-size:15px}.member-result-text small{opacity:.62;margin-top:2px}.member-result-add{font-size:25px;color:#087a52}.member-result-empty{padding:30px 15px;text-align:center;opacity:.6}
+.contribution-confirm-overlay{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;background:rgba(10,16,13,.64);backdrop-filter:blur(6px)}.contribution-confirm-overlay.open{display:flex}.contribution-confirm-modal{width:min(480px,100%);max-height:88vh;overflow:auto;background:#fff;color:#17201b;border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.3);animation:confirmIn .18s ease-out}@keyframes confirmIn{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}.contribution-confirm-head{text-align:center;padding:21px 20px 12px}.contribution-confirm-icon{width:50px;height:50px;margin:0 auto 10px;border-radius:50%;display:grid;place-items:center;background:#e5f6ee;color:#087a52;font-size:25px;font-weight:900}.contribution-confirm-head h3{margin:0 0 4px;font-size:21px}.contribution-confirm-head p{margin:0;color:#68736d;font-size:13px}.confirmation-items{padding:6px 18px 12px}.confirmation-item{display:flex;justify-content:space-between;gap:15px;align-items:center;padding:12px 13px;border:1px solid #e3ebe6;background:#f7faf8;border-radius:12px;margin-bottom:8px}.confirmation-item div{min-width:0}.confirmation-item strong{display:block}.confirmation-item small{display:block;color:#68736d;margin-top:2px}.confirmation-footer{margin:0 18px 15px;padding:14px;border-radius:13px;background:#edf8f3;display:flex;justify-content:space-between;align-items:center}.confirmation-footer span{font-size:13px;color:#68736d}.confirmation-footer strong{font-size:20px;color:#087a52}.contribution-confirm-actions{display:flex;gap:10px;padding:0 18px 19px}.contribution-confirm-actions button{flex:1;min-height:48px;border:0;border-radius:12px;font-weight:800;font-size:15px;cursor:pointer}.contribution-cancel-btn{background:#eef1ef;color:#26312b}.contribution-save-btn{background:#087a52;color:#fff}.contribution-save-btn:disabled{opacity:.6;cursor:wait}
+@media(max-width:560px){.selected-member-row{grid-template-columns:1fr auto;}.selected-member-amount-wrap{grid-column:1/2}.remove-member{grid-column:2;grid-row:2}.selected-member-amount{width:120px}.batch-summary{font-size:14px}}
+
+.wa-contrib-overlay{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;background:rgba(10,16,13,.65);backdrop-filter:blur(6px)}
+.wa-contrib-overlay.open{display:flex}.wa-contrib-modal{width:min(560px,100%);max-height:88vh;overflow:auto;background:#fff;color:#17201b;border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.3)}
+.wa-contrib-head{text-align:center;padding:22px 20px 12px}.wa-contrib-icon{width:52px;height:52px;margin:0 auto 10px;border-radius:50%;display:grid;place-items:center;background:#e5f6ee;color:#087a52;font-size:26px}.wa-contrib-head h3{margin:0 0 5px;font-size:21px}.wa-contrib-head p{margin:0;color:#68736d;font-size:13px}.wa-contrib-list{padding:8px 18px 12px}.wa-contrib-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border:1px solid #e2ebe5;background:#f8fbf9;border-radius:13px;margin-bottom:8px}.wa-contrib-info{min-width:0}.wa-contrib-info strong{display:block}.wa-contrib-info small{display:block;color:#68736d;margin-top:3px}.wa-contrib-send{border:0;border-radius:10px;padding:10px 12px;background:#087a52;color:#fff;font-weight:800;cursor:pointer;white-space:nowrap}.wa-contrib-send:disabled{opacity:.55;cursor:default}.wa-contrib-footer{padding:0 18px 19px;display:flex;gap:10px}.wa-contrib-close{width:100%;min-height:46px;border:0;border-radius:12px;background:#eef1ef;color:#26312b;font-weight:800;cursor:pointer}.wa-contrib-note{margin:0 18px 15px;padding:11px 12px;border-radius:11px;background:#fff8e8;color:#795b10;font-size:12px}
+</style>
 </head>
 <body>
-
 <header>
-<h1>Record Contribution</h1>
-
-<button class="btn" onclick="location.href='admin.html'">
-← Back to Dashboard
-</button>
+  <h1>Record Contributions</h1>
+  <button class="btn" onclick="location.href='admin.html'">← Back to Dashboard</button>
 </header>
 
 <section class="admin-panel">
+  <div class="admin-card record-contribution-card">
+    <h2>Record Contributions</h2>
+    <p class="record-intro">Select one or more approved members, enter each amount, then review and confirm before saving.</p>
 
-<div class="admin-card">
+    <div class="member-toolbar">
+      <button type="button" class="add-member-btn" id="addMemberBtn">＋ Add Member</button>
+    </div>
+    <div id="memberLoadStatus" class="member-load-status">Loading approved members...</div>
 
-<h2>Record Contribution</h2>
+    <div id="selectedMembersList" class="selected-members">
+      <div id="selectedEmpty" class="selected-empty">No members selected yet.<br>Tap <strong>＋ Add Member</strong> to begin.</div>
+    </div>
 
-<input
-type="tel"
-id="contributorPhone"
-placeholder="Phone Number">
+    <div class="batch-summary">
+      <div><small>Members</small><strong id="selectedCount">0</strong><small id="completeCount">0/0 amounts entered</small></div>
+      <div style="text-align:right"><small>Total contribution</small><strong id="totalAmount">KSh 0</strong></div>
+    </div>
 
-<input
-type="number"
-id="contributionAmount"
-placeholder="Amount">
-
-<button
-class="btn"
-onclick="recordContribution()">
-Save Contribution
-</button>
-
-</div>
-
+    <button type="button" class="review-btn" id="reviewContributionsBtn" disabled>Review Contribution</button>
+  </div>
 </section>
 
-<hr>
-
-<section class="admin-panel">
-
-<div class="admin-card">
-
-<h2>⏳ Pending Contribution Requests</h2>
-
-<div id="pendingContributions">
-
-<p></p>
-
+<!-- Searchable member picker -->
+<div id="memberPicker" class="member-picker" aria-hidden="true">
+  <div class="member-picker-panel" role="dialog" aria-modal="true" aria-labelledby="memberPickerTitle">
+    <div class="member-picker-head">
+      <h3 id="memberPickerTitle">Select Approved Member</h3>
+      <button type="button" class="close-picker" id="closeMemberPicker" aria-label="Close">×</button>
+    </div>
+    <div class="member-search-wrap">
+      <input id="memberSearch" class="member-search" type="search" autocomplete="off" placeholder="Search by name or phone...">
+    </div>
+    <div id="memberResults" class="member-results"></div>
+  </div>
 </div>
 
+<!-- Batch confirmation -->
+<div id="contributionConfirmOverlay" class="contribution-confirm-overlay" aria-hidden="true">
+  <div class="contribution-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="contributionConfirmTitle">
+    <div class="contribution-confirm-head">
+      <div class="contribution-confirm-icon">✓</div>
+      <h3 id="contributionConfirmTitle">Confirm Contributions</h3>
+      <p>Check every member and amount before saving.</p>
+    </div>
+    <div id="confirmationItems" class="confirmation-items"></div>
+    <div class="confirmation-footer">
+      <span id="confirmMemberCount">0 members</span>
+      <strong id="confirmTotalAmount">KSh 0</strong>
+    </div>
+    <div class="contribution-confirm-actions">
+      <button type="button" id="confirmContributionCancel" class="contribution-cancel-btn">Cancel</button>
+      <button type="button" id="confirmContributionSave" class="contribution-save-btn">Confirm &amp; Save</button>
+    </div>
+  </div>
 </div>
 
-</section>
+<!-- WhatsApp contribution confirmations -->
+<div id="waContributionOverlay" class="wa-contrib-overlay" aria-hidden="true">
+  <div class="wa-contrib-modal" role="dialog" aria-modal="true" aria-labelledby="waContributionTitle">
+    <div class="wa-contrib-head">
+      <div class="wa-contrib-icon">💬</div>
+      <h3 id="waContributionTitle">Send WhatsApp Confirmation</h3>
+      <p>Your contribution was saved successfully. Send a confirmation to any member below.</p>
+    </div>
+    <div id="waContributionList" class="wa-contrib-list"></div>
+    <p class="wa-contrib-note">WhatsApp will open with the confirmation message prepared. The admin must tap <strong>Send</strong> in WhatsApp.</p>
+    <div class="wa-contrib-footer"><button type="button" id="waContributionClose" class="wa-contrib-close">Done</button></div>
+  </div>
+</div>
 
-<script src="popups.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase.js"></script>
-<script src="admin-auth.js"></script>
+<script src="popups.js?v=20260831-3"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'"></script>
+<script src="supabase.js?v=20260831-3"></script>
+<script src="rihula-db-guard.js?v=20260831-3"></script>
+<script src="admin-auth.js?v=20260831-3"></script>
 <script>
 document.documentElement.style.visibility = "hidden";
-document.addEventListener("DOMContentLoaded", async () => { const admin = await RihulaAdmin.requireAdmin(); if (admin) document.documentElement.style.visibility = "visible"; });
+document.addEventListener("DOMContentLoaded", async () => {
+  const admin = await RihulaAdmin.requireAdmin();
+  if (admin) document.documentElement.style.visibility = "visible";
+});
 </script>
-<script src="script.js"></script>
-
-<script src="v22.js"></script>
-<script src="rihula-v3-ui.js"></script>
+<script src="record-contribution.js?v=20260831-4"></script>
+<script src="v22.js?v=20260831-3"></script>
+<script src="rihula-v3-ui.js?v=20260831-3"></script>
 </body>
 </html>

@@ -4641,7 +4641,6 @@ th,td{border-bottom:1px solid var(--border);padding:12px 10px}
     font-size: 16px;
     font-weight: 700;
 }
-<style>
 .add-member-page{
     width:100%;
     padding:30px 15px 80px;
@@ -4848,3 +4847,400 @@ th,td{border-bottom:1px solid var(--border);padding:12px 10px}
         font-size:32px;
     }
 }
+/* =========================================================
+   MY ACHIEVEMENTS - MEMBER DASHBOARD CARD
+   ========================================================= */
+
+.my-achievements-card-section {
+    width: 100%;
+    margin: 18px 0;
+}
+
+.my-achievements-card {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    padding: 18px;
+
+    border: 1px solid #cfe9dd;
+    border-radius: 20px;
+
+    background: #ffffff;
+
+    box-shadow: 0 8px 24px rgba(0, 80, 50, 0.08);
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        border-color 0.18s ease;
+
+    -webkit-tap-highlight-color: transparent;
+}
+
+.my-achievements-card:hover {
+    transform: translateY(-2px);
+    border-color: #1aa56f;
+    box-shadow: 0 12px 28px rgba(0, 80, 50, 0.12);
+}
+
+.my-achievements-card:active {
+    transform: scale(0.985);
+}
+
+.my-achievements-icon {
+    width: 58px;
+    height: 58px;
+
+    flex: 0 0 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 18px;
+
+    background: #e5f8ef;
+
+    font-size: 30px;
+}
+
+.my-achievements-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.my-achievements-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.my-achievements-title-row h2 {
+    margin: 0;
+
+    color: #123c2c;
+
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.my-achievements-arrow {
+    flex: 0 0 auto;
+
+    color: #078451;
+
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.my-achievements-content > p {
+    margin: 5px 0 0;
+
+    color: #687872;
+
+    font-size: 14px;
+}
+
+.my-latest-achievement {
+    color: #078451 !important;
+
+    font-weight: 700;
+}
+
+@media (max-width: 480px) {
+
+    .my-achievements-card {
+        padding: 15px;
+        gap: 13px;
+        border-radius: 18px;
+    }
+
+    .my-achievements-icon {
+        width: 52px;
+        height: 52px;
+        flex-basis: 52px;
+
+        border-radius: 15px;
+
+        font-size: 27px;
+    }
+
+    .my-achievements-title-row h2 {
+        font-size: 17px;
+    }
+
+    .my-achievements-content > p {
+        font-size: 13px;
+    }
+
+    .my-achievements-arrow {
+        font-size: 22px;
+    }
+}
+/* =========================================================
+   MEMBER DASHBOARD - MY ACHIEVEMENTS PREVIEW CARD
+   ========================================================= */
+
+.member-achievements-preview {
+    width: 100%;
+    margin: 18px 0;
+    padding: 0;
+}
+
+.member-achievements-card {
+    appearance: none;
+    -webkit-appearance: none;
+
+    width: 100%;
+    min-height: 118px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 15px;
+
+    margin: 0;
+    padding: 18px;
+
+    background: #ffffff;
+    color: #123c2d;
+
+    border: 1px solid #d7eee4;
+    border-radius: 20px;
+
+    box-shadow: 0 8px 24px rgba(0, 80, 50, 0.08);
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        border-color 0.18s ease;
+
+    font-family: inherit;
+}
+
+.member-achievements-card:hover {
+    transform: translateY(-2px);
+    border-color: #12a66f;
+    box-shadow: 0 12px 28px rgba(0, 80, 50, 0.12);
+}
+
+.member-achievements-card:active {
+    transform: scale(0.985);
+}
+
+.member-achievements-icon {
+    width: 58px;
+    height: 58px;
+
+    flex: 0 0 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 18px;
+
+    background: #e6f8ef;
+
+    font-size: 30px;
+    line-height: 1;
+}
+
+.member-achievements-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.member-achievements-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+}
+
+.member-achievements-heading h2 {
+    margin: 0;
+
+    color: #123c2d;
+
+    font-size: 19px;
+    line-height: 1.2;
+
+    font-weight: 800;
+}
+
+.member-achievements-heading p {
+    margin: 5px 0 0;
+
+    color: #687a73;
+
+    font-size: 14px;
+    line-height: 1.3;
+}
+
+.member-achievements-arrow {
+    flex: 0 0 auto;
+
+    color: #078451;
+
+    font-size: 34px;
+    line-height: 1;
+
+    font-weight: 400;
+}
+
+.member-achievements-latest {
+    margin-top: 8px;
+
+    color: #078451;
+
+    font-size: 13px;
+    line-height: 1.35;
+
+    font-weight: 700;
+}
+
+@media (max-width: 480px) {
+
+    .member-achievements-card {
+        min-height: 108px;
+        padding: 15px;
+        gap: 12px;
+
+        border-radius: 18px;
+    }
+
+    .member-achievements-icon {
+        width: 52px;
+        height: 52px;
+        flex-basis: 52px;
+
+        border-radius: 15px;
+
+        font-size: 27px;
+    }
+
+    .member-achievements-heading h2 {
+        font-size: 17px;
+    }
+
+    .member-achievements-heading p {
+        font-size: 13px;
+    }
+
+    .member-achievements-latest {
+        font-size: 12px;
+    }
+
+    .member-achievements-arrow {
+        font-size: 30px;
+    }
+}
+/* =========================================================
+   RIHULA MEMBER NAVIGATION - SINGLE SCREEN MODE
+   Only the active member screen may be visible.
+   ========================================================= */
+#dashboardScreen,
+#historyScreen,
+#announcementsScreen,
+#profileScreen,
+#leadersScreen,
+#groupMembersScreen,
+#groupGoalScreen,
+#contributeScreen,
+#chatScreen,
+#aiScreen {
+    box-sizing: border-box;
+}
+
+#dashboardScreen:not(.active),
+#historyScreen:not(.active),
+#announcementsScreen:not(.active),
+#profileScreen:not(.active),
+#leadersScreen:not(.active),
+#groupMembersScreen:not(.active),
+#groupGoalScreen:not(.active),
+#contributeScreen:not(.active),
+#chatScreen:not(.active),
+#aiScreen:not(.active),
+#dashboardScreen[hidden],
+#historyScreen[hidden],
+#announcementsScreen[hidden],
+#profileScreen[hidden],
+#leadersScreen[hidden],
+#groupMembersScreen[hidden],
+#groupGoalScreen[hidden],
+#contributeScreen[hidden],
+#chatScreen[hidden],
+#aiScreen[hidden] {
+    display: none !important;
+}
+
+#dashboardScreen.active,
+#historyScreen.active,
+#announcementsScreen.active,
+#profileScreen.active,
+#leadersScreen.active,
+#groupMembersScreen.active,
+#groupGoalScreen.active,
+#contributeScreen.active,
+#chatScreen.active,
+#aiScreen.active {
+    display: block !important;
+}
+
+/* RIHULA MEMBER NAVIGATION: only one screen can be visible. */
+#dashboardScreen:not(.active),
+#historyScreen:not(.active),
+#announcementsScreen:not(.active),
+#profileScreen:not(.active),
+#leadersScreen:not(.active),
+#groupMembersScreen:not(.active),
+#groupGoalScreen:not(.active),
+#contributeScreen:not(.active),
+#chatScreen:not(.active),
+#aiScreen:not(.active),
+#dashboardScreen[hidden],
+#historyScreen[hidden],
+#announcementsScreen[hidden],
+#profileScreen[hidden],
+#leadersScreen[hidden],
+#groupMembersScreen[hidden],
+#groupGoalScreen[hidden],
+#contributeScreen[hidden],
+#chatScreen[hidden],
+#aiScreen[hidden] {
+    display: none !important;
+}
+
+#dashboardScreen.active,
+#historyScreen.active,
+#announcementsScreen.active,
+#profileScreen.active,
+#leadersScreen.active,
+#groupMembersScreen.active,
+#groupGoalScreen.active,
+#contributeScreen.active,
+#chatScreen.active,
+#aiScreen.active {
+    display: block !important;
+}
+
+
+/* RIHULA language setting */
+.language-card { margin-top: 18px; }
+.language-help, .language-saved { color: #667085; margin: 6px 0 12px; }
+.language-select { width: 100%; padding: 13px 14px; border: 1px solid #d0d5dd; border-radius: 12px; background: #fff; font-size: 16px; }
+.language-card label { display:block; font-weight:600; margin: 10px 0 7px; }

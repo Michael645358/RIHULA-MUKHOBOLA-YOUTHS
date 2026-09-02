@@ -1,0 +1,26 @@
+RIHULA — LAMP + LOGO ANIMATION
+==============================
+
+FILE:
+lamp-animation.css
+
+HOW TO USE:
+Add this stylesheet AFTER the existing login styles in login.html:
+
+<link rel="stylesheet" href="lamp-animation.css?v=2">
+
+BEHAVIOUR:
+1. The hanging lamp swings gently left and right from the top of its cord.
+2. The swing is slow and smooth, not aggressive.
+3. The green bulb breathes brighter and dimmer.
+4. The bulb has a very subtle irregular flicker occasionally.
+5. The green light pool underneath the lamp expands and contracts.
+6. The RIHULA logo gently shakes/tilts by only a few pixels, then settles.
+7. The logo animation repeats continuously but has longer calm pauses so it does not look distracting.
+8. No JavaScript is required.
+9. Existing login functionality is not changed.
+10. If the device has Reduce Motion enabled, all these animations automatically stop.
+
+IMPORTANT:
+The current login.html already uses the classes .lamp, .lamp-light and .visual-logo,
+so this CSS is designed specifically for that RIHULA login page.

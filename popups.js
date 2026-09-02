@@ -28,11 +28,11 @@
         display:grid; grid-template-columns:46px minmax(0,1fr) 32px;
         gap:12px; align-items:start;
         padding:14px 14px 14px 12px;
-        background:rgba(255,255,255,.96);
-        border:1px solid rgba(15,23,42,.08);
+        background:rgba(15,27,21,.96);
+        border:1px solid rgba(255,255,255,.10);
         border-left:4px solid #16803a;
         border-radius:18px;
-        box-shadow:0 18px 55px rgba(15,23,42,.18);
+        box-shadow:0 24px 70px rgba(0,0,0,.38);
         backdrop-filter:blur(16px);
         -webkit-backdrop-filter:blur(16px);
         animation:rpIn .24s cubic-bezier(.2,.8,.2,1) both;
@@ -51,11 +51,11 @@
       .rp-warning .rp-icon{background:#fff6e5;color:#b66a00}
       .rp-info .rp-icon{background:#edf5ff;color:#1976d2}
       .rp-title{
-        margin:1px 0 4px; color:#172018;
+        margin:1px 0 4px; color:#eef7f1;
         font-size:14px; font-weight:800; letter-spacing:.1px;
       }
       .rp-message{
-        color:#5b665e; font-size:14px; line-height:1.5;
+        color:#b9c8bf; font-size:14px; line-height:1.5;
         white-space:pre-line; word-break:break-word;
       }
       .rp-close{
@@ -64,7 +64,7 @@
         font-size:22px;line-height:1;cursor:pointer;
         display:grid;place-items:center;
       }
-      .rp-close:hover{background:#f2f4f2;color:#172018}
+      .rp-close:hover{background:rgba(255,255,255,.08);color:#fff}
       .rp-close:focus-visible,.rp-btn:focus-visible{
         outline:3px solid rgba(25,118,210,.25);outline-offset:2px;
       }
@@ -77,8 +77,8 @@
       }
       .rp-modal{
         width:min(440px,100%);
-        background:rgba(255,255,255,.98);
-        border:1px solid rgba(255,255,255,.55);
+        background:linear-gradient(145deg,rgba(22,43,33,.98),rgba(9,24,17,.98));
+        border:1px solid rgba(123,190,151,.18);
         border-radius:24px;padding:25px;
         box-shadow:0 28px 80px rgba(0,0,0,.28);
         animation:rpModal .22s cubic-bezier(.2,.8,.2,1) both;
@@ -86,11 +86,12 @@
       .rp-modal-icon{
         width:54px;height:54px;border-radius:16px;
         display:grid;place-items:center;
-        background:#eaf7ef;color:#16803a;
+        background:rgba(22,128,58,.18);color:#78e0a2;
+        border:1px solid rgba(120,224,162,.14);
         font-size:24px;font-weight:800;margin-bottom:15px;
       }
-      .rp-modal h3{margin:0 0 8px;color:#172018;font-size:20px}
-      .rp-modal p{margin:0;color:#5d685f;font-size:15px;line-height:1.55;white-space:pre-line}
+      .rp-modal h3{margin:0 0 8px;color:#eef7f1;font-size:20px}
+      .rp-modal p{margin:0;color:#b9c8bf;font-size:15px;line-height:1.55;white-space:pre-line}
       .rp-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:23px}
       .rp-btn{
         border:0;border-radius:12px;padding:12px 18px;
@@ -98,9 +99,9 @@
         transition:transform .15s ease,opacity .15s ease;
       }
       .rp-btn:hover{transform:translateY(-1px)}
-      .rp-btn-cancel{background:#eef2ef;color:#344039}
-      .rp-btn-confirm{background:#16803a;color:#fff}
-      .rp-btn-danger{background:#dc3545;color:#fff}
+      .rp-btn-cancel{background:rgba(255,255,255,.08);color:#e3eee8;border:1px solid rgba(255,255,255,.08)}
+      .rp-btn-confirm{background:linear-gradient(135deg,#0b8f58,#086b43);color:#fff;box-shadow:0 8px 24px rgba(8,107,67,.25)}
+      .rp-btn-danger{background:linear-gradient(135deg,#d84a55,#b72834);color:#fff;box-shadow:0 8px 24px rgba(183,40,52,.20)}
       @keyframes rpIn{from{opacity:0;transform:translateY(-12px) scale(.98)}to{opacity:1;transform:none}}
       @keyframes rpFade{from{opacity:0}to{opacity:1}}
       @keyframes rpModal{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:none}}

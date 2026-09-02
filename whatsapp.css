@@ -1,0 +1,29 @@
+/* RIHULA WhatsApp Members - isolated styles */
+.wa-page{padding:28px;max-width:1180px;margin:0 auto}
+.wa-header{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:22px}
+.wa-kicker{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#087f3e}
+.wa-header h1{margin:5px 0 7px;font-size:28px;color:#14231a}
+.wa-header p{margin:0;color:#718078}
+.wa-back{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid #e1ebe5;border-radius:12px;background:#fff;color:#075e2b;text-decoration:none;font-weight:700}
+.wa-layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:20px}
+.wa-card{background:#fff;border:1px solid #e1ebe5;border-radius:22px;box-shadow:0 12px 35px rgba(20,55,35,.08);padding:20px}
+.wa-card h2{margin:0 0 6px;font-size:18px}.wa-card-sub{margin:0 0 18px;color:#718078;font-size:13px}
+.wa-label{display:block;font-size:13px;font-weight:800;margin:0 0 7px;color:#33433a}
+.wa-details-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 14px}.wa-input{width:100%;box-sizing:border-box;border:1px solid #dce7e0;border-radius:12px;padding:11px 12px;background:#fff;color:#24352b;font:inherit;outline:none}.wa-input:focus{border-color:#087f3e;box-shadow:0 0 0 3px rgba(8,127,62,.1)}
+.wa-textarea{width:100%;min-height:150px;resize:vertical;border:1px solid #dce7e0;border-radius:14px;padding:13px;font:inherit;outline:none}
+.wa-select{width:100%;border:1px solid #dce7e0;border-radius:14px;padding:12px 13px;background:#fff;color:#24352b;font:inherit;outline:none;margin:0 0 12px}.wa-select:focus{border-color:#087f3e;box-shadow:0 0 0 3px rgba(8,127,62,.1)}
+.wa-template-hint{margin:-7px 0 14px;color:#7a8780;font-size:11px}.wa-template-hint strong{color:#075e2b}
+.wa-textarea:focus{border-color:#087f3e;box-shadow:0 0 0 3px rgba(8,127,62,.1)}
+.wa-toolbar{display:flex;flex-wrap:wrap;gap:9px;margin:14px 0}
+.wa-btn{border:0;border-radius:12px;padding:11px 14px;font-weight:800;cursor:pointer;background:#eef6f0;color:#075e2b}
+.wa-btn.primary{background:#087f3e;color:#fff}.wa-btn.secondary{background:#f4f7f5;color:#33433a}.wa-btn:disabled{opacity:.5;cursor:not-allowed}
+.wa-count{margin-left:auto;align-self:center;color:#718078;font-size:12px;font-weight:700}
+.wa-list{display:flex;flex-direction:column;gap:9px;margin-top:12px}
+.wa-member{display:flex;align-items:center;gap:12px;border:1px solid #e1ebe5;border-radius:15px;padding:12px;background:#fbfdfb}
+.wa-member input{width:18px;height:18px;accent-color:#087f3e}.wa-member-main{min-width:0;flex:1}.wa-member-name{font-weight:800;color:#14231a}.wa-member-phone{font-size:12px;color:#718078;margin-top:2px}.wa-status{font-size:11px;font-weight:800;color:#718078}
+.wa-send{white-space:nowrap;border:0;border-radius:11px;padding:9px 12px;background:#eaf7ef;color:#075e2b;font-weight:800;cursor:pointer}
+.wa-side-stat{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}.wa-stat{border:1px solid #e1ebe5;border-radius:14px;padding:13px;background:#fbfdfb}.wa-stat strong{display:block;font-size:22px;color:#087f3e}.wa-stat span{font-size:11px;color:#718078}
+.wa-note{padding:14px;border-radius:14px;background:#f4f8f5;color:#526159;font-size:12px;line-height:1.55}.wa-note strong{color:#14231a}
+.wa-empty,.wa-error{padding:30px;text-align:center;color:#718078;border:1px dashed #d8e4dc;border-radius:15px}
+.wa-toast{position:fixed;right:20px;bottom:20px;z-index:3000;background:#14231a;color:#fff;padding:12px 15px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.15);display:none;max-width:330px;font-size:13px}
+@media(max-width:850px){.wa-details-grid{grid-template-columns:1fr}.wa-layout{grid-template-columns:1fr}.wa-header{flex-direction:column}.wa-page{padding:18px}.wa-count{margin-left:0}.wa-member{align-items:flex-start;flex-wrap:wrap}.wa-send{margin-left:auto}}

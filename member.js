@@ -1,22 +1,238 @@
+/* =========================================================
+   RIHULA GLOBAL LANGUAGE SYSTEM — English / Kiswahili
+   This translates the member interface, not just the Profile screen.
+   It is client-side only; no Supabase/database changes are needed.
+   ========================================================= */
+(function () {
+    const STORAGE_KEY = "rihulaLanguage";
+    const translations = {
+        "en": {},
+        "sw": {
+            "Members Dashboard":"Dashibodi ya Wanachama",
+            "Member account":"Akaunti ya mwanachama",
+            "Logout":"Ondoka",
+            "Today":"Leo",
+            "This week":"Wiki hii",
+            "This month":"Mwezi huu",
+            "My contributions":"Michango yangu",
+            "View Group Insights":"Angalia Taarifa za Kikundi",
+            "RIHULA Savings":"Akiba ya RIHULA",
+            "Group Goal":"Lengo la Kikundi",
+            "Do more with your RIHULA account":"Fanya zaidi kupitia akaunti yako ya RIHULA",
+            "Manage savings, members and association activities.":"Dhibiti akiba, wanachama na shughuli za chama.",
+            "Contribute":"Changia",
+            "My Savings history":"Historia ya Akiba Yangu",
+            "Members":"Wanachama",
+            "Leadership":"Uongozi",
+            "Announcements":"Matangazo",
+            "Community Chat":"Mazungumzo ya Jumuiya",
+            "My Account":"Akaunti Yangu",
+            "YOUR RIHULA SPACE":"NAFASI YAKO YA RIHULA",
+            "Save. Grow. Belong.":"Okoa. Kua. Shiriki.",
+            "Everything you need for your membership, savings and community life in one place.":"Kila unachohitaji kuhusu uanachama, akiba na maisha ya jumuiya katika sehemu moja.",
+            "Quick tools":"Zana za Haraka",
+            "Useful actions without leaving your dashboard.":"Vitendo muhimu bila kuondoka kwenye dashibodi yako.",
+            "Statement":"Taarifa ya Akiba",
+            "View my history":"Angalia historia yangu",
+            "Track progress":"Fuatilia maendeleo",
+            "Badges":"Beji",
+            "See achievements":"Angalia mafanikio",
+            "Updates":"Taarifa Mpya",
+            "Latest news":"Habari za hivi karibuni",
+            "My savings":"Akiba yangu",
+            "Active member":"Mwanachama hai",
+            "My goal":"Lengo langu",
+            "RIHULA Updates 🔥":"Taarifa za RIHULA 🔥",
+            "View all":"Angalia zote",
+            "Latest announcement":"Tangazo la hivi karibuni",
+            "Welcome to RIHULA Mukhobola":"Karibu RIHULA Mukhobola",
+            "Stay updated with contributions, meetings and association news.":"Endelea kupata taarifa kuhusu michango, mikutano na habari za chama.",
+            "My Achievements":"Mafanikio Yangu",
+            "Loading achievements...":"Inapakia mafanikio...",
+            "Keep saving to unlock achievements.":"Endelea kuweka akiba ili kufungua mafanikio.",
+            "Notifications":"Arifa",
+            "Back":"Rudi",
+            "My Contribution History":"Historia ya Michango Yangu",
+            "Latest Announcements":"Matangazo ya Hivi Karibuni",
+            "My Profile":"Wasifu Wangu",
+            "Upload Profile Photo":"Pakia Picha ya Wasifu",
+            "Tap to choose a photo. It uploads automatically.":"Gusa kuchagua picha. Itapakiwa kiotomatiki.",
+            "My Savings Goal":"Lengo Langu la Akiba",
+            "Enter Goal Amount":"Weka Kiasi cha Lengo",
+            "Save Goal":"Hifadhi Lengo",
+            "Leadership Team":"Timu ya Uongozi",
+            "Chairman":"Mwenyekiti",
+            "Secretary":"Katibu",
+            "Treasurer":"Mweka Hazina",
+            "Organiser":"Mratibu",
+            "Association Members":"Wanachama wa Chama",
+            "Search member...":"Tafuta mwanachama...",
+            "Contribution Days":"Siku za Michango",
+            "Make Contribution":"Fanya Mchango",
+            "Payment Instructions":"Maelekezo ya Malipo",
+            "Community Chat":"Mazungumzo ya Jumuiya",
+            "AI Assistant":"Msaidizi wa AI",
+            "Ask me anything...":"Niulize chochote...",
+            "Send":"Tuma",
+            "Home":"Nyumbani",
+            "Savings":"Akiba",
+            "Chat":"Mazungumzo",
+            "Profile":"Wasifu",
+            "Delete Message":"Futa Ujumbe",
+            "Copy Message":"Nakili Ujumbe",
+            "Cancel":"Ghairi",
+            "Close":"Funga",
+            "No transactions found.":"Hakuna miamala iliyopatikana.",
+            "No members found.":"Hakuna wanachama waliopatikana.",
+            "No announcements yet.":"Hakuna matangazo bado.",
+            "Loading...":"Inapakia...",
+            "Language":"Lugha",
+            "Choose your preferred language":"Chagua lugha unayopendelea",
+            "Your language preference is saved automatically.":"Chaguo lako la lugha linahifadhiwa kiotomatiki.",
+            "English":"Kiingereza",
+            "Kiswahili":"Kiswahili",
+            "Welcome back!":"Karibu tena!",
+            "Good Morning":"Habari za Asubuhi",
+            "Good Afternoon":"Habari za Mchana",
+            "Good Evening":"Habari za Jioni",
+            "Good Night":"Usiku Mwema"
+        }
+    };
+
+    // Text nodes do not have .dataset. Keep original text safely in a WeakMap.
+    // This prevents the language observer from throwing when it encounters
+    // normal text nodes inside the page.
+    const originalTextNodes = new WeakMap();
+
+    function canonicalText(node) {
+        if (!node || node.nodeType !== Node.TEXT_NODE) return "";
+
+        if (!originalTextNodes.has(node)) {
+            originalTextNodes.set(node, node.nodeValue || "");
+        }
+
+        return String(originalTextNodes.get(node) || "").trim();
+    }
+
+    function translateTextNode(node, lang) {
+        const original = canonicalText(node);
+        if (!original) return;
+        const translated = (translations[lang] && translations[lang][original]) || original;
+        if (node.nodeValue.trim() === original) {
+            node.nodeValue = node.nodeValue.replace(original, translated);
+        } else if (node.nodeValue.trim() === (translations.sw[original] || "__none__")) {
+            node.nodeValue = node.nodeValue.replace(node.nodeValue.trim(), translated);
+        }
+    }
+
+    function translateRoot(root, lang) {
+        if (!root) return;
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+        const nodes = [];
+        while (walker.nextNode()) {
+            const n = walker.currentNode;
+            if (n.parentElement && !["SCRIPT","STYLE","NOSCRIPT","OPTION"].includes(n.parentElement.tagName)) nodes.push(n);
+        }
+        nodes.forEach(n => translateTextNode(n, lang));
+
+        root.querySelectorAll && root.querySelectorAll("input[placeholder], textarea[placeholder], [aria-label]").forEach(el => {
+            ["placeholder","aria-label"].forEach(attr => {
+                if (!el.hasAttribute(attr)) return;
+                const original = el.dataset["rihulaOriginal"+attr.replace(/-([a-z])/g,(_,c)=>c.toUpperCase())] || el.getAttribute(attr);
+                const key = attr === "placeholder" ? "rihulaOriginalPlaceholder" : "rihulaOriginalAriaLabel";
+                if (!el.dataset[key]) el.dataset[key] = original;
+                const base = el.dataset[key];
+                el.setAttribute(attr, (translations[lang] && translations[lang][base]) || base);
+            });
+        });
+    }
+
+    function apply(lang) {
+        lang = lang === "sw" ? "sw" : "en";
+        localStorage.setItem(STORAGE_KEY, lang);
+        document.documentElement.lang = lang === "sw" ? "sw" : "en";
+        translateRoot(document.body, lang);
+        const select = document.getElementById("rihulaLanguageSelect");
+        if (select) select.value = lang;
+        const options = document.querySelectorAll("#rihulaLanguageSelect option");
+        options.forEach(option => {
+            if (option.value === "en") option.textContent = "🇬🇧 " + (lang === "sw" ? "Kiingereza" : "English");
+            if (option.value === "sw") option.textContent = "🇰🇪 Kiswahili";
+        });
+        window.dispatchEvent(new CustomEvent("rihulaLanguageChanged", { detail: { language: lang } }));
+    }
+
+    function init() {
+        const select = document.getElementById("rihulaLanguageSelect");
+        if (select && !select.dataset.bound) {
+            select.dataset.bound = "1";
+            select.addEventListener("change", () => apply(select.value));
+        }
+        apply(localStorage.getItem(STORAGE_KEY) || "en");
+        const observer = new MutationObserver(mutations => {
+            const lang = localStorage.getItem(STORAGE_KEY) || "en";
+            mutations.forEach(m => m.addedNodes.forEach(n => {
+                if (n.nodeType === Node.ELEMENT_NODE || n.nodeType === Node.TEXT_NODE) translateRoot(n.nodeType === Node.TEXT_NODE ? n.parentElement : n, lang);
+            }));
+        });
+        if (document.body) observer.observe(document.body, { childList:true, subtree:true });
+    }
+
+    window.RihulaLanguage = { apply, get: () => localStorage.getItem(STORAGE_KEY) || "en" };
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once:true });
+    else init();
+})();
+
 async function loadMemberData() {
-
-    let user =
-        JSON.parse(localStorage.getItem("loggedUser"));
-
-    if (!user) {
-        window.location.href = "login.html";
+    try {
+        await window.waitForRihulaDb();
+    } catch (error) {
+        console.warn("RIHULA: Database not ready yet.", error.message);
         return;
     }
 
+
+    const { data: authData, error: authError } = await db.auth.getUser();
+    if (authError || !authData || !authData.user) {
+        localStorage.removeItem("loggedUser");
+        window.location.replace("login.html");
+        return;
+    }
+
+    let user = null;
     const { data, error } = await db
         .from("members")
         .select("*")
-        .eq("phone", user.phone)
+        .eq("auth_id", authData.user.id)
         .single();
+
+    if (error || !data || data.is_member !== true) {
+        localStorage.removeItem("loggedUser");
+        await db.auth.signOut();
+        window.location.replace("login.html");
+        return;
+    }
 
     if (!error && data) {
 
         user = data;
+
+        // Link this authenticated RIHULA member to OneSignal using the
+        // same Supabase Auth UUID targeted by the push Edge Function.
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        if (typeof window.OneSignalDeferred.push === "function") {
+            window.OneSignalDeferred.push(async function (OneSignal) {
+                try {
+                    await OneSignal.login(String(authData.user.id));
+                    console.info("RIHULA: OneSignal member identity linked.");
+                } catch (oneSignalError) {
+                    console.warn(
+                        "RIHULA: OneSignal member identity could not be linked.",
+                        oneSignalError
+                    );
+                }
+            });
+        }
 
         localStorage.setItem(
             "loggedUser",
@@ -99,9 +315,10 @@ async function logout() {
         }
     }
 
+    try { await db.auth.signOut(); } catch (e) { console.warn("Supabase sign-out failed", e); }
     localStorage.removeItem("loggedUser");
-
-    window.location.href = "login.html";
+    localStorage.removeItem("rihulaMemberSession");
+    window.location.replace("login.html");
 }
 
 loadMemberData();
@@ -112,142 +329,134 @@ showDashboard();
 updateLastSeen();
 loadOnlineMembers();
 
+// Keep the personal savings card current after an admin records a contribution
+// or withdrawal while the member remains on the dashboard.
+setInterval(() => {
+    const currentUser = JSON.parse(localStorage.getItem("loggedUser") || "null");
+    if (currentUser && currentUser.phone) {
+        loadSavingsStats(currentUser.phone);
+    }
+}, 15000);
+
+window.addEventListener("pageshow", () => {
+    const currentUser = JSON.parse(localStorage.getItem("loggedUser") || "null");
+    if (currentUser && currentUser.phone) {
+        loadSavingsStats(currentUser.phone);
+    }
+});
+
+window.addEventListener("focus", () => {
+    const currentUser = JSON.parse(localStorage.getItem("loggedUser") || "null");
+    if (currentUser && currentUser.phone) {
+        loadSavingsStats(currentUser.phone);
+    }
+});
+
 setInterval(() => {
     updateLastSeen();
     loadOnlineMembers();
 }, 30000); // Refresh every 30 seconds
-function showHistory() {
-
-    document.getElementById("dashboardScreen")
-        .style.display = "none";
-
-    document.getElementById("historyScreen")
-        .style.display = "block";
-
-        document.getElementById("chatScreen")
-    .style.display = "none";
+function getRihulaMemberScreenIds() {
+    return [
+        "dashboardScreen",
+        "historyScreen",
+        "announcementsScreen",
+        "profileScreen",
+        "leadersScreen",
+        "groupMembersScreen",
+        "groupGoalScreen",
+        "contributeScreen",
+        "chatScreen",
+        "aiScreen"
+    ];
 }
+
+function hideAllMemberScreens() {
+    getRihulaMemberScreenIds().forEach(function (id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        el.classList.remove("active");
+        el.hidden = true;
+        el.style.display = "none";
+    });
+}
+
+function openMemberScreen(id, addHistory = true) {
+    const screen = document.getElementById(id);
+
+    if (!screen) {
+        console.warn("RIHULA: Member screen not found:", id);
+        return;
+    }
+
+    /* Always close every other member screen first. */
+    hideAllMemberScreens();
+
+    /* Open only the selected screen. */
+    screen.hidden = false;
+    screen.style.display = "block";
+    screen.classList.add("active");
+
+    /* Keep Android/browser Back navigation working. */
+    if (addHistory && !window.__rihulaHandlingPopState) {
+        const state = { rihulaScreenId: id };
+        if (!history.state || history.state.rihulaScreenId !== id) {
+            history.pushState(state, "", "#" + id);
+        }
+    }
+
+    window.scrollTo({ top: 0, behavior: "auto" });
+}
+
+function showHistory() {
+    openMemberScreen("historyScreen");
+}
+
 
 
 async function showProfile() {
+    openMemberScreen("profileScreen");
 
-    let user =
-    JSON.parse(localStorage.getItem("loggedUser"));
+    let user = JSON.parse(localStorage.getItem("loggedUser"));
+    if (!user) return;
 
-const { data } = await db
-    .from("members")
-    .select("*")
-    .eq("phone", user.phone)
-    .single();
-
-if (data) {
-    user = data;
-
-    localStorage.setItem(
-        "loggedUser",
-        JSON.stringify(user)
-    );
-}
-
-    document.getElementById("dashboardScreen")
-        .style.display = "none";
-
-    document.getElementById("profileScreen")
-        .style.display = "block";
-
-        document.getElementById("chatScreen")
-    .style.display = "none";
-
-    document.getElementById("passwordnName")
-    .innerText = user.name;
-
-    document.getElementById("profileScreenPhone")
-        .innerText = user.phone;
-
-    if (user.online) {
-
-    document.getElementById("profileScreenStatus")
-    .innerText = "🟢 Online";
-
-} else if (user.last_seen) {
-
-    const lastSeen = new Date(user.last_seen);
-    const now = new Date();
-
-    const diffMinutes =
-        Math.floor((now - lastSeen) / 60000);
-
-    if (diffMinutes < 1) {
-
-        document.getElementById("profileScreenStatus")
-        .innerText = "⏰ Last seen just now";
-
-    } else if (diffMinutes < 60) {
-
-        document.getElementById("profileScreenStatus")
-        .innerText =
-        `⏰ Last seen ${diffMinutes} min ago`;
-
-    } else if (diffMinutes < 1440) {
-
-        document.getElementById("profileScreenStatus")
-        .innerText =
-        `⏰ Last seen ${Math.floor(diffMinutes / 60)} hr ago`;
-
-    } else {
-
-        document.getElementById("profileScreenStatus")
-        .innerText =
-        `⏰ Last seen ${Math.floor(diffMinutes / 1440)} day(s) ago`;
+    const { data } = await db.from("members").select("*").eq("phone", user.phone).single();
+    if (data) {
+        user = data;
+        localStorage.setItem("loggedUser", JSON.stringify(user));
     }
 
-} else {
+    document.getElementById("passwordnName").innerText = user.name || "Member";
+    document.getElementById("profileScreenPhone").innerText = user.phone || "";
 
-    document.getElementById("profileScreenStatus")
-    .innerText = "⚫ Offline";
-
-}
-
-
-    if (user.photo_url) {
-        document.getElementById("profileScreenImage")
-            .src = user.photo_url;
+    const status = document.getElementById("profileScreenStatus");
+    if (status) {
+        if (user.online) status.innerText = "🟢 Online";
+        else if (user.last_seen) {
+            const diffMinutes = Math.floor((new Date() - new Date(user.last_seen)) / 60000);
+            if (diffMinutes < 1) status.innerText = "⏰ Last seen just now";
+            else if (diffMinutes < 60) status.innerText = `⏰ Last seen ${diffMinutes} min ago`;
+            else if (diffMinutes < 1440) status.innerText = `⏰ Last seen ${Math.floor(diffMinutes / 60)} hr ago`;
+            else status.innerText = `⏰ Last seen ${Math.floor(diffMinutes / 1440)} day(s) ago`;
+        } else status.innerText = "⚫ Offline";
     }
-    document.getElementById("goalInput").value =
-    user.goal || 5000;
+
+    const image = document.getElementById("profileScreenImage");
+    if (image && user.photo_url) image.src = user.photo_url;
+    const goal = document.getElementById("goalInput");
+    if (goal) goal.value = user.goal || 5000;
 }
+
 function showLeaders() {
-
-    document.getElementById("dashboardScreen")
-        .style.display = "none";
-
-    document.getElementById("historyScreen")
-        .style.display = "none";
-
-    document.getElementById("profileScreen")
-        .style.display = "none";
-
-    document.getElementById("leadersScreen")
-        .style.display = "block";
-
-        document.getElementById("chatScreen")
-    .style.display = "none";
+    openMemberScreen("leadersScreen");
 }
+
 function showGroupMembers() {
-
-    document.getElementById("dashboardScreen").style.display = "none";
-    document.getElementById("historyScreen").style.display = "none";
-    document.getElementById("profileScreen").style.display = "none";
-    document.getElementById("leadersScreen").style.display = "none";
-    document.getElementById("contributeScreen").style.display = "none";
-    document.getElementById("chatScreen").style.display = "none";
-    document.getElementById("announcementsScreen").style.display = "none";
-    document.getElementById("aiScreen").style.display = "none";
-
-    document.getElementById("groupMembersScreen").style.display = "block";
-    
+    openMemberScreen("groupMembersScreen");
     loadGroupMembers();
 }
+
 async function loadGroupMembers() {
 
     const { data, error } = await db
@@ -480,372 +689,335 @@ async function loadGroupGoal() {
     }
 }
 function showContribute() {
-
-    document.getElementById("dashboardScreen")
-        .style.display = "none";
-
-    document.getElementById("historyScreen")
-        .style.display = "none";
-
-    document.getElementById("profileScreen")
-        .style.display = "none";
-
-    document.getElementById("leadersScreen")
-        .style.display = "none";
-
-    document.getElementById("contributeScreen")
-        .style.display = "block";
-
-        document.getElementById("chatScreen")
-    .style.display = "none";
+    openMemberScreen("contributeScreen");
 }
 
+
 function showGroupGoal() {
+    openMemberScreen("groupGoalScreen");
+}
 
-    document.getElementById("dashboardScreen").style.display = "none";
-    document.getElementById("historyScreen").style.display = "none";
-    document.getElementById("announcementsScreen").style.display = "none";
-    document.getElementById("profileScreen").style.display = "none";
-    document.getElementById("leadersScreen").style.display = "none";
-    document.getElementById("contributeScreen").style.display = "none";
-    document.getElementById("chatScreen").style.display = "none";
-    document.getElementById("aiScreen").style.display = "none";
-    document.getElementById("groupMembersScreen").style.display = "none";
 
-    document.getElementById("groupGoalScreen").style.display = "block";
+function getContributionCollectionDate(value) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return null;
+
+    const day = date.getDay(); // Sun=0 ... Sat=6
+    let daysBack;
+
+    // Saturday collection covers Saturday, Sunday, Monday and Tuesday.
+    if (day === 6 || day === 0 || day === 1 || day === 2) {
+        daysBack = day === 6 ? 0 : day + 1;
+    } else {
+        // Wednesday collection covers Wednesday, Thursday and Friday.
+        daysBack = day - 3;
+    }
+
+    const collectionDate = new Date(date);
+    collectionDate.setDate(collectionDate.getDate() - daysBack);
+    collectionDate.setHours(0, 0, 0, 0);
+    return collectionDate;
+}
+
+function formatContributionCollectionDate(value) {
+    const date = getContributionCollectionDate(value);
+    return date
+        ? date.toLocaleDateString("en-GB", {
+            weekday: "long",
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        })
+        : "";
 }
 
 async function loadContributionHistory(phone) {
 
     try {
 
-        // Get contributions
         const { data: contributions, error: contributionError } =
             await db
                 .from("contributions")
                 .select("amount, created_at")
                 .eq("member_phone", String(phone));
 
-
         if (contributionError) {
-            console.error(
-                "Contribution history error:",
-                contributionError
-            );
+            console.error("Contribution history error:", contributionError);
             return;
         }
 
-
-        // Get withdrawals
         const { data: withdrawals, error: withdrawalError } =
             await db
                 .from("withdrawals")
                 .select("amount, reason, created_at")
                 .eq("member_phone", String(phone));
 
-
         if (withdrawalError) {
-            console.error(
-                "Withdrawal history error:",
-                withdrawalError
-            );
+            console.error("Withdrawal history error:", withdrawalError);
             return;
         }
 
-
         const history = [];
 
-
-        // Add contributions
+        // Keep every contribution amount, but display it under its official
+        // collection day (Sat for Sat-Tue, Wed for Wed-Fri).
         (contributions || []).forEach(item => {
-
             history.push({
                 type: "contribution",
                 amount: Number(item.amount || 0),
                 reason: "Contribution",
-                created_at: item.created_at
+                created_at: item.created_at,
+                collection_date: getContributionCollectionDate(item.created_at)
             });
-
         });
 
-
-        // Add withdrawals
         (withdrawals || []).forEach(item => {
-
             history.push({
                 type: "withdrawal",
                 amount: Number(item.amount || 0),
                 reason: item.reason || "Savings withdrawal",
-                created_at: item.created_at
+                created_at: item.created_at,
+                collection_date: null
             });
-
         });
 
+        history.sort((a, b) => {
+            const aDate = a.collection_date || new Date(a.created_at);
+            const bDate = b.collection_date || new Date(b.created_at);
+            return bDate - aDate;
+        });
 
-        // Newest first
-        history.sort(
-            (a, b) =>
-                new Date(b.created_at) -
-                new Date(a.created_at)
-        );
-
-
-        const container =
-            document.getElementById(
-                "historyOnlyContainer"
-            );
-
-
+        const container = document.getElementById("historyOnlyContainer");
         if (!container) return;
 
-
         if (history.length === 0) {
-
-            container.innerHTML =
-                "<p>No savings activity yet.</p>";
-
+            container.innerHTML = "<p>No savings activity yet.</p>";
             return;
         }
-
 
         container.innerHTML = "";
 
-
         history.forEach(item => {
-
-            const date =
-                item.created_at
-                    ? new Date(
-                        item.created_at
-                    ).toLocaleDateString()
-                    : "";
-
+            const date = item.type === "contribution"
+                ? formatContributionCollectionDate(item.created_at)
+                : (item.created_at
+                    ? new Date(item.created_at).toLocaleDateString("en-GB")
+                    : "");
 
             if (item.type === "withdrawal") {
-
                 container.innerHTML += `
-
                     <div class="card">
-
                         <h3 style="color:#c0392b;">
                             💸 -KSh ${item.amount.toLocaleString()}
                         </h3>
-
-                        <p>
-                            ${item.reason}
-                        </p>
-
-                        <small>
-                            ${date}
-                        </small>
-
+                        <p>${item.reason}</p>
+                        <small>${date}</small>
                     </div>
-
                 `;
-
             } else {
-
                 container.innerHTML += `
-
                     <div class="card">
-
                         <h3 style="color:#087f4f;">
                             💰 +KSh ${item.amount.toLocaleString()}
                         </h3>
-
-                        <p>
-                            Contribution
-                        </p>
-
-                        <small>
-                            ${date}
-                        </small>
-
+                        <p>Contribution • Collection day</p>
+                        <small>${date}</small>
                     </div>
-
                 `;
-
             }
-
         });
 
-
     } catch (error) {
-
-        console.error(
-            "Savings history error:",
-            error
-        );
-
+        console.error("Savings history error:", error);
     }
 }
 async function loadSavingsStats(phone) {
-    try {
-        phone = String(phone || "").trim();
-        if (!phone) return;
-
-        const { data: myData, error: myError } = await db
-            .from("contributions")
-            .select("amount, created_at")
-            .eq("member_phone", phone);
-        if (myError) throw myError;
-
-        const { data: withdrawalData, error: withdrawalError } = await db
-            .from("withdrawals")
-            .select("amount, created_at")
-            .eq("member_phone", phone);
-        if (withdrawalError) throw withdrawalError;
-
-        const myTotal = (myData || []).reduce((sum, row) => sum + Number(row.amount || 0), 0);
-        const totalWithdrawn = (withdrawalData || []).reduce((sum, row) => sum + Number(row.amount || 0), 0);
-        const currentSavings = Math.max(myTotal - totalWithdrawn, 0);
-
-        const mySavingsEl = document.getElementById("mySavings");
-        if (mySavingsEl) mySavingsEl.innerText = "KSh " + currentSavings.toLocaleString();
-
-        // Group balance must also reflect withdrawals.
-        const { data: groupData, error: groupError } = await db
-            .from("contributions")
-            .select("amount");
-        if (groupError) console.error("Group savings error:", groupError);
-
-        const { data: allWithdrawals, error: allWithdrawalsError } = await db
-            .from("withdrawals")
-            .select("amount");
-        if (allWithdrawalsError) console.error("Group withdrawals error:", allWithdrawalsError);
-
-        const groupContributed = (groupData || []).reduce((sum, row) => sum + Number(row.amount || 0), 0);
-        const groupWithdrawn = (allWithdrawals || []).reduce((sum, row) => sum + Number(row.amount || 0), 0);
-        const groupTotal = Math.max(groupContributed - groupWithdrawn, 0);
-
-        const groupSavingsEl = document.getElementById("groupSavings");
-        if (groupSavingsEl) groupSavingsEl.innerText = "KSh " + groupTotal.toLocaleString();
-
-        const user = JSON.parse(localStorage.getItem("loggedUser")) || {};
-        const goal = Number(user.goal || 5000);
-        const percent = goal > 0 ? Math.min(100, Math.round((currentSavings / goal) * 100)) : 0;
-
-        const goalAmountEl = document.getElementById("goalAmount");
-        if (goalAmountEl) goalAmountEl.innerText = `KSh ${currentSavings.toLocaleString()} / KSh ${goal.toLocaleString()}`;
-
-        const progressTextEl = document.getElementById("progressText");
-        if (progressTextEl) progressTextEl.innerText = percent + "%";
-
-        const progressFillEl = document.getElementById("progressFill");
-        if (progressFillEl) progressFillEl.style.width = percent + "%";
-    } catch (err) {
-        console.error("Savings Error:", err);
-        const mySavingsEl = document.getElementById("mySavings");
-        if (mySavingsEl) mySavingsEl.innerText = "KSh 0";
-    }
-}
-
-function toggleSinglePassword(inputId, button) {
-
-    const input =
-        document.getElementById(inputId);
-
-    if (!input) return;
-
-    if (input.type === "password") {
-
-        input.type = "text";
-
-        button.innerText = "🙈";
-
-    } else {
-
-        input.type = "password";
-
-        button.innerText = "👁";
-
-    }
-}
-async function loadCollectionPeriods() {
-
-    console.log("RIHULA: Loading group collection...");
 
     try {
+        const requestedPhone = String(phone || "").trim();
 
-        if (!window.db) {
-            console.error(
-                "RIHULA ERROR: db is not available."
+        if (!requestedPhone) return;
+
+        let contributions = 0;
+        let withdrawals = 0;
+        let usedRpc = false;
+
+        // Primary source: secure member finance function.
+        const { data, error } = await db.rpc(
+            "get_member_finance",
+            { p_phone: requestedPhone }
+        );
+
+        if (!error) {
+            const row = Array.isArray(data) ? (data[0] || {}) : (data || {});
+            contributions = Number(row.contributions || 0);
+            withdrawals = Number(row.withdrawals || 0);
+            usedRpc = true;
+        } else {
+            // Some deployments do not yet have the RPC in PostgREST's schema
+            // cache. That is a compatibility condition, not a member-facing
+            // JavaScript error, so use the personal-row fallback quietly.
+            const rpcMissing =
+                error &&
+                (error.code === "PGRST202" ||
+                 /schema cache/i.test(error.message || "") ||
+                 /get_member_finance/i.test(error.message || ""));
+
+            if (!rpcMissing) {
+                console.warn("get_member_finance failed; using personal row fallback:", error.message);
+            }
+
+            // Fallback for projects where the RPC has not yet been deployed.
+            const [cResult, wResult] = await Promise.all([
+                db.from("contributions")
+                    .select("member_phone, amount")
+                    .eq("member_phone", requestedPhone),
+                db.from("withdrawals")
+                    .select("member_phone, amount")
+                    .eq("member_phone", requestedPhone)
+            ]);
+
+            if (cResult.error) throw cResult.error;
+            if (wResult.error) throw wResult.error;
+
+            contributions = (cResult.data || []).reduce(
+                (sum, row) => sum + Number(row.amount || 0),
+                0
             );
 
-            updateCollectionDisplay(0, 0, 0);
+            withdrawals = (wResult.data || []).reduce(
+                (sum, row) => sum + Number(row.amount || 0),
+                0
+            );
+        }
+
+        const currentSavings = Math.max(
+            contributions - withdrawals,
+            0
+        );
+
+        const mySavings = document.getElementById("mySavings");
+
+        if (mySavings) {
+            mySavings.textContent =
+                "KSh " + currentSavings.toLocaleString("en-KE");
+        }
+
+        const user =
+            JSON.parse(localStorage.getItem("loggedUser") || "{}");
+
+        const goal = Number(user.goal || 5000);
+
+        const percent = goal > 0
+            ? Math.min(
+                100,
+                Math.round((currentSavings / goal) * 100)
+            )
+            : 0;
+
+        const goalAmount = document.getElementById("goalAmount");
+        if (goalAmount) {
+            goalAmount.textContent =
+                "KSh " + currentSavings.toLocaleString("en-KE") +
+                " / KSh " + goal.toLocaleString("en-KE");
+        }
+
+        const progressText = document.getElementById("progressText");
+        if (progressText) {
+            progressText.textContent = percent + "%";
+        }
+
+        const progressFill = document.getElementById("progressFill");
+        if (progressFill) {
+            progressFill.style.width = percent + "%";
+        }
+
+        console.log("RIHULA PERSONAL SAVINGS", {
+            phone: requestedPhone,
+            contributions,
+            withdrawals,
+            savings: currentSavings,
+            source: usedRpc ? "get_member_finance" : "fallback"
+        });
+
+    } catch (error) {
+        console.error("Personal savings update error:", error);
+        // Keep the last valid value on screen instead of replacing it with 0.
+    }
+}
+
+async function loadCollectionPeriods() {
+    try {
+        const user = JSON.parse(
+            localStorage.getItem("loggedUser") || "null"
+        );
+
+        const todayEl =
+            document.getElementById("memberCollectedToday");
+
+        const weekEl =
+            document.getElementById("memberCollectedWeek");
+
+        const monthEl =
+            document.getElementById("memberCollectedMonth");
+
+        // This card is PERSONAL only.
+        // Never use group totals here.
+        if (!user || !user.phone) {
+            if (todayEl) todayEl.textContent = "KSh 0";
+            if (weekEl) weekEl.textContent = "KSh 0";
+            if (monthEl) monthEl.textContent = "KSh 0";
             return;
         }
 
+        const normalizePhone = phone => {
+            let p = String(phone || "").replace(/\D/g, "");
 
+            if (p.startsWith("254")) {
+                p = "0" + p.substring(3);
+            }
+
+            return p;
+        };
+
+        const myPhone = normalizePhone(user.phone);
+
+        // Load contribution rows and keep ONLY this member's rows.
         const { data, error } = await db
             .from("contributions")
-            .select("amount, created_at");
-
+            .select("member_phone, amount, created_at");
 
         if (error) {
-
             console.error(
-                "RIHULA CONTRIBUTION ERROR:",
+                "Personal contribution periods error:",
                 error
             );
 
-            updateCollectionDisplay(0, 0, 0);
+            if (todayEl) todayEl.textContent = "KSh 0";
+            if (weekEl) weekEl.textContent = "KSh 0";
+            if (monthEl) monthEl.textContent = "KSh 0";
             return;
         }
 
-
-        console.log(
-            "RIHULA CONTRIBUTIONS:",
-            data
+        const mine = (data || []).filter(row =>
+            normalizePhone(row.member_phone) === myPhone
         );
-
-
-        let todayTotal = 0;
-        let weekTotal = 0;
-        let monthTotal = 0;
-
 
         const now = new Date();
 
-
-        /* ==========================
-           TODAY
-           ========================== */
-
-        const startOfToday = new Date(
+        const startOfDay = new Date(
             now.getFullYear(),
             now.getMonth(),
             now.getDate()
         );
 
-
-        /* ==========================
-           MONDAY / START OF WEEK
-           ========================== */
-
-        const day = now.getDay();
-
+        const startOfWeek = new Date(startOfDay);
         const daysFromMonday =
-            day === 0 ? 6 : day - 1;
-
-
-        const startOfWeek = new Date(now);
+            (startOfDay.getDay() + 6) % 7;
 
         startOfWeek.setDate(
-            now.getDate() - daysFromMonday
+            startOfWeek.getDate() - daysFromMonday
         );
-
-        startOfWeek.setHours(
-            0,
-            0,
-            0,
-            0
-        );
-
-
-        /* ==========================
-           START OF MONTH
-           ========================== */
 
         const startOfMonth = new Date(
             now.getFullYear(),
@@ -853,240 +1025,44 @@ async function loadCollectionPeriods() {
             1
         );
 
+        let today = 0;
+        let week = 0;
+        let month = 0;
 
-        /* ==========================
-           CALCULATE
-           ========================== */
+        mine.forEach(row => {
+            const date = new Date(row.created_at);
+            const amount = Number(row.amount || 0);
 
-        (data || []).forEach(row => {
+            if (Number.isNaN(date.getTime())) return;
 
-            const amount =
-                Number(row.amount) || 0;
-
-
-            if (!row.created_at) {
-                return;
-            }
-
-
-            const date =
-                new Date(row.created_at);
-
-
-            if (Number.isNaN(date.getTime())) {
-                return;
-            }
-
-
-            // TODAY
-
-            if (date >= startOfToday) {
-                todayTotal += amount;
-            }
-
-
-            // THIS WEEK
-
-            if (date >= startOfWeek) {
-                weekTotal += amount;
-            }
-
-
-            // THIS MONTH
-
-            if (date >= startOfMonth) {
-                monthTotal += amount;
-            }
-
+            if (date >= startOfDay) today += amount;
+            if (date >= startOfWeek) week += amount;
+            if (date >= startOfMonth) month += amount;
         });
 
+        const format = value =>
+            "KSh " + Number(value || 0).toLocaleString("en-KE");
 
-        console.log(
-            "RIHULA FINAL TOTALS:",
-            {
-                today: todayTotal,
-                week: weekTotal,
-                month: monthTotal
-            }
-        );
+        if (todayEl) todayEl.textContent = format(today);
+        if (weekEl) weekEl.textContent = format(week);
+        if (monthEl) monthEl.textContent = format(month);
 
-
-        updateCollectionDisplay(
-            todayTotal,
-            weekTotal,
-            monthTotal
-        );
-
+        console.log("RIHULA PERSONAL CONTRIBUTIONS", {
+            memberPhone: user.phone,
+            today,
+            week,
+            month,
+            records: mine.length
+        });
 
     } catch (error) {
-
         console.error(
-            "RIHULA COLLECTION CRASH:",
+            "Personal contribution periods failed:",
             error
         );
-
-        updateCollectionDisplay(
-            0,
-            0,
-            0
-        );
     }
 }
-function updateCollectionDisplay(today, week, month) {
 
-    const todayElement =
-        document.getElementById("collectedToday");
-
-    const weekElement =
-        document.getElementById("collectedWeek");
-
-    const monthElement =
-        document.getElementById("collectedMonth");
-
-
-    if (todayElement) {
-        todayElement.textContent =
-            "KSh " + Number(today || 0).toLocaleString();
-    }
-
-    if (weekElement) {
-        weekElement.textContent =
-            "KSh " + Number(week || 0).toLocaleString();
-    }
-
-    if (monthElement) {
-        monthElement.textContent =
-            "KSh " + Number(month || 0).toLocaleString();
-    }
-
-
-    console.log("RIHULA DISPLAY:", {
-        today: today,
-        week: week,
-        month: month
-    });
-}
-
-/* =========================================
-   RIHULA COLLECTION COUNTER
-   ========================================= */
-
-function animateCollectionValue(element, target) {
-
-    if (!element) {
-        console.warn(
-            "RIHULA: Collection element not found."
-        );
-        return;
-    }
-
-    target = Number(target) || 0;
-
-    const duration = 900;
-
-    const startTime = performance.now();
-
-    function animate(currentTime) {
-
-        const elapsed =
-            currentTime - startTime;
-
-        const progress =
-            Math.min(elapsed / duration, 1);
-
-        /*
-         * Smooth easing
-         */
-        const eased =
-            1 - Math.pow(1 - progress, 3);
-
-        const currentValue =
-            Math.round(target * eased);
-
-        element.innerText =
-            "KSh " +
-            currentValue.toLocaleString();
-
-        if (progress < 1) {
-
-            requestAnimationFrame(animate);
-
-        } else {
-
-            element.innerText =
-                "KSh " +
-                target.toLocaleString();
-        }
-    }
-
-    requestAnimationFrame(animate);
-}
-async function changePassword() {
-
-    const user = JSON.parse(localStorage.getItem("loggedUser"));
-
-    const currentPassword = document.getElementById("currentPassword").value.trim();
-    const newPassword = document.getElementById("newPassword").value.trim();
-    const confirmPassword = document.getElementById("confirmPassword").value.trim();
-
-    if (!currentPassword || !newPassword || !confirmPassword) {
-        showPopup("Please fill all fields.");
-        return;
-    }
-
-    if (newPassword !== confirmPassword) {
-        showPopup("New passwords do not match.");
-        return;
-    }
-
-    if (newPassword.length < 6) {
-        showPopup("Password must be at least 6 characters long.");
-        return;
-    }
-
-    const { data, error } = await db
-        .from("members")
-        .select("id,password")
-        .eq("phone", user.phone)
-        .single();
-
-    if (error || !data) {
-        showPopup("Member not found.");
-        return;
-    }
-
-    if (currentPassword !== data.password) {
-        showPopup("Current password is incorrect.");
-        return;
-    }
-
-    if (newPassword === data.password) {
-        showPopup("Your new password cannot be the same as your current password.");
-        return;
-    }
-
-    const { error: updateError } = await db
-        .from("members")
-        .update({
-            password: newPassword
-        })
-        .eq("id", data.id);
-
-    if (updateError) {
-        if (button) button.disabled = false;
-        showPopup(updateError.message, "error");
-        return;
-    }
-
-    user.password = newPassword;
-    localStorage.setItem("loggedUser", JSON.stringify(user));
-
-    document.getElementById("currentPassword").value = "";
-    document.getElementById("newPassword").value = "";
-    document.getElementById("confirmPassword").value = "";
-
-    showPopup("Password changed successfully.");
-}
 function togglePasswordVisibility() {
 
     const fields = [
@@ -1150,7 +1126,7 @@ document.getElementById("announcementsOnlyContainer");
 async function uploadProfilePhoto() {
 
     const user =
-        JSON.parse(localStorage.getItem("loggedUser"));
+        JSON.parse(localStorage.getItem("loggedUser") || "null");
 
     const input =
         document.getElementById("photoUpload");
@@ -1158,6 +1134,10 @@ async function uploadProfilePhoto() {
     const button =
         document.getElementById("uploadPhotoButton");
 
+
+    // =========================
+    // CHECK USER + FILE
+    // =========================
 
     if (
         !user ||
@@ -1177,7 +1157,7 @@ async function uploadProfilePhoto() {
 
 
     // =========================
-    // CHECK FILE TYPE
+    // CHECK IMAGE TYPE
     // =========================
 
     if (!file.type.startsWith("image/")) {
@@ -1193,8 +1173,7 @@ async function uploadProfilePhoto() {
 
 
     // =========================
-    // CHECK FILE SIZE
-    // Maximum 5MB
+    // MAXIMUM 5MB
     // =========================
 
     if (file.size > 5 * 1024 * 1024) {
@@ -1209,6 +1188,10 @@ async function uploadProfilePhoto() {
     }
 
 
+    // =========================
+    // BUTTON
+    // =========================
+
     if (button) {
 
         button.disabled = true;
@@ -1220,17 +1203,24 @@ async function uploadProfilePhoto() {
 
     try {
 
-        // =========================
-        // GET SUPABASE AUTH USER
-        // =========================
+        // =================================
+        // GET REAL SUPABASE AUTH USER
+        // =================================
 
         const {
-            data: { user: authUser },
+            data: {
+                user: authUser
+            },
             error: authError
         } = await db.auth.getUser();
 
 
         if (authError || !authUser) {
+
+            console.error(
+                "SUPABASE AUTH ERROR:",
+                authError
+            );
 
             showPopup(
                 "Your login session has expired. Please log in again.",
@@ -1241,36 +1231,112 @@ async function uploadProfilePhoto() {
         }
 
 
-        // =========================
-        // FILE EXTENSION
-        // =========================
+        // =================================
+        // GET RIHULA MEMBER ID
+        // =================================
 
-        const extension =
-            file.name
-                .split(".")
-                .pop()
-                .toLowerCase();
+        const memberId =
+            user.id ||
+            user.member_id ||
+            user.memberId;
 
 
-        // =========================
-        // UNIQUE FILE NAME
-        // =========================
+        if (!memberId) {
+
+            console.error(
+                "RIHULA MEMBER DATA:",
+                user
+            );
+
+            showPopup(
+                "Your member account could not be identified.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        // =================================
+        // SAFE FILE EXTENSION
+        // =================================
+
+        let extension = "jpg";
+
+        if (file.type === "image/png") {
+
+            extension = "png";
+
+        } else if (file.type === "image/webp") {
+
+            extension = "webp";
+
+        } else if (
+            file.type === "image/jpeg" ||
+            file.type === "image/jpg"
+        ) {
+
+            extension = "jpg";
+        }
+
+
+        // =================================
+        // UNIQUE STORAGE PATH
+        // =================================
 
         const fileName =
-            `${authUser.id}/${Date.now()}.${extension}`;
+            `members/${memberId}/${Date.now()}.${extension}`;
 
 
         console.log(
-            "Uploading profile photo:",
+            "================================="
+        );
+
+        console.log(
+            "RIHULA PROFILE PHOTO UPLOAD"
+        );
+
+        console.log(
+            "Supabase Auth ID:",
+            authUser.id
+        );
+
+        console.log(
+            "RIHULA Member ID:",
+            memberId
+        );
+
+        console.log(
+            "File:",
+            file.name
+        );
+
+        console.log(
+            "Type:",
+            file.type
+        );
+
+        console.log(
+            "Size:",
+            file.size
+        );
+
+        console.log(
+            "Storage path:",
             fileName
         );
 
+        console.log(
+            "================================="
+        );
 
-        // =========================
-        // UPLOAD
-        // =========================
+
+        // =================================
+        // UPLOAD TO SUPABASE STORAGE
+        // =================================
 
         const {
+            data: uploadData,
             error: uploadError
         } = await db.storage
             .from("profile-pictures")
@@ -1279,7 +1345,10 @@ async function uploadProfilePhoto() {
                 file,
                 {
                     cacheControl: "3600",
-                    upsert: false
+
+                    contentType: file.type,
+
+                    upsert: true
                 }
             );
 
@@ -1287,12 +1356,41 @@ async function uploadProfilePhoto() {
         if (uploadError) {
 
             console.error(
-                "PROFILE PHOTO UPLOAD ERROR:",
+                "================================="
+            );
+
+            console.error(
+                "PROFILE PHOTO STORAGE ERROR"
+            );
+
+            console.error(
+                "Message:",
+                uploadError.message
+            );
+
+            console.error(
+                "Error:",
+                uploadError.error
+            );
+
+            console.error(
+                "Status:",
+                uploadError.statusCode
+            );
+
+            console.error(
+                "Full error:",
                 uploadError
             );
 
+            console.error(
+                "================================="
+            );
+
+
             showPopup(
-                "Photo could not be uploaded. Check Storage permissions.",
+                uploadError.message ||
+                "Photo upload failed. Please check Supabase Storage permissions.",
                 "error"
             );
 
@@ -1300,9 +1398,15 @@ async function uploadProfilePhoto() {
         }
 
 
-        // =========================
+        console.log(
+            "PHOTO UPLOAD SUCCESS:",
+            uploadData
+        );
+
+
+        // =================================
         // GET PUBLIC URL
-        // =========================
+        // =================================
 
         const {
             data: publicData
@@ -1317,6 +1421,10 @@ async function uploadProfilePhoto() {
 
         if (!photoUrl) {
 
+            console.error(
+                "Could not create public URL."
+            );
+
             showPopup(
                 "Photo uploaded but URL could not be created.",
                 "error"
@@ -1326,9 +1434,15 @@ async function uploadProfilePhoto() {
         }
 
 
-        // =========================
-        // SAVE URL TO MEMBER
-        // =========================
+        console.log(
+            "PROFILE PHOTO URL:",
+            photoUrl
+        );
+
+
+        // =================================
+        // SAVE URL IN MEMBERS TABLE
+        // =================================
 
         const {
             error: updateError
@@ -1338,8 +1452,8 @@ async function uploadProfilePhoto() {
                 photo_url: photoUrl
             })
             .eq(
-                "auth_id",
-                authUser.id
+                "id",
+                memberId
             );
 
 
@@ -1359,11 +1473,12 @@ async function uploadProfilePhoto() {
         }
 
 
-        // =========================
+        // =================================
         // UPDATE LOCAL USER
-        // =========================
+        // =================================
 
-        user.photo_url = photoUrl;
+        user.photo_url =
+            photoUrl;
 
         localStorage.setItem(
             "loggedUser",
@@ -1371,9 +1486,9 @@ async function uploadProfilePhoto() {
         );
 
 
-        // =========================
+        // =================================
         // UPDATE PROFILE IMAGE
-        // =========================
+        // =================================
 
         const profileImage =
             document.getElementById(
@@ -1386,19 +1501,39 @@ async function uploadProfilePhoto() {
             );
 
 
+        // Cache-busting so the new photo
+        // appears immediately
+
+        const displayUrl =
+            photoUrl +
+            "?t=" +
+            Date.now();
+
+
         if (profileImage) {
-            profileImage.src = photoUrl;
+
+            profileImage.src =
+                displayUrl;
         }
 
 
         if (profileScreenImage) {
-            profileScreenImage.src = photoUrl;
+
+            profileScreenImage.src =
+                displayUrl;
         }
 
 
-        // Clear file input
+        // =================================
+        // CLEAR INPUT
+        // =================================
+
         input.value = "";
 
+
+        // =================================
+        // SUCCESS
+        // =================================
 
         showPopup(
             "Profile photo updated successfully!",
@@ -1409,11 +1544,26 @@ async function uploadProfilePhoto() {
     } catch (error) {
 
         console.error(
+            "================================="
+        );
+
+        console.error(
             "PROFILE PHOTO ERROR:",
             error
         );
 
+        console.error(
+            "Message:",
+            error?.message
+        );
+
+        console.error(
+            "================================="
+        );
+
+
         showPopup(
+            error?.message ||
             "Something went wrong while uploading the photo.",
             "error"
         );
@@ -1475,48 +1625,23 @@ function scrollToBottom() {
 }
 
 function showAI() {
-
-    document.getElementById("dashboardScreen").style.display = "none";
-    document.getElementById("historyScreen").style.display = "none";
-    document.getElementById("profileScreen").style.display = "none";
-    document.getElementById("leadersScreen").style.display = "none";
-    document.getElementById("contributeScreen").style.display = "none";
-    document.getElementById("chatScreen").style.display = "none";
-    document.getElementById("announcementsScreen").style.display = "none";
-
-    document.getElementById("aiScreen").style.display = "block";
+    openMemberScreen("aiScreen");
 }
+
 
 function showDashboard() {
-
-    document.getElementById("dashboardScreen").style.display = "block";
-    document.getElementById("historyScreen").style.display = "none";
-    document.getElementById("profileScreen").style.display = "none";
-    document.getElementById("leadersScreen").style.display = "none";
-    document.getElementById("contributeScreen").style.display = "none";
-    document.getElementById("chatScreen").style.display = "none";
-    document.getElementById("announcementsScreen").style.display = "none";
-    document.getElementById("aiScreen").style.display = "none";
-    document.getElementById("groupGoalScreen").style.display = "none";
-    document.getElementById("groupMembersScreen").style.display = "none";
-
-    
+    openMemberScreen("dashboardScreen", false);
 }
+
 function showChat() {
-
-    document.getElementById("historyScreen").style.display = "none";
-    document.getElementById("profileScreen").style.display = "none";
-    document.getElementById("leadersScreen").style.display = "none";
-    document.getElementById("contributeScreen").style.display = "none";
-
-    document.getElementById("chatScreen").style.display = "block";
-
-    document.getElementById("unreadBadge").style.display = "none";
-
+    openMemberScreen("chatScreen");
+    const unread = document.getElementById("unreadBadge");
+    if (unread) unread.style.display = "none";
     loadMessages();
     loadOnlineMembers();
     scrollToBottom();
 }
+
 async function sendMessage() {
 
     const user =
@@ -1777,44 +1902,14 @@ async function loadNotifications() {
     `;
 });
 }
-async function saveRecoveryInfo() {
-
-    const user =
-        JSON.parse(localStorage.getItem("loggedUser"));
-
-        console.log("Logged User:", user.name);
-
-    const answer1 =
-        document.getElementById("answer1").value;
-
-    const answer2 =
-        document.getElementById("answer2").value;
-
-    const idNumber =
-        document.getElementById("idNumber").value;
-
-    if (!answer1 || !answer2 || !idNumber) {
-        showPopup("Fill all fields");
-        return;
-    }
-
-    const { error } = await db
-        .from("members")
-        .update({
-            answer1: answer1,
-            answer2: answer2,
-            id_number: idNumber
-        })
-        .eq("phone", user.phone);
-
-    if (error) {
-        showPopup(error.message);
-        return;
-    }
-
-    showPopup("Recovery information saved successfully");
-}
 async function updateUnreadCount() {
+    try {
+        await window.waitForRihulaDb();
+    } catch (error) {
+        console.warn("RIHULA: Database not ready yet.", error.message);
+        return;
+    }
+
 
     const user =
         JSON.parse(localStorage.getItem("loggedUser"));
@@ -1839,6 +1934,13 @@ async function updateUnreadCount() {
         count > 0 ? "flex" : "none";
 }
 async function updateOnlineStatus(isOnline) {
+    try {
+        await window.waitForRihulaDb();
+    } catch (error) {
+        console.warn("RIHULA: Database not ready yet.", error.message);
+        return;
+    }
+
 
     const user =
         JSON.parse(localStorage.getItem("loggedUser"));
@@ -1854,6 +1956,13 @@ async function updateOnlineStatus(isOnline) {
         .eq("phone", user.phone);
 }
 async function loadOnlineMembers() {
+    try {
+        await window.waitForRihulaDb();
+    } catch (error) {
+        console.warn("RIHULA: Database not ready yet.", error.message);
+        return;
+    }
+
 
     const fiveMinutesAgo =
 new Date(Date.now() - 5 * 60 * 1000).toISOString();
@@ -1946,8 +2055,7 @@ async function loadOfflineMembers() {
 }
 async function deleteMessage(id) {
 
-    const confirmDelete =
-        confirm("Delete this message?");
+    const confirmDelete = await showConfirm("Delete this message? This cannot be undone.", { title: "Delete message", confirmText: "Delete", danger: true });
 
     if (!confirmDelete) return;
 
@@ -1964,6 +2072,13 @@ async function deleteMessage(id) {
     loadMessages();
 }
 async function updateLastSeen() {
+    try {
+        await window.waitForRihulaDb();
+    } catch (error) {
+        console.warn("RIHULA: Database not ready yet.", error.message);
+        return;
+    }
+
 
     const user = JSON.parse(localStorage.getItem("loggedUser"));
 
@@ -2102,49 +2217,25 @@ function cancelHold() {
 }
 
 async function showAnnouncements() {
-
-    document.getElementById("dashboardScreen").style.display = "none";
-    document.getElementById("historyScreen").style.display = "none";
-    document.getElementById("profileScreen").style.display = "none";
-    document.getElementById("leadersScreen").style.display = "none";
-    document.getElementById("contributeScreen").style.display = "none";
-    document.getElementById("chatScreen").style.display = "none";
-    document.getElementById("groupMembersScreen").style.display = "none";
-    document.getElementById("aiScreen").style.display = "none";
-
-    document.getElementById("announcementsScreen").style.display = "block";
-
+    openMemberScreen("announcementsScreen");
     const container = document.getElementById("announcementsOnlyContainer");
-
-    const { data, error } = await db
-        .from("announcements")
-        .select("*")
-        .order("created_at", { ascending: false });
-
+    if (!container) return;
+    const { data, error } = await db.from("announcements").select("*").order("created_at", { ascending: false });
     if (error) {
         container.innerHTML = "<p>Failed to load announcements.</p>";
         return;
     }
-
-    if (!data || data.length === 0) {
-        container.innerHTML = "<p>No announcements available.</p>";
-        return;
-    }
-
-    container.innerHTML = "";
-
-    data.forEach(item => {
-        container.innerHTML += `
-            <div class="card">
-                <h3>${item.title}</h3>
-                <p>${item.message}</p>
-            </div>
-        `;
-    });
+    container.innerHTML = (data || []).map(item => `
+        <article class="announcement">
+            <span class="date-badge">${new Date(item.created_at).toLocaleDateString()}</span>
+            <h3>${item.title || "Announcement"}</h3>
+            <p>${item.message || ""}</p>
+        </article>`).join("") || "<p>No announcements yet.</p>";
 }
+
 async function deleteNotification(id) {
 
-    const ok = confirm("Delete this notification?");
+    const ok = await showConfirm("Delete this notification? This cannot be undone.", { title: "Delete notification", confirmText: "Delete", danger: true, icon: "🗑" });
 
     if (!ok) return;
 
@@ -2246,231 +2337,293 @@ function copyMpesaNumber() {
 
     temp.remove();
 }
+function getMostRecentWeekdayDate(value, targetDay) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return null;
+
+    const diff = (date.getDay() - targetDay + 7) % 7;
+    date.setDate(date.getDate() - diff);
+    date.setHours(0, 0, 0, 0);
+    return date;
+}
+
 async function loadContributionDayTotals() {
-
     try {
-
         const { data, error } = await db
             .from("contributions")
             .select("amount, created_at");
 
         if (error) {
-            console.error(
-                "Contribution day error:",
-                error
-            );
+            console.error("Contribution day error:", error);
             return;
         }
 
         const contributions = data || [];
         const now = new Date();
 
-        /*
-         * Find the most recent completed Wednesday
-         */
-
-        const wednesday = new Date(now);
-        const currentDay = wednesday.getDay();
-
-        let daysSinceWednesday =
-            (currentDay - 3 + 7) % 7;
-
-        // If today is Wednesday, use today
-        wednesday.setDate(
-            wednesday.getDate() - daysSinceWednesday
-        );
-
-        wednesday.setHours(0, 0, 0, 0);
-
-        /*
-         * Find the most recent completed Saturday
-         */
-
-        const saturday = new Date(now);
-
-        let daysSinceSaturday =
-            (currentDay - 6 + 7) % 7;
-
-        saturday.setDate(
-            saturday.getDate() - daysSinceSaturday
-        );
-
-        saturday.setHours(0, 0, 0, 0);
-
-
-        /*
-         * End of each contribution day
-         */
-
-        const nextWednesday =
-            new Date(wednesday);
-
-        nextWednesday.setDate(
-            nextWednesday.getDate() + 1
-        );
-
-        const nextSaturday =
-            new Date(saturday);
-
-        nextSaturday.setDate(
-            nextSaturday.getDate() + 1
-        );
-
+        const currentSaturday = getMostRecentWeekdayDate(now, 6);
+        const currentWednesday = getMostRecentWeekdayDate(now, 3);
 
         let wednesdayTotal = 0;
         let saturdayTotal = 0;
 
-
         contributions.forEach(item => {
+            const collectionDate = getContributionCollectionDate(item.created_at);
+            if (!collectionDate) return;
 
-            if (!item.created_at) return;
+            const amount = Number(item.amount || 0);
 
-            const date =
-                new Date(item.created_at);
-
-            if (Number.isNaN(date.getTime())) {
-                return;
-            }
-
-            const amount =
-                Number(item.amount || 0);
-
-
-            // Wednesday
-            if (
-                date >= wednesday &&
-                date < nextWednesday
-            ) {
-                wednesdayTotal += amount;
-            }
-
-
-            // Saturday
-            if (
-                date >= saturday &&
-                date < nextSaturday
-            ) {
+            if (collectionDate.getTime() === currentSaturday.getTime()) {
                 saturdayTotal += amount;
             }
 
+            if (collectionDate.getTime() === currentWednesday.getTime()) {
+                wednesdayTotal += amount;
+            }
         });
 
-
-        const wednesdayEl =
-            document.getElementById(
-                "wednesdayAmount"
-            );
-
-        const saturdayEl =
-            document.getElementById(
-                "saturdayAmount"
-            );
-
+        const wednesdayEl = document.getElementById("wednesdayAmount");
+        const saturdayEl = document.getElementById("saturdayAmount");
 
         if (wednesdayEl) {
-            wednesdayEl.innerText =
-                "KSh " +
-                wednesdayTotal.toLocaleString() +
-                " collected";
+            wednesdayEl.innerText = "KSh " + wednesdayTotal.toLocaleString() + " collected";
         }
-
 
         if (saturdayEl) {
-            saturdayEl.innerText =
-                "KSh " +
-                saturdayTotal.toLocaleString() +
-                " collected";
+            saturdayEl.innerText = "KSh " + saturdayTotal.toLocaleString() + " collected";
         }
-
 
     } catch (error) {
-
-        console.error(
-            "Contribution day error:",
-            error
-        );
-
+        console.error("Contribution day error:", error);
     }
 }
-/* =========================================================
-   ANDROID / PHONE BACK BUTTON NAVIGATION
-   Keeps member dashboard screens in browser history
-   ========================================================= */
+/* Android/browser Back is handled by openMemberScreen/popstate above. */
 
-(function () {
+function createSimplePdf(lines, title) {
+    const pageWidth = 595;
+    const pageHeight = 842;
+    const margin = 40;
+    const lineHeight = 16;
+    const maxLines = 46;
 
-    const screens = [
-        "showDashboard",
-        "showHistory",
-        "showAnnouncements",
-        "showProfile",
-        "showLeaders",
-        "showGroupMembers",
-        "showGroupGoal",
-        "showContribute",
-        "showChat",
-        "showAI"
-    ];
-
-    const originalFunctions = {};
-    let handlingBack = false;
-
-    // Save the original functions
-    screens.forEach(name => {
-        if (typeof window[name] === "function") {
-            originalFunctions[name] = window[name];
+    const pages = [];
+    let page = [];
+    lines.forEach(line => {
+        if (page.length >= maxLines) {
+            pages.push(page);
+            page = [];
         }
+        page.push(String(line));
     });
+    if (page.length || !pages.length) pages.push(page);
 
-    // Replace each function with a history-aware version
-    screens.forEach(name => {
+    const objects = [];
+    const addObject = body => {
+        objects.push(body);
+        return objects.length;
+    };
 
-        if (!originalFunctions[name]) return;
+    const catalogId = addObject("");
+    const pagesId = addObject("");
+    const fontId = addObject("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>");
+    const pageIds = [];
 
-        window[name] = function () {
-
-            // Don't create another history entry when
-            // the Android/browser Back button is being handled
-            if (!handlingBack) {
-                history.pushState(
-                    { rihulaScreen: name },
-                    "",
-                    "#" + name
-                );
-            }
-
-            originalFunctions[name]();
-        };
-    });
-
-    // Initial dashboard state
-    if (!history.state || !history.state.rihulaScreen) {
-        history.replaceState(
-            { rihulaScreen: "showDashboard" },
-            "",
-            "#dashboard"
+    pages.forEach(pageLines => {
+        const commands = ["BT", "/F1 10 Tf", `${margin} ${pageHeight - 55} Td`];
+        pageLines.forEach((line, index) => {
+            const safe = line
+                .replace(/[^\x20-\x7E]/g, "?")
+                .replace(/\\/g, "\\\\")
+                .replace(/\(/g, "\\(")
+                .replace(/\)/g, "\\)");
+            if (index > 0) commands.push(`0 -${lineHeight} Td`);
+            commands.push(`(${safe}) Tj`);
+        });
+        commands.push("ET");
+        const stream = commands.join("\n");
+        const contentId = addObject(`<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`);
+        const pageId = addObject(
+            `<< /Type /Page /Parent ${pagesId} 0 R /MediaBox [0 0 ${pageWidth} ${pageHeight}] /Resources << /Font << /F1 ${fontId} 0 R >> >> /Contents ${contentId} 0 R >>`
         );
+        pageIds.push(pageId);
+    });
+
+    objects[catalogId - 1] = `<< /Type /Catalog /Pages ${pagesId} 0 R >>`;
+    objects[pagesId - 1] = `<< /Type /Pages /Kids [${pageIds.map(id => `${id} 0 R`).join(" ")}] /Count ${pageIds.length} >>`;
+
+    let pdf = "%PDF-1.4\n%RIHULA\n";
+    const offsets = [0];
+    objects.forEach((obj, i) => {
+        offsets.push(pdf.length);
+        pdf += `${i + 1} 0 obj\n${obj}\nendobj\n`;
+    });
+    const xref = pdf.length;
+    pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+    for (let i = 1; i < offsets.length; i++) {
+        pdf += `${String(offsets[i]).padStart(10, "0")} 00000 n \n`;
+    }
+    pdf += `trailer\n<< /Size ${objects.length + 1} /Root ${catalogId} 0 R >>\nstartxref\n${xref}\n%%EOF`;
+
+    return new Blob([pdf], { type: "application/pdf" });
+}
+
+function saveStatementPdf(blob, fileName, pwaWindow) {
+    const pdfUrl = URL.createObjectURL(blob);
+    const isPwa = window.matchMedia && window.matchMedia("(display-mode: standalone)").matches;
+
+    if (isPwa) {
+        if (pwaWindow && !pwaWindow.closed) {
+            pwaWindow.location.href = pdfUrl;
+        } else {
+            // Popup blockers can still stop a blank window. Navigate the PWA
+            // directly to the generated PDF as the final fallback.
+            window.location.href = pdfUrl;
+        }
+    } else {
+        const link = document.createElement("a");
+        link.href = pdfUrl;
+        link.download = fileName;
+        link.rel = "noopener";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
     }
 
-    // Android / browser Back button
-    window.addEventListener("popstate", function (event) {
+    setTimeout(() => URL.revokeObjectURL(pdfUrl), 60000);
+}
 
-        const state = event.state;
+async function downloadStatement() {
+    const button = document.querySelector('[onclick="downloadStatement()"]');
+    const isPwa = window.matchMedia && window.matchMedia("(display-mode: standalone)").matches;
+    let pwaWindow = null;
 
-        if (!state || !state.rihulaScreen) {
+    // Open a blank tab immediately while the click is still user-initiated.
+    // After the async Supabase reads finish, the generated PDF is loaded into it.
+    if (isPwa) {
+        pwaWindow = window.open("about:blank", "_blank");
+    }
+
+    try {
+        const user = JSON.parse(localStorage.getItem("loggedUser"));
+        if (!user || !user.phone) {
+            showPopup("Unable to identify member", "error");
             return;
         }
 
-        const screen = state.rihulaScreen;
-
-        if (originalFunctions[screen]) {
-
-            handlingBack = true;
-
-            originalFunctions[screen]();
-
-            handlingBack = false;
+        if (button) {
+            button.disabled = true;
+            button.innerText = "⏳ Preparing...";
         }
-    });
 
-})();
+        const { data: contributions, error: contributionError } = await db
+            .from("contributions")
+            .select("amount, created_at")
+            .eq("member_phone", String(user.phone))
+            .order("created_at", { ascending: true });
+
+        if (contributionError) throw contributionError;
+
+        const { data: withdrawals, error: withdrawalError } = await db
+            .from("withdrawals")
+            .select("amount, reason, created_at")
+            .eq("member_phone", String(user.phone))
+            .order("created_at", { ascending: true });
+
+        if (withdrawalError) throw withdrawalError;
+
+        // Group contributions by the official collection day:
+        // Sat/Sun/Mon/Tue -> Saturday; Wed/Thu/Fri -> Wednesday.
+        const contributionGroups = new Map();
+        (contributions || []).forEach(item => {
+            const collectionDate = getContributionCollectionDate(item.created_at);
+            if (!collectionDate) return;
+            const key = [collectionDate.getFullYear(), collectionDate.getMonth() + 1, collectionDate.getDate()].join("-");
+            const existing = contributionGroups.get(key) || {
+                type: "Contribution",
+                amount: 0,
+                date: collectionDate,
+                reason: "Savings contribution"
+            };
+            existing.amount += Number(item.amount || 0);
+            contributionGroups.set(key, existing);
+        });
+
+        const transactions = [
+            ...Array.from(contributionGroups.values()),
+            ...(withdrawals || []).map(item => ({
+                type: "Withdrawal",
+                amount: Number(item.amount || 0),
+                date: item.created_at,
+                reason: item.reason || "Savings withdrawal"
+            }))
+        ].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        let totalContributions = 0;
+        let totalWithdrawals = 0;
+        transactions.forEach(item => {
+            if (item.type === "Contribution") totalContributions += item.amount;
+            else totalWithdrawals += item.amount;
+        });
+
+        const balance = totalContributions - totalWithdrawals;
+
+        const lines = [
+            "RIHULA MUKHOBOLA ASSOCIATION",
+            "MEMBER SAVINGS STATEMENT",
+            "",
+            `Member: ${user.name || "Member"}`,
+            `Phone: ${user.phone}`,
+            `Generated: ${new Date().toLocaleDateString("en-GB")}`,
+            "",
+            "TRANSACTION HISTORY",
+            ""
+        ];
+
+        if (!transactions.length) {
+            lines.push("No transactions found.");
+        } else {
+            transactions.forEach(item => {
+                const date = item.type === "Contribution"
+                    ? formatContributionCollectionDate(item.date)
+                    : new Date(item.date).toLocaleDateString("en-GB");
+                const sign = item.type === "Contribution" ? "+" : "-";
+                lines.push(`${date} | ${item.type} | ${sign}KSh ${item.amount.toLocaleString()}`);
+            });
+        }
+
+        lines.push(
+            "",
+            "SUMMARY",
+            `Total Contributions: KSh ${totalContributions.toLocaleString()}`,
+            `Total Withdrawals: KSh ${totalWithdrawals.toLocaleString()}`,
+            `NET SAVINGS: KSh ${balance.toLocaleString()}`
+        );
+
+        const safeName = (user.name || "member")
+            .replace(/[^a-z0-9]/gi, "_")
+            .replace(/_+/g, "_")
+            .replace(/^_|_$/g, "")
+            .toLowerCase();
+        const fileName = `RIHULA_Statement_${safeName || "member"}.pdf`;
+
+        const pdfBlob = createSimplePdf(lines, "MEMBER SAVINGS STATEMENT");
+        saveStatementPdf(pdfBlob, fileName, pwaWindow);
+
+        showPopup(
+            window.matchMedia && window.matchMedia("(display-mode: standalone)").matches
+                ? "✅ Statement opened. Use the PDF viewer's Download button to save it."
+                : "✅ Statement download started.",
+            "success"
+        );
+
+    } catch (error) {
+        console.error("Statement download error:", error);
+        showPopup("❌ Unable to create statement. Please try again.", "error");
+    } finally {
+        if (button) {
+            button.disabled = false;
+            button.innerText = "📥 Download Statement";
+        }
+    }
+}
+

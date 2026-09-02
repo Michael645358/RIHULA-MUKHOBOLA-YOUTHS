@@ -1,0 +1,15 @@
+RIHULA CONTRIBUTION MEMBER SELECTOR - PENDING CONTRIBUTIONS REMOVED
+
+Changes in this version:
+- Removed the Pending Contribution Requests section from record-contribution.html.
+- Removed the old loadPendingContributions() code from script.js so the Record Contribution page no longer queries pending_contributions.
+- Record Contribution uses only approved members from members table.
+- Confirmation is shown before saving.
+- Member is verified again before the insert.
+- Unavailable/pending/rejected members cannot be selected or saved.
+
+Replace these files in your project:
+- record-contribution.html
+- record-contribution.js
+- script.js
+- admin.js

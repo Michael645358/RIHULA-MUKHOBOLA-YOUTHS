@@ -7,17 +7,8 @@
 
 <link rel="stylesheet" href="style.css">
 
-<script src="popups.js"></script>
+<script src="popups.js?v=20260826-0835"></script>
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-
-<script>
-window.OneSignalDeferred = window.OneSignalDeferred || [];
-OneSignalDeferred.push(async function(OneSignal) {
-  await OneSignal.init({
-    appId: "9785cd9a-e4e0-432b-b63c-8115c8a3b833"
-  });
-});
-</script>
 
 <link rel="stylesheet" href="rihula-modern-design.css">
 <link rel="stylesheet" href="rihula-v3-ui.css">
@@ -51,19 +42,19 @@ OneSignalDeferred.push(async function(OneSignal) {
     </div>
 
     <div class="collection-card">
-        <div class="collection-title">Total collected</div>
+        <div class="collection-title">My contributions</div>
         <div class="collection-periods">
             <div>
                 <span>Today</span>
-                <strong id="collectedToday">KSh 0</strong>
+                <strong id="memberCollectedToday">KSh 0</strong>
             </div>
             <div>
                 <span>This week</span>
-                <strong id="collectedWeek">KSh 0</strong>
+                <strong id="memberCollectedWeek">KSh 0</strong>
             </div>
             <div>
                 <span>This month</span>
-                <strong id="collectedMonth">KSh 0</strong>
+                <strong id="memberCollectedMonth">KSh 0</strong>
             </div>
         </div>
         <button class="insights-btn" onclick="showGroupGoal()">View Group Insights</button>
@@ -187,23 +178,49 @@ OneSignalDeferred.push(async function(OneSignal) {
             </div>
         </div>
     </section>
+<!-- My Achievements -->
+<section class="member-achievements-preview">
 
-    <!-- Achievements -->
-    <section class="achievements-section">
-        <div class="featured-heading">
-            <h2>🏆 Achievements</h2>
-            <button onclick="location.href='achievements.html'">View all</button>
+    <button
+        type="button"
+        class="member-achievements-card"
+        onclick="window.location.href='achievements.html'"
+        aria-label="Open My Achievements">
+
+        <div class="member-achievements-icon">
+            🏆
         </div>
-        <div id="achievementsContainer" class="achievements-list">
-            <div class="achievement-empty">Loading achievements...</div>
+
+        <div class="member-achievements-info">
+
+            <div class="member-achievements-heading">
+                <div>
+                    <h2>My Achievements</h2>
+                    <p id="dashboardAchievementProgress">
+                        Loading achievements...
+                    </p>
+                </div>
+
+                <span class="member-achievements-arrow">›</span>
+            </div>
+
+            <div
+                id="dashboardLatestAchievement"
+                class="member-achievements-latest">
+                Keep saving to unlock achievements.
+            </div>
+
         </div>
-    </section>
+
+    </button>
+
+</section>
 
     <!-- Rank -->
     <section class="rankings dashboard-rank">
         <div class="rank-card">
             <span class="summary-label">Contribution ranking</span>
-            <h3 id="myRank">#0</h3>
+            <h3 id="myRank">Loading...</h3>
             <p>Your current position among all members</p>
         </div>
     </section>
@@ -221,6 +238,10 @@ OneSignalDeferred.push(async function(OneSignal) {
 
     <button onclick="showDashboard()" class="btn">
         ← Back
+    </button>
+
+    <button onclick="downloadStatement()" class="btn">
+        📥 Download Statement
     </button>
 
     <h2>My Contribution History</h2>
@@ -284,82 +305,15 @@ OneSignalDeferred.push(async function(OneSignal) {
             </span>
         </p>
        <hr>
-<div class="profile-card password-card">
-
-    <h3>🔐 Change Password</h3>
-
-    <div class="password-input">
-        <input
-            type="password"
-            id="currentPassword"
-            placeholder="Current Password">
-
-        <button
-            type="button"
-            onclick="toggleSinglePassword('currentPassword', this)">
-            👁
-        </button>
-    </div>
-
-
-    <div class="password-input">
-        <input
-            type="password"
-            id="newPassword"
-            placeholder="New Password">
-
-        <button
-            type="button"
-            onclick="toggleSinglePassword('newPassword', this)">
-            👁
-        </button>
-    </div>
-
-
-    <div class="password-input">
-        <input
-            type="password"
-            id="confirmPassword"
-            placeholder="Confirm New Password">
-
-        <button
-            type="button"
-            onclick="toggleSinglePassword('confirmPassword', this)">
-            👁
-        </button>
-    </div>
-
-
-    <button
-        onclick="changePassword()"
-        class="btn password-update-btn">
-        🔐 Update Password
-    </button>
-
-</div>
 <hr>
-<div class="profile-card">
-<h3>Recovery Information</h3>
-
-<input
-    type="text"
-    id="answer1"
-    placeholder="Village where you were born">
-
-<input
-    type="text"
-    id="answer2"
-    placeholder="Primary School Attended">
-
-<input
-    type="text"
-    id="idNumber"
-    placeholder="National ID Number">
-
-<button onclick="saveRecoveryInfo()" class="btn">
-    Save Recovery Information
-</button>
-
+<div class="profile-card rihula-language-card" id="languageSettingsCard">
+<h3 data-i18n="Language">🌐 Language</h3>
+<p data-i18n="Choose your preferred language">Choose your preferred language</p>
+<select id="rihulaLanguageSelect" aria-label="Language">
+    <option value="en">🇬🇧 English</option>
+    <option value="sw">🇰🇪 Kiswahili</option>
+</select>
+<p class="upload-hint" data-i18n="Your language preference is saved automatically.">Your language preference is saved automatically.</p>
 </div>
 
 <hr>
@@ -752,10 +706,16 @@ OneSignalDeferred.push(async function(OneSignal) {
 </div>
 
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase.js"></script>
-<script src="ai.js"></script>
-<script src="member.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.3" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2.103.3/dist/umd/supabase.js'"></script>
+<script src="supabase.js?v=20260901-password-current"></script>
+<script src="rihula-db-guard.js?v=20260826-0835"></script>
+<script src="custom-auth.js?v=20260901-password-current"></script>
+<script src="finance.js?v=20260826-0835"></script>
+<script src="ai.js?v=20260826-0835"></script>
+
+
+<script src="member.js?v=20260901-language-v3"></script>
+<script src="v22.js?v=20260826-0835"></script>
 
 <div id="memberStatusPopup" class="member-status-popup">
 
@@ -773,9 +733,8 @@ OneSignalDeferred.push(async function(OneSignal) {
 
 </div>
 
-<script src="v22.js"></script>
-<script src="finance.js"></script>
-<script src="achievements.js"></script>
-<script src="rihula-v3-ui.js"></script>
+
+<script src="achievements.js?v=20260826-0835"></script>
+<script src="rihula-v3-ui.js?v=20260826-0835"></script>
 </body>
 </html>

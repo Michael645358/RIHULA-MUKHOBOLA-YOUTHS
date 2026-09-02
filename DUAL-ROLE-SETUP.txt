@@ -1,0 +1,8 @@
+RIHULA DUAL ROLE SETUP
+
+1. Run RIHULA-DUAL-ROLE-MIGRATION.sql in Supabase SQL Editor.
+2. A normal registration gets: is_member=true, is_admin=false.
+3. To make a person Admin + Member, edit their members row and set:
+   is_admin=true
+   is_member=true
+4. The same email/password can then log into both admin-login.html and login.html.

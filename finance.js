@@ -20,38 +20,93 @@
   }
 
   async function netFor(phone) {
+    if (typeof window.waitForRihulaDb === "function") {
+      await window.waitForRihulaDb();
+    }
+
     const requestedPhone = String(phone || "").trim();
     if (!requestedPhone) throw new Error("Member phone number is required.");
 
     const { data, error } = await db.rpc("get_member_finance", {
       p_phone: requestedPhone
     });
-    if (error) throw error;
 
-    const row = Array.isArray(data) ? (data[0] || {}) : (data || {});
+    if (!error) {
+      const row = Array.isArray(data) ? (data[0] || {}) : (data || {});
+      return {
+        contributions: money(row.contributions),
+        withdrawals: money(row.withdrawals),
+        net: money(row.net_savings)
+      };
+    }
+
+    // Compatibility fallback for databases where the finance RPC has not
+    // been deployed yet or still has the older parameter signature.
+    const [cResult, wResult] = await Promise.all([
+      db.from("contributions").select("amount").eq("member_phone", requestedPhone),
+      db.from("withdrawals").select("amount").eq("member_phone", requestedPhone)
+    ]);
+
+    if (cResult.error) throw cResult.error;
+    if (wResult.error) throw wResult.error;
+
+    const contributions = (cResult.data || []).reduce((sum, row) => sum + money(row.amount), 0);
+    const withdrawals = (wResult.data || []).reduce((sum, row) => sum + money(row.amount), 0);
+
     return {
-      contributions: money(row.contributions),
-      withdrawals: money(row.withdrawals),
-      net: money(row.net_savings)
+      contributions,
+      withdrawals,
+      net: Math.max(contributions - withdrawals, 0)
     };
   }
 
   async function groupNet() {
-    const { data, error } = await db.rpc("get_group_finance");
-    if (error) throw error;
+    if (typeof window.waitForRihulaDb === "function") {
+      await window.waitForRihulaDb();
+    }
 
-    const row = Array.isArray(data) ? (data[0] || {}) : (data || {});
+    const { data, error } = await db.rpc("get_group_finance");
+
+    if (!error) {
+      const row = Array.isArray(data) ? (data[0] || {}) : (data || {});
+      return {
+        contributions: money(row.contributions),
+        withdrawals: money(row.withdrawals),
+        net: money(row.net_savings)
+      };
+    }
+
+    // Safe compatibility fallback for an older/missing finance RPC.
+    const [cResult, wResult] = await Promise.all([
+      db.from("contributions").select("amount"),
+      db.from("withdrawals").select("amount")
+    ]);
+
+    if (cResult.error) throw cResult.error;
+    if (wResult.error) throw wResult.error;
+
+    const contributions = (cResult.data || []).reduce((sum, row) => sum + money(row.amount), 0);
+    const withdrawals = (wResult.data || []).reduce((sum, row) => sum + money(row.amount), 0);
+
     return {
-      contributions: money(row.contributions),
-      withdrawals: money(row.withdrawals),
-      net: money(row.net_savings)
+      contributions,
+      withdrawals,
+      net: Math.max(contributions - withdrawals, 0)
     };
   }
+
 
   window.rihulaFinance = { money, fmt, netFor, groupNet };
 
   // Member dashboard: member net savings and group net savings.
   window.loadSavingsStats = async function (phone) {
+    try {
+      await window.waitForRihulaDb();
+    } catch (error) {
+      console.warn("RIHULA: Finance database not ready.", error.message);
+      return;
+    }
+
     try {
       const result = await netFor(phone);
       const user = currentUser() || {};
@@ -74,32 +129,86 @@
       const groupSavings = document.getElementById("groupSavings");
       if (groupSavings) groupSavings.textContent = fmt(group.net);
     } catch (e) {
-      console.error("RIHULA finance: member savings failed", e);
+      console.warn("RIHULA finance: member savings fallback failed", e);
     }
   };
 
   // Member rank uses NET savings, including withdrawals.
   window.loadMyRank = async function () {
+    try {
+      await window.waitForRihulaDb();
+    } catch (error) {
+      console.warn("RIHULA: Finance database not ready.", error.message);
+      return;
+    }
+
     const user = currentUser();
-    const el = document.getElementById("myRank");
-    if (!user || !el) return;
+
+    const el =
+        document.getElementById("myRank");
+
+    if (!user || !user.phone || !el) {
+        return;
+    }
 
     try {
-      const { data, error } = await db.rpc("get_member_rank", {
-        p_phone: String(user.phone || "")
-      });
-      if (error) throw error;
-      const rank = money(data);
-      el.textContent = rank > 0 ? "#" + rank : "Unranked";
-      try {
-        const finance = await netFor(user.phone);
-        window.renderAchievements?.(finance.net, rank);
-      } catch (_) {}
-    } catch (e) {
-      console.error("RIHULA finance: member rank failed", e);
-      el.textContent = "Unranked";
+
+        const { data, error } =
+            await db.rpc(
+                "get_member_rank",
+                {
+                  p_phone: String(user.phone)
+                }
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        let rank = Number(data || 0);
+
+if (!Number.isFinite(rank) || rank < 1) {
+    rank = 0;
+}
+        el.textContent =
+            rank > 0
+                ? "#" + rank
+                : "Unranked";
+
+        // Load achievements using the same
+        // personal net savings value.
+        try {
+
+            const finance =
+                await window.rihulaFinance.netFor(
+                    user.phone
+                );
+
+            window.renderAchievements?.(
+                finance.net,
+                rank
+            );
+
+        } catch (achievementError) {
+
+            console.warn(
+                "Achievement refresh failed:",
+                achievementError
+            );
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "RIHULA rank error:",
+            error
+        );
+
+        el.textContent =
+            "Unranked";
     }
-  };
+};
 
   // Group goal uses NET savings, so withdrawals reduce progress immediately.
   window.loadGroupGoal = async function () {

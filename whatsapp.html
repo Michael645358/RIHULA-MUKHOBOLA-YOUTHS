@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WhatsApp Members | RIHULA Admin</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="admin-dashboard-3.css">
+<link rel="stylesheet" href="rihula-modern-design.css">
+<link rel="stylesheet" href="rihula-v3-ui.css">
+<link rel="stylesheet" href="whatsapp.css">
+</head>
+<body class="admin-dashboard-page">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'"></script>
+<script src="supabase.js?v=20260826-0835"></script>
+<script src="rihula-db-guard.js?v=20260826-0835"></script>
+<script src="admin-auth.js?v=20260827-activity"></script>
+<div class="admin-shell">
+<aside class="admin-sidebar">
+  <div class="admin-brand"><img src="images/logo.jpg" alt="RIHULA Logo"><div><strong>RIHULA</strong><span>Admin Panel</span></div></div>
+  <nav class="admin-nav">
+    <a href="admin.html" class="admin-nav-item"><span>📊</span><span>Dashboard</span></a>
+    <a href="all-members.html" class="admin-nav-item"><span>👥</span><span>All Members</span></a>
+    <a href="pending-members.html" class="admin-nav-item"><span>⏳</span><span>Pending Members</span></a>
+    <a href="online-members.html" class="admin-nav-item"><span>🟢</span><span>Online Members</span></a>
+    <a href="record-contribution.html" class="admin-nav-item"><span>💰</span><span>Record Contribution</span></a>
+    <a href="leaderboard.html" class="admin-nav-item"><span>🏆</span><span>Leaderboard</span></a>
+    <a href="edit-member.html" class="admin-nav-item"><span>✏️</span><span>Edit Member</span></a>
+    <a href="edit-contribution.html" class="admin-nav-item"><span>📝</span><span>Edit Contribution</span></a>
+    <a href="announcements.html" class="admin-nav-item"><span>📢</span><span>Announcements</span></a>
+    <a href="gallery-admin.html" class="admin-nav-item"><span>🖼️</span><span>Gallery</span></a>
+    <a href="admin-activities.html" class="admin-nav-item"><span>🕘</span><span>Admin Activities</span></a>
+    <a href="whatsapp.html" class="admin-nav-item active"><span>📱</span><span>WhatsApp Members</span></a>
+  </nav>
+  <div class="admin-sidebar-bottom">
+    <a href="login.html" class="admin-nav-item admin-member-login-link"><span>👤</span><span>Login as Member</span></a>
+    <a href="index.html" class="admin-nav-item"><span>🌐</span><span>View Website</span></a>
+    <button type="button" class="admin-nav-item admin-logout" onclick="RihulaAdmin.adminLogout()"><span>🚪</span><span>Logout</span></button>
+  </div>
+</aside>
+<main class="admin-main">
+  <div class="wa-page">
+    <header class="wa-header">
+      <div><span class="wa-kicker">Member communication</span><h1>📱 WhatsApp Members</h1><p>Prepare a WhatsApp message and open member chats directly from RIHULA.</p></div>
+      <a class="wa-back" href="admin.html">← Dashboard</a>
+    </header>
+    <div class="wa-layout">
+      <section class="wa-card">
+        <h2>Compose message</h2><p class="wa-card-sub">Choose a RIHULA template, fill in the details, and the message will be prepared automatically.</p>
+        <label class="wa-label" for="waTemplate">Message template</label>
+        <select id="waTemplate" class="wa-select">
+          <option value="custom">✍️ Custom message</option>
+          <option value="contribution">💰 Contribution confirmation</option>
+          <option value="approval">✅ Member approval</option>
+          <option value="reminder">⏰ Contribution reminder</option>
+          <option value="meeting">📅 Meeting reminder</option>
+          <option value="announcement">📢 Official announcement</option>
+          <option value="payment">💳 Payment instructions</option>
+          <option value="welcome">👋 Welcome to RIHULA</option>
+        </select>
+        <div class="wa-details-grid">
+          <div><label class="wa-label" for="waAmount">Contribution amount (optional)</label><input id="waAmount" class="wa-input" type="text" placeholder="e.g. KSh 500"></div>
+          <div><label class="wa-label" for="waDate">Date / due date (optional)</label><input id="waDate" class="wa-input" type="text" placeholder="e.g. Saturday, 5 September 2026"></div>
+          <div><label class="wa-label" for="waPayment">Payment instructions (optional)</label><input id="waPayment" class="wa-input" type="text" placeholder="e.g. M-Pesa Paybill/Till: XXXXX"></div>
+          <div><label class="wa-label" for="waMeeting">Meeting details (optional)</label><input id="waMeeting" class="wa-input" type="text" placeholder="e.g. 2:00 PM at Mukhobola Centre"></div>
+        </div>
+        <label class="wa-label" for="waMessage">Message</label>
+        <textarea id="waMessage" class="wa-textarea" placeholder="Hello {name}, this is RIHULA Mukhobola Association...">Hello {name}, this is RIHULA Mukhobola Association.</textarea>
+        <p class="wa-template-hint">Placeholders: <strong>{name}</strong> name · <strong>{amount}</strong> amount · <strong>{date}</strong> date · <strong>{payment}</strong> payment instructions · <strong>{meeting}</strong> meeting details.</p>
+        <div class="wa-toolbar">
+          <button class="wa-btn" type="button" id="waRefresh">↻ Refresh Members</button>
+          <button class="wa-btn secondary" type="button" id="waClear">Clear Selection</button>
+          <span class="wa-count" id="waSelectedCount">0 selected</span>
+        </div>
+        <div class="wa-toolbar">
+          <label class="wa-btn secondary"><input id="waSelectAll" type="checkbox" style="margin-right:7px"> Select all valid numbers</label>
+          <button class="wa-btn primary" type="button" id="waOpenSelected" disabled>💬 Open Selected</button>
+          <button class="wa-btn" type="button" id="waOpenNext">💬 Open Next</button>
+        </div>
+        <div id="waMembersList" class="wa-list"><div class="wa-empty">Loading members...</div></div>
+      </section>
+      <aside class="wa-card">
+        <h2>WhatsApp guide</h2><p class="wa-card-sub">Free Click-to-Chat method</p>
+        <div class="wa-side-stat"><div class="wa-stat"><strong id="waTotalCount">0</strong><span>Members loaded</span></div><div class="wa-stat"><strong>🇰🇪</strong><span>Kenya numbers</span></div></div>
+        <div class="wa-note"><strong>How it works</strong><br><br>RIHULA reads the member's phone number, converts Kenyan <strong>01</strong> and <strong>07</strong> numbers to international format, and opens the WhatsApp chat with your message prepared.<br><br><strong>Important:</strong> WhatsApp still requires the admin to tap <strong>Send</strong>. This free method does not silently send messages in the background.</div>
+      </aside>
+    </div>
+  </div>
+</main>
+</div>
+<div id="waToast" class="wa-toast"></div>
+<script src="whatsapp.js?v=20260831-2"></script>
+</body>
+</html>

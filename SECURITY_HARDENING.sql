@@ -19,8 +19,8 @@ as $$
     select 1
     from public.members m
     where m.auth_id = auth.uid()
-      and lower(coalesce(m.role, '')) in
-          ('admin','administrator','chairperson','secretary','treasurer')
+      and (m.is_admin = true or lower(coalesce(m.role, '')) in
+          ('admin','administrator','chairperson','secretary','treasurer'))
       and lower(coalesce(m.status, 'active')) not in
           ('blocked','suspended','inactive')
   );
