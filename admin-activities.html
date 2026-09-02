@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIHULA Admin Activities</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="admin-dashboard-3.css">
+<link rel="stylesheet" href="rihula-modern-design.css">
+<link rel="stylesheet" href="rihula-v3-ui.css">
+<link rel="stylesheet" href="admin-activities.css">
+<script src="popups.js?v=20260902-1"></script>
+</head>
+<body class="admin-activities-page">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'"></script>
+<script src="supabase.js?v=20260826-0835"></script>
+<script src="rihula-db-guard.js?v=20260826-0835"></script>
+<script src="admin-auth.js?v=20260827-activity"></script>
+<script>
+(async function(){
+  document.documentElement.style.visibility='hidden';
+  try{
+    const admin=await RihulaAdmin.requireAdmin();
+    if(!admin) return;
+    document.documentElement.style.visibility='visible';
+    loadActivities();
+  }catch(e){ console.error('Admin Activities security error:',e); }
+})();
+
+let activityRows=[];
+
+function esc(v){
+  return String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
+}
+
+function render(rows){
+  const list=document.getElementById('activityList');
+  const total=document.getElementById('totalActivities');
+  const admins=document.getElementById('activeAdmins');
+  const last=document.getElementById('lastActivity');
+  total.textContent=rows.length.toLocaleString();
+  const unique=new Set(rows.map(r=>r.admin_email||r.admin_name||'Admin').filter(Boolean));
+  admins.textContent=unique.size.toLocaleString();
+  last.textContent=rows[0]?.created_at ? new Date(rows[0].created_at).toLocaleString([], {dateStyle:'short',timeStyle:'short'}) : '—';
+  updateSelectionUI();
+  if(!rows.length){
+    list.innerHTML='<div class="admin-activity-empty"><div style="font-size:34px">📋</div><strong>No admin activities found</strong><span>Recorded administrator actions will appear here.</span></div>';
+    return;
+  }
+  list.innerHTML=rows.map(r=>{
+    const when=r.created_at?new Date(r.created_at).toLocaleString():'Unknown time';
+    const admin=r.admin_name||'Admin';
+    const email=r.admin_email||'';
+    const entity=r.entity_type||'';
+    const checked=selectedActivityIds.has(String(r.id))?' checked':'';
+    return `<article class="admin-activity-row${checked?' is-selected':''}" data-id="${esc(r.id)}">
+      <label class="admin-activity-check" aria-label="Select activity">
+        <input type="checkbox" class="activity-checkbox" value="${esc(r.id)}"${checked} onchange="toggleActivitySelection(this)">
+        <span></span>
+      </label>
+      <span class="admin-activity-dot"></span>
+      <div class="admin-activity-main">
+        <div class="admin-activity-action">${esc(r.action||'Admin activity')}</div>
+        <div class="admin-activity-meta">
+          <span>👤 ${esc(admin)}</span>
+          ${email?`<span>✉️ ${esc(email)}</span>`:''}
+          <span>🕒 ${esc(when)}</span>
+          ${entity?`<span class="admin-activity-badge">${esc(entity)}</span>`:''}
+        </div>
+      </div>
+    </article>`;
+  }).join('');
+  updateSelectionUI();
+}
+
+const selectedActivityIds = new Set();
+
+function getVisibleRows(){
+  const q=document.getElementById('activitySearch').value.trim().toLowerCase();
+  if(!q) return activityRows;
+  return activityRows.filter(r=>[r.admin_name,r.admin_email,r.action,r.entity_type,r.entity_id].some(v=>String(v||'').toLowerCase().includes(q)));
+}
+
+function updateSelectionUI(){
+  const visible=getVisibleRows();
+  const visibleIds=visible.map(r=>String(r.id));
+  const selectedVisible=visibleIds.filter(id=>selectedActivityIds.has(id));
+  const count=selectedActivityIds.size;
+  const visibleAll=visibleIds.length>0 && selectedVisible.length===visibleIds.length;
+  const selectAll=document.getElementById('selectAllActivities');
+  const countLabel=document.getElementById('selectedCount');
+  const copyBtn=document.getElementById('copyActivitiesBtn');
+  const deleteBtn=document.getElementById('deleteActivitiesBtn');
+  if(selectAll){
+    selectAll.checked=visibleAll;
+    selectAll.indeterminate=selectedVisible.length>0 && !visibleAll;
+  }
+  if(countLabel) countLabel.textContent=count ? `${count} selected` : 'Nothing selected';
+  if(copyBtn) copyBtn.disabled=count===0;
+  if(deleteBtn) deleteBtn.disabled=count===0;
+}
+
+function toggleSelectAllActivities(checked){
+  getVisibleRows().forEach(r=>{
+    const id=String(r.id);
+    if(checked) selectedActivityIds.add(id);
+    else selectedActivityIds.delete(id);
+  });
+  render(getVisibleRows());
+}
+
+function toggleActivitySelection(input){
+  const id=String(input.value);
+  if(input.checked) selectedActivityIds.add(id);
+  else selectedActivityIds.delete(id);
+  const row=input.closest('.admin-activity-row');
+  if(row) row.classList.toggle('is-selected',input.checked);
+  updateSelectionUI();
+}
+
+function clearActivitySelection(){
+  selectedActivityIds.clear();
+  render(getVisibleRows());
+}
+
+function selectedRows(){
+  return activityRows.filter(r=>selectedActivityIds.has(String(r.id)));
+}
+
+async function copySelectedActivities(){
+  const rows=selectedRows();
+  if(!rows.length) return;
+  const text=rows.map(r=>{
+    const when=r.created_at?new Date(r.created_at).toLocaleString():'Unknown time';
+    return `${r.action||'Admin activity'} | Admin: ${r.admin_name||'Admin'}${r.admin_email?' | Email: '+r.admin_email:''} | ${when}${r.entity_type?' | '+r.entity_type:''}${r.entity_id?' | ID: '+r.entity_id:''}`;
+  }).join('\n');
+  try{
+    await navigator.clipboard.writeText(text);
+    showActivityNotice(`${rows.length} activity record${rows.length===1?'':'s'} copied.`,'success');
+  }catch(e){
+    const area=document.createElement('textarea');
+    area.value=text; area.style.position='fixed'; area.style.opacity='0';
+    document.body.appendChild(area); area.select();
+    try{document.execCommand('copy'); showActivityNotice(`${rows.length} activity record${rows.length===1?'':'s'} copied.`,'success');}
+    catch(err){showActivityNotice('Copy failed. Please try again.','error');}
+    area.remove();
+  }
+}
+
+async function deleteSelectedActivities(){
+  const rows=selectedRows();
+  if(!rows.length) return;
+  const confirmed=await showConfirm(`Delete ${rows.length} selected admin activit${rows.length===1?'y':'ies'} permanently?\n\nThis cannot be undone.`, { title: "Delete admin activity", confirmText: "Delete", danger: true });
+  if(!confirmed) return;
+  const ids=rows.map(r=>r.id);
+  const btn=document.getElementById('deleteActivitiesBtn');
+  if(btn) btn.disabled=true;
+  try{
+    const {error}=await db.from('activity_logs').delete().in('id',ids);
+    if(error) throw error;
+    const idSet=new Set(ids.map(String));
+    activityRows=activityRows.filter(r=>!idSet.has(String(r.id)));
+    selectedActivityIds.clear();
+    render(getVisibleRows());
+    showActivityNotice(`${rows.length} activity record${rows.length===1?'':'s'} deleted.`,'success');
+  }catch(error){
+    console.error('Delete admin activities error:',error);
+    showActivityNotice(`Delete failed: ${error.message||'Database permission denied.'}`,'error');
+    updateSelectionUI();
+  }
+}
+
+function showActivityNotice(message,type){
+  const notice=document.getElementById('activityNotice');
+  if(!notice) return;
+  notice.textContent=message;
+  notice.className=`admin-activity-notice ${type||''}`;
+  clearTimeout(showActivityNotice.timer);
+  showActivityNotice.timer=setTimeout(()=>{notice.className='admin-activity-notice';notice.textContent='';},3500);
+}
+
+async function loadActivities(){
+  const list=document.getElementById('activityList');
+  list.innerHTML='<div class="admin-activity-empty"><div style="font-size:34px">⏳</div><strong>Loading admin activities...</strong><span>Please wait.</span></div>';
+  try{
+    const rows=[]; const size=1000; let from=0;
+    while(true){
+      const {data,error}=await db.from('activity_logs')
+        .select('id,admin_name,admin_email,action,entity_type,entity_id,created_at')
+        .order('created_at',{ascending:false}).range(from,from+size-1);
+      if(error) throw error;
+      rows.push(...(data||[]));
+      if(!data || data.length<size) break;
+      from+=size;
+    }
+    activityRows=rows;
+    document.getElementById('activitySearch').value='';
+    render(rows);
+  }catch(error){
+    console.error('Admin activities load error:',error);
+    document.getElementById('activityList').innerHTML=`<div class="admin-activity-error">Could not load the admin activity log.<br><small>${esc(error.message||'Database error')}</small></div>`;
+  }
+}
+
+function filterActivities(){
+  render(getVisibleRows());
+}
+</script>
+
+<div class="admin-activities-wrap">
+  <header class="admin-activities-top">
+    <div class="admin-activities-title">
+      <div class="admin-activities-kicker">RIHULA · SECURITY & AUDIT</div>
+      <h1>Admin Activities</h1>
+      <p class="admin-activities-sub">Complete record of actions performed by RIHULA administrators.</p>
+    </div>
+    <a class="admin-activities-back" href="admin.html">← Back to Dashboard</a>
+  </header>
+
+  <section class="admin-activities-card">
+    <div class="admin-activities-summary">
+      <div class="admin-activities-stat"><span>Total Activities</span><strong id="totalActivities">—</strong></div>
+      <div class="admin-activities-stat"><span>Administrators</span><strong id="activeAdmins">—</strong></div>
+      <div class="admin-activities-stat"><span>Latest Activity</span><strong id="lastActivity" style="font-size:14px">—</strong></div>
+    </div>
+    <div class="admin-activities-toolbar">
+      <input id="activitySearch" class="admin-activities-search" type="search" placeholder="🔎 Search by admin, action or record..." oninput="filterActivities()" autocomplete="off">
+      <button class="admin-activities-refresh" type="button" onclick="loadActivities()">↻ Refresh</button>
+    </div>
+    <div class="admin-activities-actions">
+      <label class="admin-select-all">
+        <input id="selectAllActivities" type="checkbox" onchange="toggleSelectAllActivities(this.checked)">
+        <span>Select all visible</span>
+      </label>
+      <span id="selectedCount" class="admin-selected-count">Nothing selected</span>
+      <div class="admin-activity-action-buttons">
+        <button id="copyActivitiesBtn" class="admin-action-btn admin-copy-btn" type="button" onclick="copySelectedActivities()" disabled>📋 Copy</button>
+        <button class="admin-action-btn admin-clear-btn" type="button" onclick="clearActivitySelection()">Clear</button>
+        <button id="deleteActivitiesBtn" class="admin-action-btn admin-delete-btn" type="button" onclick="deleteSelectedActivities()" disabled>🗑️ Delete</button>
+      </div>
+    </div>
+    <div id="activityNotice" class="admin-activity-notice" role="status" aria-live="polite"></div>
+    <div id="activityList" class="admin-activities-list"></div>
+  </section>
+</div>
+</body>
+</html>

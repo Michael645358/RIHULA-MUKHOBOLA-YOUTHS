@@ -1,0 +1,7 @@
+RIHULA animation fix.
+
+The previous animation did not work because its CSS targeted .login-visual, .lamp, .lamp-light and .visual-logo, but the actual login page used none of those classes.
+
+This version adds the animation elements directly to login.html and loads rihula-lamp-logo-animation.css.
+
+Behaviour: the lamp swings from the cord, the bulb pulses, the green light cone breathes, and the RIHULA logo subtly shakes/tilts. Existing login JavaScript and Supabase code are preserved.

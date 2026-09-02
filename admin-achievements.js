@@ -27,6 +27,13 @@ function adminAchievementEscapeHtml(value) {
 }
 
 async function loadAdminAchievementsPage() {
+    try {
+        await window.waitForRihulaDb();
+    } catch (error) {
+        console.warn("RIHULA: Admin achievements database not ready.", error.message);
+        return;
+    }
+
     const container = document.getElementById("adminAchievementsContainer");
     if (!container) return;
 

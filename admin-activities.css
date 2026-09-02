@@ -1,0 +1,67 @@
+/* RIHULA ADMIN ACTIVITIES - clean standalone audit page */
+.admin-activities-page{
+  margin:0; min-height:100vh; background:#f3f8f5; color:#16372a;
+  font-family:Arial,Helvetica,sans-serif;
+}
+.admin-activities-wrap{max-width:1100px;margin:0 auto;padding:24px;}
+.admin-activities-top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;}
+.admin-activities-title h1{margin:3px 0 0;font-size:28px;line-height:1.15;}
+.admin-activities-kicker{font-size:11px;font-weight:900;letter-spacing:1.2px;color:#19744f;text-transform:uppercase;}
+.admin-activities-sub{margin:7px 0 0;color:#66766e;font-size:13px;}
+.admin-activities-back{display:inline-flex;align-items:center;gap:7px;padding:11px 15px;border-radius:12px;background:#087f50;color:#fff;text-decoration:none;font-weight:800;box-shadow:0 7px 18px rgba(8,127,80,.16);}
+.admin-activities-card{background:#fff;border:1px solid #dce9e1;border-radius:20px;box-shadow:0 12px 30px rgba(21,61,43,.07);overflow:hidden;}
+.admin-activities-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:18px;border-bottom:1px solid #e6eee9;}
+.admin-activities-stat{padding:15px;border:1px solid #e0ebe5;border-radius:14px;background:#f8fbf9;}
+.admin-activities-stat span{display:block;color:#718078;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;}
+.admin-activities-stat strong{display:block;margin-top:5px;font-size:22px;color:#126c49;}
+.admin-activities-toolbar{display:flex;gap:10px;padding:16px 18px;border-bottom:1px solid #e6eee9;}
+.admin-activities-search{flex:1;min-width:0;padding:13px 14px;border:1px solid #d7e4dd;border-radius:12px;font-size:14px;outline:none;background:#fff;}
+.admin-activities-search:focus{border-color:#159564;box-shadow:0 0 0 3px rgba(21,149,100,.1);}
+.admin-activities-refresh{border:0;border-radius:12px;padding:0 17px;background:#0b8554;color:#fff;font-weight:800;cursor:pointer;}
+.admin-activities-list{padding:8px 18px 20px;}
+.admin-activity-row{display:flex;gap:12px;padding:15px 4px;border-bottom:1px solid #edf2ef;}
+.admin-activity-dot{width:10px;height:10px;flex:0 0 10px;margin-top:6px;border-radius:50%;background:#11955f;box-shadow:0 0 0 4px #e5f6ee;}
+.admin-activity-main{min-width:0;flex:1;}
+.admin-activity-action{font-size:14px;font-weight:900;color:#173a2b;line-height:1.4;}
+.admin-activity-meta{display:flex;flex-wrap:wrap;gap:7px 14px;margin-top:6px;color:#6b7a73;font-size:12px;}
+.admin-activity-meta span{display:inline-flex;align-items:center;gap:4px;}
+.admin-activity-badge{display:inline-flex;align-items:center;padding:3px 7px;border-radius:999px;background:#edf8f2;color:#19734f;font-size:10px;font-weight:900;}
+.admin-activity-empty{text-align:center;padding:55px 20px;color:#728079;}
+.admin-activity-empty strong{display:block;color:#315647;margin-bottom:5px;}
+.admin-activity-error{margin:18px;padding:14px;border-radius:12px;background:#fff4f3;border:1px solid #f0d1ce;color:#a23b32;font-size:13px;}
+@media(max-width:700px){
+ .admin-activities-wrap{padding:14px;}
+ .admin-activities-top{align-items:flex-start;flex-direction:column;}
+ .admin-activities-title h1{font-size:24px;}
+ .admin-activities-summary{grid-template-columns:1fr;}
+ .admin-activities-toolbar{flex-direction:column;}
+ .admin-activities-refresh{min-height:44px;}
+}
+
+/* Selection and bulk actions */
+.admin-activities-actions{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:12px 18px;border-bottom:1px solid #e6eee9;background:#fbfdfc;
+}
+.admin-select-all{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:800;color:#315647;cursor:pointer;user-select:none;}
+.admin-select-all input,.admin-activity-check input{width:18px;height:18px;accent-color:#0b8554;cursor:pointer;}
+.admin-selected-count{font-size:12px;color:#728079;font-weight:700;margin-right:auto;}
+.admin-activity-action-buttons{display:flex;gap:8px;flex-wrap:wrap;}
+.admin-action-btn{border:1px solid #d8e6df;border-radius:10px;padding:9px 13px;background:#fff;color:#315647;font-weight:800;font-size:12px;cursor:pointer;transition:.15s ease;}
+.admin-action-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 12px rgba(21,61,43,.08);}
+.admin-action-btn:disabled{opacity:.45;cursor:not-allowed;}
+.admin-copy-btn{border-color:#b9dfcd;color:#0b7650;}
+.admin-delete-btn{border-color:#efc9c5;color:#a23b32;}
+.admin-clear-btn{color:#66766e;}
+.admin-activity-check{display:flex;align-items:flex-start;padding-top:2px;cursor:pointer;flex:0 0 20px;}
+.admin-activity-row.is-selected{background:#f1faf5;border-radius:10px;margin:2px 0;padding-left:8px;padding-right:8px;}
+.admin-activity-notice{min-height:0;margin:0 18px;color:transparent;font-size:12px;font-weight:800;transition:.15s ease;}
+.admin-activity-notice.success,.admin-activity-notice.error{padding:10px 12px;margin-top:10px;border-radius:10px;}
+.admin-activity-notice.success{background:#edf8f2;color:#19734f;border:1px solid #cce9da;}
+.admin-activity-notice.error{background:#fff4f3;color:#a23b32;border:1px solid #f0d1ce;}
+@media(max-width:700px){
+  .admin-activities-actions{align-items:flex-start;}
+  .admin-selected-count{width:100%;order:3;}
+  .admin-activity-action-buttons{width:100%;}
+  .admin-action-btn{flex:1;min-height:42px;}
+}

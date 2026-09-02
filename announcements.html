@@ -93,76 +93,137 @@ onclick="location.href='admin.html'">
 
 </section>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase.js"></script>
-<script src="admin-auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'"></script>
+<script src="supabase.js?v=20260826-0835"></script>
+<script src="rihula-db-guard.js?v=20260826-0835"></script>
+<script src="admin-auth.js?v=20260827-activity"></script>
 <script>
 document.documentElement.style.visibility = "hidden";
 document.addEventListener("DOMContentLoaded", async () => { const admin = await RihulaAdmin.requireAdmin(); if (admin) document.documentElement.style.visibility = "visible"; });
 </script>
-<script src="script.js"></script>
+<script src="script.js?v=20260826-0835"></script>
 
 <script>
-window.onload = function () {
-    loadAnnouncementsList();
-};
+// Announcements page functions.
+// Kept local to this page so it does not depend on the Admin Dashboard script.
+async function loadAnnouncementsList() {
+    const container = document.getElementById("announcementsList");
+    if (!container) return;
 
-async function sendNotification() {
+    container.innerHTML = "<p>Loading announcements...</p>";
 
-    const title = document
-        .getElementById("notificationTitle")
-        .value.trim();
-
-    const message = document
-        .getElementById("notificationMessage")
-        .value.trim();
-
-    if (!title || !message) {
-        showPopup("Please enter both a title and a message.", "warning");
-        return;
-    }
-
-    // Save notification
-    const { error } = await db
-        .from("notifications")
-        .insert([{
-            title,
-            message
-        }]);
+    const { data, error } = await db
+        .from("announcements")
+        .select("*")
+        .order("created_at", { ascending: false });
 
     if (error) {
-        showPopup(error.message, "error");
+        console.error("RIHULA announcements load failed:", error);
+        container.innerHTML = "<p>Could not load announcements.</p>";
+        if (typeof showPopup === "function") showPopup(error.message, "error");
         return;
     }
 
-    // Send OneSignal Push
-    const res = await fetch(
-        "https://qkjymwjhtzidbwpeusoh.supabase.co/functions/v1/smart-function",
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                title,
-                message
-            })
-        }
-    );
+    if (!data || data.length === 0) {
+        container.innerHTML = "<p>No announcements yet.</p>";
+        return;
+    }
 
-    const result = await res.json();
-    console.log(result);
-
-    document.getElementById("notificationTitle").value = "";
-    document.getElementById("notificationMessage").value = "";
-
-    showPopup("Notification sent to all subscribed members.", "success", "Notification sent");
+    container.innerHTML = data.map(item => `
+        <div class="card announcement">
+            <h3>${escapeAnnouncementText(item.title)}</h3>
+            <p>${escapeAnnouncementText(item.message)}</p>
+            <small>${item.created_at ? new Date(item.created_at).toLocaleString() : ""}</small>
+            <br><br>
+            <button class="btn" type="button" onclick="deleteAnnouncement(${Number(item.id)})">Delete</button>
+        </div>
+    `).join("");
 }
+
+function escapeAnnouncementText(value) {
+    const div = document.createElement("div");
+    div.textContent = value ?? "";
+    return div.innerHTML;
+}
+
+async function addAnnouncement() {
+    const titleEl = document.getElementById("announcementTitle");
+    const messageEl = document.getElementById("announcementMessage");
+    const title = titleEl?.value.trim() || "";
+    const message = messageEl?.value.trim() || "";
+
+    if (!title || !message) {
+        if (typeof showPopup === "function") showPopup("Please enter both a title and a message.", "warning");
+        return;
+    }
+
+    const { error } = await db.from("announcements").insert([{ title, message }]);
+
+    if (error) {
+        console.error("RIHULA announcement save failed:", error);
+        if (typeof showPopup === "function") showPopup(error.message, "error");
+        return;
+    }
+
+    titleEl.value = "";
+    messageEl.value = "";
+    if (typeof showPopup === "function") showPopup("Announcement posted successfully.", "success");
+    await loadAnnouncementsList();
+}
+
+async function deleteAnnouncement(id) {
+    const confirmed = await showConfirm("Delete this announcement? This action cannot be undone.", {
+        title: "Delete announcement",
+        confirmText: "Delete",
+        danger: true
+    });
+
+    if (!confirmed) return;
+
+    const { error } = await db.from("announcements").delete().eq("id", id);
+
+    if (error) {
+        console.error("RIHULA announcement delete failed:", error);
+        if (typeof showPopup === "function") showPopup(error.message, "error");
+        return;
+    }
+
+    if (typeof showPopup === "function") showPopup("Announcement deleted successfully.", "success");
+    await loadAnnouncementsList();
+}
+
+async function sendNotification() {
+    const titleEl = document.getElementById("notificationTitle");
+    const messageEl = document.getElementById("notificationMessage");
+    const title = titleEl?.value.trim() || "";
+    const message = messageEl?.value.trim() || "";
+
+    if (!title || !message) {
+        if (typeof showPopup === "function") showPopup("Please enter both a title and a message.", "warning");
+        return;
+    }
+
+    const { error } = await db.from("notifications").insert([{ title, message }]);
+
+    if (error) {
+        console.error("RIHULA notification save failed:", error);
+        if (typeof showPopup === "function") showPopup(error.message, "error");
+        return;
+    }
+
+    titleEl.value = "";
+    messageEl.value = "";
+    if (typeof showPopup === "function") showPopup("Notification saved successfully.", "success");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    loadAnnouncementsList();
+});
 </script>
 
-<script src="popups.js"></script>
+<script src="popups.js?v=20260826-0835"></script>
 
-<script src="v22.js"></script>
-<script src="rihula-v3-ui.js"></script>
+<script src="v22.js?v=20260826-0835"></script>
+<script src="rihula-v3-ui.js?v=20260826-0835"></script>
 </body>
 </html>

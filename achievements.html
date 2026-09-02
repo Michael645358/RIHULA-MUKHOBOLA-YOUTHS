@@ -1,40 +1,841 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RIHULA Achievements</title>
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="rihula-modern-design.css">
-<link rel="stylesheet" href="achievements.css">
-<link rel="stylesheet" href="rihula-v3-ui.css">
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>RIHULA Achievements</title>
+
+    <!-- Main site CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Achievement-only CSS -->
+    <link rel="stylesheet" href="achievements.css">
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'"></script>
+
 </head>
-<body class="achievements-page">
-<header class="achievements-hero">
-  <div><span>RIHULA MUKHOBOLA ASSOCIATION</span><h1>🏆 Achievements</h1><p>Milestones earned from your current net savings and leaderboard position.</p></div>
-  <button class="btn" onclick="history.back()">← Back</button>
-</header>
-<main class="achievements-wrap">
-  <section class="achievement-summary"><span>Current Net Savings</span><strong id="achievementNet">KSh 0</strong><span>Current Rank</span><strong id="achievementRank">—</strong></section>
-  <section id="achievementsContainer" class="achievements-list page-achievements"></section>
-</main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase.js"></script>
-<script src="finance.js"></script>
-<script src="achievements.js"></script>
+
+<body>
+
+<div class="achievement-page">
+
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
+    <header class="achievement-header">
+
+        <button
+            class="back-button"
+            onclick="history.back()">
+            ← Back
+        </button>
+
+        <div class="association-name">
+            RIHULA MUKHOBOLA ASSOCIATION
+        </div>
+
+        <h1 class="achievement-title">
+            🏆 Achievements
+        </h1>
+
+        <p class="achievement-subtitle">
+            Milestones earned from your current net savings
+            and leaderboard position.
+        </p>
+
+    </header>
+
+
+    <!-- =====================================================
+         CURRENT STATUS
+         ===================================================== -->
+
+    <section class="achievement-summary">
+
+        <!-- NET SAVINGS -->
+
+        <div class="summary-box">
+
+            <div class="summary-icon">
+                💰
+            </div>
+
+            <div>
+
+                <div class="summary-label">
+                    Current Net Savings
+                </div>
+
+                <div
+                    id="currentSavings"
+                    class="summary-value">
+                    KSh 0
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- RANK -->
+
+        <div class="summary-box">
+
+            <div class="summary-icon">
+                🏆
+            </div>
+
+            <div>
+
+                <div class="summary-label">
+                    Current Rank
+                </div>
+
+                <div
+                    id="currentRank"
+                    class="summary-value rank-value">
+                    —
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         SAVINGS ACHIEVEMENTS
+         ===================================================== -->
+
+    <section class="achievement-section">
+
+        <h2 class="section-heading">
+            🏅 Savings Milestones
+        </h2>
+
+        <p class="section-description">
+            Save more to unlock new achievements.
+        </p>
+
+
+        <div
+            id="milestoneGrid"
+            class="milestone-grid">
+
+            <div class="loading">
+                Loading achievements...
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         RANK ACHIEVEMENTS
+         ===================================================== -->
+
+    <section class="achievement-section">
+
+        <h2 class="section-heading">
+            🏆 Leaderboard Achievements
+        </h2>
+
+        <p class="section-description">
+            Climb the leaderboard and earn recognition.
+        </p>
+
+
+        <div
+            id="rankGrid"
+            class="rank-grid">
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FOOTER
+         ===================================================== -->
+
+    <div class="achievement-footer">
+
+        ✨ Your achievements update automatically
+        as your savings and rank improve.
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     SUPABASE CONFIG
+     ========================================================= -->
+
+<script src="supabase.js?v=20260826-0835"></script>
+<script src="rihula-db-guard.js?v=20260826-0835"></script>
+
+
 <script>
-(async function(){
- const user=JSON.parse(localStorage.getItem('loggedUser')||'null');
- if(!user?.phone){ location.href='login.html'; return; }
- try{
-   const finance=await window.rihulaFinance.netFor(user.phone);
-   const {data}=await db.rpc('get_member_rank',{p_phone:String(user.phone)});
-   const rank=Number(data||0);
-   document.getElementById('achievementNet').textContent=window.rihulaFinance.fmt(finance.net);
-   document.getElementById('achievementRank').textContent=rank?'#'+rank:'—';
- }catch(e){document.getElementById('achievementsContainer').innerHTML='<div class="achievement-empty">Unable to load achievements.</div>'; console.error(e);}
-})();
+
+/* =========================================================
+   SAVINGS MILESTONES
+
+   Highest achievement = KSh 15,000
+   ========================================================= */
+
+const SAVINGS_MILESTONES = [
+
+    {
+        amount: 500,
+        name: "Getting Started",
+        icon: "🌱"
+    },
+
+    {
+        amount: 1000,
+        name: "First Step",
+        icon: "🌱"
+    },
+
+    {
+        amount: 1500,
+        name: "Early Saver",
+        icon: "⭐"
+    },
+
+    {
+        amount: 2500,
+        name: "Growing Saver",
+        icon: "🌿"
+    },
+
+    {
+        amount: 3500,
+        name: "Steady Saver",
+        icon: "💚"
+    },
+
+    {
+        amount: 5000,
+        name: "Consistent Saver",
+        icon: "⭐"
+    },
+
+    {
+        amount: 6500,
+        name: "Committed Saver",
+        icon: "💎"
+    },
+
+    {
+        amount: 8000,
+        name: "Strong Saver",
+        icon: "🏆"
+    },
+
+    {
+        amount: 10000,
+        name: "Serious Saver",
+        icon: "🛡️"
+    },
+
+    {
+        amount: 12000,
+        name: "Top Saver",
+        icon: "🥇"
+    },
+
+    {
+        amount: 13500,
+        name: "Elite Saver",
+        icon: "👑"
+    },
+
+    {
+        amount: 15000,
+        name: "Master Saver",
+        icon: "🏆"
+    }
+
+];
+
+
+/* =========================================================
+   RANK ACHIEVEMENTS
+   ========================================================= */
+
+const RANK_ACHIEVEMENTS = [
+
+    {
+        min: 1,
+        max: 1,
+        name: "Rank #1",
+        icon: "🥇"
+    },
+
+    {
+        min: 2,
+        max: 2,
+        name: "Rank #2",
+        icon: "🥈"
+    },
+
+    {
+        min: 3,
+        max: 3,
+        name: "Rank #3",
+        icon: "🥉"
+    },
+
+    {
+        min: 4,
+        max: 5,
+        name: "Top 5",
+        icon: "🏅"
+    },
+
+    {
+        min: 6,
+        max: 10,
+        name: "Top 10",
+        icon: "🎖️"
+    },
+
+    {
+        min: 11,
+        max: 20,
+        name: "Top 20",
+        icon: "👥"
+    }
+
+];
+
+
+/* =========================================================
+   FORMAT MONEY
+   ========================================================= */
+
+function formatMoney(amount) {
+
+    return "KSh " +
+        Number(amount || 0)
+            .toLocaleString("en-KE");
+
+}
+
+
+/* =========================================================
+   LOAD ACHIEVEMENTS
+   ========================================================= */
+
+async function loadAchievements() {
+
+    try {
+
+        const user =
+            JSON.parse(
+                localStorage.getItem("loggedUser")
+            );
+
+
+        if (!user || !user.phone) {
+
+            showError(
+                "Please log in again."
+            );
+
+            return;
+        }
+
+
+        /* =================================================
+           GET MEMBER FINANCE
+           ================================================= */
+
+        let netSavings = 0;
+
+
+        const {
+            data: financeData,
+            error: financeError
+        } = await db.rpc(
+            "get_member_finance",
+            {
+                p_phone: user.phone
+            }
+        );
+
+
+        if (
+            !financeError &&
+            financeData &&
+            financeData.length
+        ) {
+
+            netSavings =
+                Number(
+                    financeData[0].net_savings || 0
+                );
+
+        } else {
+
+            /* =============================================
+               FALLBACK
+
+               Contributions - Withdrawals
+               ============================================= */
+
+            const {
+                data: contributions
+            } = await db
+                .from("contributions")
+                .select("amount")
+                .eq(
+                    "member_phone",
+                    user.phone
+                );
+
+
+            const {
+                data: withdrawals
+            } = await db
+                .from("withdrawals")
+                .select("amount")
+                .eq(
+                    "member_phone",
+                    user.phone
+                );
+
+
+            const totalContributions =
+                (contributions || [])
+                    .reduce(
+                        (sum, row) =>
+                            sum +
+                            Number(
+                                row.amount || 0
+                            ),
+                        0
+                    );
+
+
+            const totalWithdrawals =
+                (withdrawals || [])
+                    .reduce(
+                        (sum, row) =>
+                            sum +
+                            Number(
+                                row.amount || 0
+                            ),
+                        0
+                    );
+
+
+            netSavings =
+                Math.max(
+                    totalContributions -
+                    totalWithdrawals,
+                    0
+                );
+
+        }
+
+
+        /* =================================================
+           DISPLAY CURRENT SAVINGS
+           ================================================= */
+
+        const savingsElement =
+            document.getElementById(
+                "currentSavings"
+            );
+
+
+        if (savingsElement) {
+
+            savingsElement.textContent =
+                formatMoney(
+                    netSavings
+                );
+
+        }
+
+
+        /* =================================================
+           DISPLAY SAVINGS MILESTONES
+           ================================================= */
+
+        renderMilestones(
+            netSavings
+        );
+
+
+        /* =================================================
+           GET MEMBER RANK
+           ================================================= */
+
+        let rank = null;
+
+
+        const {
+            data: rankData,
+            error: rankError
+        } = await db.rpc(
+            "get_member_rank",
+            {
+                p_phone: user.phone
+            }
+        );
+
+
+        if (!rankError) {
+
+            rank =
+                Number(rankData);
+
+        }
+
+
+        if (
+            !rank ||
+            rank < 1
+        ) {
+
+            rank = null;
+
+        }
+
+
+        /* =================================================
+           DISPLAY RANK
+           ================================================= */
+
+        const rankElement =
+            document.getElementById(
+                "currentRank"
+            );
+
+
+        if (rankElement) {
+
+            rankElement.textContent =
+                rank
+                ? "#" + rank
+                : "—";
+
+        }
+
+
+        /* =================================================
+           DISPLAY RANK ACHIEVEMENTS
+           ================================================= */
+
+        renderRankAchievements(
+            rank
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Achievement loading error:",
+            error
+        );
+
+        showError(
+            "Unable to load achievements."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   RENDER SAVINGS MILESTONES
+   ========================================================= */
+
+function renderMilestones(
+    currentSavings
+) {
+
+    const container =
+        document.getElementById(
+            "milestoneGrid"
+        );
+
+
+    if (!container) return;
+
+
+    container.innerHTML = "";
+
+
+    SAVINGS_MILESTONES.forEach(
+        milestone => {
+
+            const achieved =
+                currentSavings >=
+                milestone.amount;
+
+
+            const remaining =
+                Math.max(
+                    milestone.amount -
+                    currentSavings,
+                    0
+                );
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "milestone-card" +
+                (
+                    achieved
+                    ? " achieved"
+                    : ""
+                );
+
+
+            card.innerHTML = `
+
+                <div class="milestone-icon">
+                    ${milestone.icon}
+                </div>
+
+                <div class="milestone-name">
+                    ${milestone.name}
+                </div>
+
+                <div class="milestone-amount">
+                    ${formatMoney(
+                        milestone.amount
+                    )}
+                </div>
+
+                ${
+                    achieved
+
+                    ?
+
+                    `
+                    <div class="
+                        milestone-status
+                        achieved-status
+                    ">
+                        ✓ Achieved
+                    </div>
+
+                    <div class="
+                        milestone-note
+                    ">
+                        Milestone unlocked!
+                    </div>
+                    `
+
+                    :
+
+                    `
+                    <div class="
+                        milestone-status
+                        locked-status
+                    ">
+                        🔒 Locked
+                    </div>
+
+                    <div class="
+                        milestone-note
+                    ">
+                        ${formatMoney(
+                            remaining
+                        )}
+                        to go
+                    </div>
+                    `
+                }
+
+            `;
+
+
+            container.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   RENDER RANK ACHIEVEMENTS
+   ========================================================= */
+
+function renderRankAchievements(
+    currentRank
+) {
+
+    const container =
+        document.getElementById(
+            "rankGrid"
+        );
+
+
+    if (!container) return;
+
+
+    container.innerHTML = "";
+
+
+    RANK_ACHIEVEMENTS.forEach(
+        achievement => {
+
+            const achieved =
+                currentRank &&
+                currentRank >=
+                    achievement.min &&
+                currentRank <=
+                    achievement.max;
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "rank-card" +
+                (
+                    achieved
+                    ? " achieved"
+                    : ""
+                );
+
+
+            let positionText;
+
+
+            if (
+                achievement.min ===
+                achievement.max
+            ) {
+
+                positionText =
+                    "Position " +
+                    achievement.min;
+
+            } else {
+
+                positionText =
+                    "Positions " +
+                    achievement.min +
+                    " - " +
+                    achievement.max;
+
+            }
+
+
+            card.innerHTML = `
+
+                <div class="rank-icon">
+                    ${achievement.icon}
+                </div>
+
+                <div class="rank-name">
+                    ${achievement.name}
+                </div>
+
+                <div class="rank-position">
+                    ${positionText}
+                </div>
+
+                <div class="
+                    milestone-status
+                    ${
+                        achieved
+                        ? "achieved-status"
+                        : "locked-status"
+                    }
+                ">
+
+                    ${
+                        achieved
+                        ? "✓ Achieved"
+                        : "🔒 Locked"
+                    }
+
+                </div>
+
+            `;
+
+
+            container.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   ERROR DISPLAY
+   ========================================================= */
+
+function showError(
+    message
+) {
+
+    const container =
+        document.getElementById(
+            "milestoneGrid"
+        );
+
+
+    if (!container) return;
+
+
+    container.innerHTML = `
+
+        <div class="loading">
+            ${message}
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        loadAchievements();
+
+    }
+);
+
 </script>
-<script src="rihula-v3-ui.js"></script>
+
 </body>
 </html>

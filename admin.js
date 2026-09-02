@@ -3,47 +3,6 @@ if (window.RihulaAdmin) {
     RihulaAdmin.requireAdmin();
 }
 
-
-console.log("DB:", db);
-
-async function recordContribution() {
-
-    const phone =
-        document.getElementById("contributorPhone").value;
-
-    const amount =
-        document.getElementById("contributionAmount").value;
-
-    if (!phone || !amount) {
-        showPopup("Please fill in all required fields.", "warning");
-        return;
-    }
-
-    const { error } = await db
-        .from("contributions")
-        .insert([
-            {
-                member_phone: phone,
-                amount: amount
-            }
-        ]);
-
-    if (error) {
-        showPopup("Could not save the contribution: " + error.message, "error");
-    } else {
-
-        showPopup("Contribution saved successfully.", "success");
-
-        document.getElementById("contributorPhone").value = "";
-        document.getElementById("contributionAmount").value = "";
-
-        loadLeaderboard();
-        loadStats();
-        loadDashboardStats();
-loadAdminGroupGoal();
-
-    }
-}
 async function loadStats() {
 
     const { count: memberCount } = await db
@@ -130,6 +89,7 @@ async function editMember() {
         showPopup(error.message, "error");
     } else {
         showPopup("Member updated successfully.", "success");
+        if (typeof loadRecentActivity === "function") loadRecentActivity();
     }
 }
 
@@ -156,6 +116,7 @@ async function editContribution() {
         showPopup(error.message, "error");
     } else {
         showPopup("Contribution updated successfully.", "success");
+        if (typeof loadRecentActivity === "function") loadRecentActivity();
     }
 }
 async function loadMembers() {
@@ -231,6 +192,7 @@ async function deleteMember(phone) {
         showPopup(error.message, "error");
     } else {
         showPopup("Member deleted successfully.", "success");
+        if (typeof loadRecentActivity === "function") loadRecentActivity();
         loadMembers();
     }
 }
@@ -247,17 +209,43 @@ async function approveMember(phone) {
         showPopup(error.message, "error");
     } else {
         showPopup("Member approved successfully.", "success");
+        if (typeof loadRecentActivity === "function") loadRecentActivity();
 
-await addActivity(
-    "Approved member: " + phone
-);
-
-loadMembers();
-loadPendingMembers();
-loadDashboardStats();
-loadLeaderboard();
+if (typeof loadMembers === "function") loadMembers();
+if (typeof loadPendingMembers === "function") loadPendingMembers();
+if (typeof loadDashboardStats === "function") loadDashboardStats();
+if (typeof loadLeaderboard === "function") loadLeaderboard();
     }
-}async function loadPendingMembers() {
+}
+
+async function rejectMember(phone) {
+
+    const confirmed = await showConfirm(
+        "Are you sure you want to reject this member?",
+        { title: "Reject member", confirmText: "Reject", danger: true }
+    );
+
+    if (!confirmed) return;
+
+    const { error } = await db
+        .from("members")
+        .update({ status: "rejected" })
+        .eq("phone", phone);
+
+    if (error) {
+        showPopup(error.message, "error");
+        return;
+    }
+
+    showPopup("Member rejected.", "success");
+
+
+    if (typeof loadMembers === "function") loadMembers();
+    if (typeof loadPendingMembers === "function") loadPendingMembers();
+    if (typeof loadDashboardStats === "function") loadDashboardStats();
+}
+
+async function loadPendingMembers() {
 
     const { data, error } = await db
         .from("members")
@@ -297,6 +285,11 @@ data.forEach(member => {
         <button onclick="approveMember('${member.phone}')"
                 class="btn">
             Approve
+        </button>
+
+        <button onclick="rejectMember('${member.phone}')"
+                class="btn">
+            Reject
         </button>
     </div>
     `;
@@ -402,6 +395,7 @@ async function addAnnouncement() {
         document.getElementById(
             "announcementMessage"
         ).value = "";
+        if (typeof loadRecentActivity === "function") loadRecentActivity();
     }
 }
 async function loadAnnouncementsList() {
@@ -455,6 +449,7 @@ async function deleteAnnouncement(id) {
         showPopup("Could not delete the announcement: " + error.message, "error");
     } else {
         showPopup("Announcement deleted successfully.", "success");
+        if (typeof loadRecentActivity === "function") loadRecentActivity();
         loadAnnouncementsList();
     }
 }
@@ -632,19 +627,10 @@ function searchMembers() {
     });
 }
 async function addActivity(action) {
-
-    const { error } = await db
-        .from("activity_logs")
-        .insert([
-            {
-                admin_name: "Admin",
-                action: action
-            }
-        ]);
-
-    if (error) {
-        console.log(error.message);
+    if (window.RihulaAdmin && typeof RihulaAdmin.logActivity === "function") {
+        return RihulaAdmin.logActivity(action);
     }
+    return false;
 }
 async function loadOnlineCount() {
 
@@ -831,6 +817,8 @@ async function updateGroupGoal() {
         currentGoal.innerText = "KSh " + newGoal.toLocaleString();
     }
 
+    if (typeof loadRecentActivity === "function") loadRecentActivity();
+
     showPopup(
         "Group goal updated successfully.\n\nNew goal: KSh " +
         newGoal.toLocaleString(),
@@ -863,11 +851,31 @@ async function recordWithdrawal() {
         const admin = await RihulaAdmin.getAdminUser();
         if (!admin) return showPopup("Admin session expired. Please sign in again.", "error");
 
-        const { data: member, error: memberError } = await db
+        // Accept the common Kenyan phone formats used by existing records:
+        // 07..., 01..., 2547..., 2541..., +2547..., and +2541... . The database RPC also normalizes
+        // numbers, so the admin lookup must use the same matching rule.
+        const phoneCandidates = [
+            phone,
+            phone.startsWith("0") ? "254" + phone.slice(1) : phone,
+            phone.startsWith("0") ? "+254" + phone.slice(1) : phone
+        ].filter((value, index, list) => value && list.indexOf(value) === index);
+
+        let memberQuery = db
             .from("members")
             .select("id, name, phone")
-            .eq("phone", phone)
-            .maybeSingle();
+            .in("phone", phoneCandidates);
+
+        const { data: members, error: memberError } = await memberQuery;
+        if (memberError) throw memberError;
+
+        // Keep the normalized comparison as the final guard in case the
+        // stored value contains spaces, dashes, or parentheses.
+        const normalizeForMatch = (value) =>
+            String(value || "").replace(/\D/g, "").replace(/^254/, "0");
+
+        const member = (members || []).find(
+            (item) => normalizeForMatch(item.phone) === normalizeForMatch(phone)
+        );
 
         if (memberError) throw memberError;
         if (!member) return showPopup("Member with that phone number was not found.", "error");
@@ -885,6 +893,8 @@ async function recordWithdrawal() {
             const el = document.getElementById(id);
             if (el) el.value = "";
         });
+
+        if (typeof loadRecentActivity === "function") loadRecentActivity();
 
         if (typeof refreshRihulaFinance === "function") await refreshRihulaFinance();
         else {

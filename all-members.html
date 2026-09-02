@@ -7,13 +7,15 @@
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="admin-dashboard-3.css">
 <link rel="stylesheet" href="all-member-modern.css">
+<script src="popups.js?v=20260902-1"></script>
 <link rel="stylesheet" href="rihula-v3-ui.css">
 </head>
 
 <body class="admin-dashboard-page members-page">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase.js"></script>
-<script src="admin-auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'"></script>
+<script src="supabase.js?v=20260826-0835"></script>
+<script src="rihula-db-guard.js?v=20260826-0835"></script>
+<script src="admin-auth.js?v=20260827-activity"></script>
 
 <div class="admin-shell">
 <aside class="admin-sidebar" id="adminSidebar">
@@ -24,7 +26,10 @@
   <nav class="admin-nav">
     <a href="admin.html" class="admin-nav-item"><span>📊</span><span>Dashboard</span></a>
     <a href="all-members.html" class="admin-nav-item active"><span>👥</span><span>All Members</span></a>
-    <a href="pending-members.html" class="admin-nav-item"><span>⏳</span><span>Pending Members</span></a>
+    <a href="pending-members.html" class="admin-nav-item">
+    <span>⏳</span>
+    <span>Pending Members</span>
+</a>
     <a href="online-members.html" class="admin-nav-item"><span>🟢</span><span>Online Members</span></a>
     <a href="record-contribution.html" class="admin-nav-item"><span>💰</span><span>Contributions</span></a>
     <a href="leaderboard.html" class="admin-nav-item"><span>🏆</span><span>Leaderboard</span></a>
@@ -57,7 +62,6 @@
     <h2>All Members</h2>
     <p>Manage registered members of RIHULA MUKHOBOLA ASSOCIATION.</p>
   </div>
-  <a href="add-member.html" class="admin-primary-btn">＋ Add Member</a>
 </section>
 
 <section class="member-stats">
@@ -139,31 +143,139 @@ const AM = (() => {
     return (a.length > 1 ? a[0][0] + a[a.length-1][0] : a[0].slice(0,2)).toUpperCase();
   };
   const cap = v => v ? v.charAt(0).toUpperCase()+v.slice(1) : "";
+function achievement(rank, net) {
+    const amount = Number(net || 0);
 
-  function achievement(rank, net) {
-    if (rank === 1) return ["🥇 #1 Leader","gold"];
-    if (rank === 2) return ["🥈 #2 Leader","silver"];
-    if (rank === 3) return ["🥉 #3 Leader","bronze"];
-    if (net >= 25000) return ["🏅 KSh 25,000 Builder","builder"];
-    if (net >= 10000) return ["💎 KSh 10,000 Champion","champion"];
-    if (net >= 5000) return ["⭐ KSh 5,000 Saver","saver"];
-    if (net >= 1000) return ["🌱 KSh 1,000 Saver","starter"];
-    return ["—","none"];
-  }
+    // Achievement is based on NET SAVINGS.
+    // Rank is displayed separately.
+    if (amount >= 25000) {
+        return ["🏅 KSh 25,000 Builder", "builder"];
+    }
 
-  async function loadFinance() {
-    const {data, error} = await window.db.rpc("get_finance_leaderboard");
-    if (error) throw error;
-    finance = new Map((data || []).map(r => [cleanPhone(r.member_phone), r]));
-  }
+    if (amount >= 10000) {
+        return ["💎 KSh 10,000 Champion", "champion"];
+    }
 
-  function financeFor(member) {
-    const r = finance.get(cleanPhone(member.phone)) || {};
-    const contributed = Number(r.contributions ?? 0);
-    const withdrawn = Number(r.withdrawals ?? 0);
-    const net = Number(r.net_savings ?? Math.max(0, contributed - withdrawn));
-    return { contributed, withdrawn, net, rank: Number(r.member_rank || 0) };
-  }
+    if (amount >= 5000) {
+        return ["⭐ KSh 5,000 Saver", "saver"];
+    }
+
+    if (amount >= 1000) {
+        return ["🌱 KSh 1,000 Saver", "starter"];
+    }
+
+    return ["🌱 Starter", "none"];
+}
+
+
+/*
+ * Load all member finance information from the secure
+ * Supabase leaderboard RPC.
+ */
+async function loadFinance() {
+
+    const { data, error } =
+        await window.db.rpc("get_finance_leaderboard");
+
+    if (error) {
+        console.error("Finance RPC error:", error);
+        throw error;
+    }
+
+    finance = new Map();
+
+    (data || []).forEach(row => {
+
+        // Accept both the current RPC column name and
+        // possible older versions of the function.
+        const phone =
+            row.member_phone ??
+            row.phone ??
+            row.memberPhone ??
+            "";
+
+        const normalizedPhone = cleanPhone(phone);
+
+        if (!normalizedPhone) return;
+
+        const contributed = Number(
+            row.contributions ??
+            row.contributed ??
+            0
+        );
+
+        const withdrawn = Number(
+            row.withdrawals ??
+            row.withdrawn ??
+            0
+        );
+
+        const net = Math.max(
+            0,
+            Number(
+                row.net_savings ??
+                row.net ??
+                (contributed - withdrawn)
+            )
+        );
+
+        const rank = Number(
+            row.member_rank ??
+            row.rank ??
+            0
+        );
+
+        finance.set(normalizedPhone, {
+            member_phone: phone,
+            contributions: contributed,
+            withdrawals: withdrawn,
+            net_savings: net,
+            member_rank: rank
+        });
+    });
+
+    console.log(
+        "RIHULA finance loaded:",
+        Array.from(finance.entries())
+    );
+}
+
+
+/*
+ * Get finance for a specific member.
+ */
+function financeFor(member) {
+
+    const memberPhone = cleanPhone(member.phone);
+
+    const r =
+        finance.get(memberPhone) || {};
+
+    const contributed =
+        Number(r.contributions || 0);
+
+    const withdrawn =
+        Number(r.withdrawals || 0);
+
+    const net =
+        Math.max(
+            0,
+            Number(
+                r.net_savings ??
+                (contributed - withdrawn)
+            )
+        );
+
+    const rank =
+        Number(r.member_rank || 0);
+
+    return {
+        contributed,
+        withdrawn,
+        net,
+        rank
+    };
+}
 
   async function load() {
     const body = document.getElementById("membersBody");
@@ -298,7 +410,7 @@ const AM = (() => {
   function closeHistory(){document.getElementById("historyModal").setAttribute("aria-hidden","true");}
   function edit(phone){window.location.href="edit-member.html?phone="+encodeURIComponent(phone);}
   async function remove(id,phone,name){
-    if(!confirm(`Delete ${name || phone}? This cannot be undone.`)) return;
+    if(!(await showConfirm(`Delete ${name || phone}? This cannot be undone.`, { title: "Delete member", confirmText: "Delete", danger: true }))) return;
     try {
       let q=window.db.from("members").delete();
       q=id ? q.eq("id",id) : q.eq("phone",phone);
@@ -314,6 +426,6 @@ const AM = (() => {
 })();
 document.addEventListener("DOMContentLoaded", () => AM.load());
 </script>
-<script src="rihula-v3-ui.js"></script>
+<script src="rihula-v3-ui.js?v=20260826-0835"></script>
 </body>
 </html>

@@ -74,6 +74,13 @@
   }
 
   async function loadMemberAchievements() {
+    try {
+      await window.waitForRihulaDb();
+    } catch (error) {
+      console.warn("RIHULA: Achievements database not ready.", error.message);
+      return;
+    }
+
     const user = (() => {
       try { return JSON.parse(localStorage.getItem("loggedUser") || "null"); }
       catch (_) { return null; }
@@ -89,7 +96,45 @@
         const { data, error } = await db.rpc("get_member_rank", { p_phone: String(user.phone) });
         if (!error) rank = money(data);
       } catch (_) {}
+const dashboardProgress =
+    document.getElementById("dashboardAchievementProgress");
 
+const dashboardLatest =
+    document.getElementById("dashboardLatestAchievement");
+
+if (dashboardProgress || dashboardLatest) {
+
+    const allAchievements =
+        getAchievements(finance.net, rank);
+
+    const unlockedAchievements =
+        allAchievements.filter(a => a.unlocked);
+
+    if (dashboardProgress) {
+        dashboardProgress.textContent =
+            `${unlockedAchievements.length} of ${allAchievements.length} achievements unlocked`;
+    }
+
+    if (dashboardLatest) {
+
+        if (unlockedAchievements.length > 0) {
+
+            const latest =
+                unlockedAchievements[
+                    unlockedAchievements.length - 1
+                ];
+
+            dashboardLatest.textContent =
+                `${latest.icon} ${latest.title} achieved`;
+
+        } else {
+
+            dashboardLatest.textContent =
+                "🌱 Keep saving to unlock your first achievement.";
+
+        }
+    }
+}
       const showLocked = document.body?.classList.contains("achievements-page");
       const unlocked = renderAchievements(finance.net, rank, "achievementsContainer", showLocked) || [];
       const next = nextMilestone(finance.net);
@@ -123,7 +168,7 @@
     } catch (error) {
       console.error("RIHULA achievements failed:", error);
       const container = document.getElementById("achievementsContainer");
-      if (container) container.innerHTML = '<div class="achievement-empty">Unable to load achievements. Please try again.</div>';
+      if (container) container.innerHTML 
     }
   }
 
@@ -135,3 +180,242 @@
   // finance.js is loaded after this file on some pages, so wait for the finance engine.
   window.addEventListener("load", () => setTimeout(loadMemberAchievements, 100));
 })();
+/* =========================================================
+   DASHBOARD ACHIEVEMENTS
+   ========================================================= */
+
+const DASHBOARD_MILESTONES = [
+    { amount: 500,   name: "Getting Started", icon: "🌱" },
+    { amount: 1000,  name: "First Step",       icon: "🌱" },
+    { amount: 1500,  name: "Early Saver",      icon: "⭐" },
+    { amount: 2500,  name: "Growing Saver",    icon: "🌿" },
+    { amount: 3500,  name: "Steady Saver",     icon: "💚" },
+    { amount: 5000,  name: "Consistent Saver", icon: "⭐" },
+    { amount: 6500,  name: "Committed Saver",  icon: "💎" },
+    { amount: 8000,  name: "Strong Saver",     icon: "🏆" },
+    { amount: 10000, name: "Serious Saver",    icon: "🛡️" },
+    { amount: 12000, name: "Top Saver",        icon: "🥇" },
+    { amount: 13500, name: "Elite Saver",     icon: "👑" },
+    { amount: 15000, name: "Master Saver",    icon: "🏆" }
+];
+
+
+const DASHBOARD_RANKS = [
+    { min: 1,  max: 1,  name: "Rank #1", icon: "🥇" },
+    { min: 2,  max: 2,  name: "Rank #2", icon: "🥈" },
+    { min: 3,  max: 3,  name: "Rank #3", icon: "🥉" },
+    { min: 4,  max: 5,  name: "Top 5",   icon: "🏅" },
+    { min: 6,  max: 10, name: "Top 10",  icon: "🎖️" }
+];
+
+
+function dashboardMoney(amount) {
+
+    return "KSh " +
+        Number(amount || 0)
+            .toLocaleString("en-KE");
+
+}
+
+
+function renderDashboardAchievements(
+    savings,
+    rank
+) {
+
+    const savingsContainer =
+        document.getElementById(
+            "dashboardSavingsAchievements"
+        );
+
+    const rankContainer =
+        document.getElementById(
+            "dashboardRankAchievements"
+        );
+
+
+    if (!savingsContainer) return;
+
+
+    /*
+     * Show selected milestones on the dashboard.
+     * The full list remains available through View all.
+     */
+
+    const visibleMilestones =
+        DASHBOARD_MILESTONES.slice(0, 5);
+
+
+    savingsContainer.innerHTML = "";
+
+
+    visibleMilestones.forEach(
+        milestone => {
+
+            const achieved =
+                savings >= milestone.amount;
+
+
+            const card =
+                document.createElement("div");
+
+
+            card.className =
+                "dashboard-achievement-card " +
+                (
+                    achieved
+                    ? "achieved"
+                    : "locked"
+                );
+
+
+            card.innerHTML = `
+
+                <div class="
+                    dashboard-achievement-icon
+                ">
+                    ${milestone.icon}
+                </div>
+
+                <div class="
+                    dashboard-achievement-name
+                ">
+                    ${milestone.name}
+                </div>
+
+                <div class="
+                    dashboard-achievement-amount
+                ">
+                    ${dashboardMoney(
+                        milestone.amount
+                    )}
+                </div>
+
+                <span class="
+                    dashboard-achievement-status
+                    ${
+                        achieved
+                        ? "achieved"
+                        : "locked"
+                    }
+                ">
+                    ${
+                        achieved
+                        ? "✓ Achieved"
+                        : "🔒 Locked"
+                    }
+                </span>
+
+                ${
+                    !achieved
+                    ? `
+                        <div class="
+                            milestone-note
+                        ">
+                            ${dashboardMoney(
+                                milestone.amount -
+                                savings
+                            )}
+                            to go
+                        </div>
+                    `
+                    : ""
+                }
+
+            `;
+
+
+            savingsContainer.appendChild(
+                card
+            );
+
+        }
+    );
+
+
+    if (!rankContainer) return;
+
+
+    rankContainer.innerHTML = "";
+
+
+    DASHBOARD_RANKS.forEach(
+        achievement => {
+
+            const achieved =
+                rank >= achievement.min &&
+                rank <= achievement.max;
+
+
+            const card =
+                document.createElement("div");
+
+
+            card.className =
+                "dashboard-achievement-card " +
+                (
+                    achieved
+                    ? "achieved"
+                    : "locked"
+                );
+
+
+            card.innerHTML = `
+
+                <div class="
+                    dashboard-achievement-icon
+                ">
+                    ${achievement.icon}
+                </div>
+
+                <div class="
+                    dashboard-achievement-name
+                ">
+                    ${achievement.name}
+                </div>
+
+                <div class="
+                    achievement-summary-small
+                ">
+                    ${
+                        achievement.min ===
+                        achievement.max
+
+                        ? "Position " +
+                          achievement.min
+
+                        : "Position " +
+                          achievement.min +
+                          " - " +
+                          achievement.max
+                    }
+                </div>
+
+                <br>
+
+                <span class="
+                    dashboard-achievement-status
+                    ${
+                        achieved
+                        ? "achieved"
+                        : "locked"
+                    }
+                ">
+                    ${
+                        achieved
+                        ? "✓ Achieved"
+                        : "🔒 Locked"
+                    }
+                </span>
+
+            `;
+
+
+            rankContainer.appendChild(
+                card
+            );
+
+        }
+    );
+
+}

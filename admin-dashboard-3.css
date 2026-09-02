@@ -558,6 +558,7 @@
     margin-bottom:9px;
 }
 
+
 .admin-tool strong{
     font-size:14px;
 }
@@ -567,46 +568,6 @@
     color:var(--admin-muted);
     font-size:11px;
     line-height:1.35;
-}
-
-.admin-activity-list{
-    min-height:220px;
-}
-
-.admin-activity-item{
-    display:flex;
-    align-items:flex-start;
-    gap:12px;
-    padding:12px 0;
-    border-bottom:1px solid #edf2ee;
-}
-
-.admin-activity-item:last-child{
-    border-bottom:0;
-}
-
-.activity-dot{
-    width:10px;
-    height:10px;
-    flex:0 0 10px;
-    margin-top:5px;
-    border-radius:50%;
-    background:var(--admin-green);
-    box-shadow:0 0 0 5px rgba(8,127,62,.09);
-}
-
-.admin-activity-item strong{
-    display:block;
-    color:#27362c;
-    font-size:13px;
-    line-height:1.4;
-}
-
-.admin-activity-item small{
-    display:block;
-    margin-top:3px;
-    color:var(--admin-muted);
-    font-size:10px;
 }
 
 .admin-empty-state{
@@ -904,3 +865,4 @@
     }
     .admin-role-switch a{width:100%;text-align:center;padding-top:7px;}
 }
+

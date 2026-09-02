@@ -56,9 +56,10 @@
     <a href="login.html">← Back to Login</a>
 </div>
 
-<script src="popups.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase.js"></script>
+<script src="popups.js?v=20260826-0835"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'"></script>
+<script src="supabase.js?v=20260826-0835"></script>
+<script src="rihula-db-guard.js?v=20260826-0835"></script>
 
 <script>
 async function activateAccount() {
@@ -130,7 +131,8 @@ async function activateAccount() {
         password: newPassword,
         options: {
             emailRedirectTo:
-                new URL("auth-callback.html", window.location.href).href
+                new URL("auth-callback.html", window.location.href).href,
+            data: { phone: phone }
         }
     });
 
@@ -200,7 +202,7 @@ async function activateAccount() {
     }
 }
 </script>
-<script src="v22.js"></script>
-<script src="rihula-v3-ui.js"></script>
+<script src="v22.js?v=20260826-0835"></script>
+<script src="rihula-v3-ui.js?v=20260826-0835"></script>
 </body>
 </html>

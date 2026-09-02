@@ -5,20 +5,19 @@
 (function () {
   "use strict";
 
-  const ADMIN_ROLES = ["admin", "administrator", "chairperson", "secretary", "treasurer"];
-  const SESSION_KEY = "rihulaAdminUser";
-
-  function normalizeRole(role) {
-    return String(role || "").trim().toLowerCase();
-  }
+    const SESSION_KEY = "rihulaAdminUser";
 
   function clearAdminSession() {
     sessionStorage.removeItem("adminVerified");
     sessionStorage.removeItem(SESSION_KEY);
+    sessionStorage.removeItem("rihulaAdminActivityLogged");
     localStorage.removeItem("adminAccess");
   }
 
   async function getAdminUser() {
+    if (typeof window.waitForRihulaDb === "function") {
+      await window.waitForRihulaDb();
+    }
     if (!window.db) throw new Error("Supabase is not initialized.");
 
     const { data: authData, error: authError } = await window.db.auth.getUser();
@@ -26,7 +25,7 @@
 
     const { data: member, error } = await window.db
       .from("members")
-      .select("id, auth_id, name, email, phone, role, status")
+      .select("id, auth_id, name, email, phone, role, status, is_admin, is_member")
       .eq("auth_id", authData.user.id)
       .maybeSingle();
 
@@ -35,11 +34,12 @@
       throw error;
     }
 
-    if (!member || !ADMIN_ROLES.includes(normalizeRole(member.role))) {
+    if (!member || member.is_admin !== true) {
       return null;
     }
 
-    if (member.status && ["blocked", "suspended", "inactive"].includes(normalizeRole(member.status))) {
+    const normalizedStatus = String(member.status || "").trim().toLowerCase();
+    if (member.status && ["blocked", "suspended", "inactive"].includes(normalizedStatus)) {
       return null;
     }
 
@@ -70,6 +70,23 @@
     }
   }
 
+  async function logActivity(action) {
+    try {
+      if (!window.db || !action) return false;
+      const { error } = await window.db.rpc("log_admin_activity", {
+        p_action: String(action).trim()
+      });
+      if (error) {
+        console.warn("Admin activity log failed:", error);
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.warn("Admin activity log failed:", error);
+      return false;
+    }
+  }
+
   async function adminLogout() {
     try {
       await window.db.auth.signOut();
@@ -80,5 +97,5 @@
     location.replace("admin-login.html");
   }
 
-  window.RihulaAdmin = { getAdminUser, requireAdmin, adminLogout, clearAdminSession };
+  window.RihulaAdmin = { getAdminUser, requireAdmin, adminLogout, clearAdminSession, logActivity };
 })();

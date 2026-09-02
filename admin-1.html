@@ -38,19 +38,9 @@ if (sessionStorage.getItem("adminVerified") !== "true") {
                 <span>Dashboard</span>
             </a>
 
-            <a href="add-member.html" class="admin-nav-item">
-                <span>➕</span>
-                <span>Add Member</span>
-            </a>
-
             <a href="all-members.html" class="admin-nav-item">
                 <span>👥</span>
                 <span>All Members</span>
-            </a>
-
-            <a href="pending-members.html" class="admin-nav-item">
-                <span>⏳</span>
-                <span>Pending Members</span>
             </a>
 
             <a href="online-members.html" class="admin-nav-item">
@@ -154,10 +144,6 @@ if (sessionStorage.getItem("adminVerified") !== "true") {
                     </p>
                 </div>
 
-                <a href="add-member.html" class="admin-primary-btn">
-                    <span>＋</span> Add Member
-                </a>
-
             </section>
 
 
@@ -253,22 +239,10 @@ if (sessionStorage.getItem("adminVerified") !== "true") {
 
                     <div class="admin-mini-actions">
 
-                        <a href="add-member.html">
-                            <span>➕</span>
-                            <strong>Add Member</strong>
-                            <small>Register a member</small>
-                        </a>
-
                         <a href="record-contribution.html">
                             <span>💰</span>
                             <strong>Add Savings</strong>
                             <small>Record contribution</small>
-                        </a>
-
-                        <a href="pending-members.html">
-                            <span>⏳</span>
-                            <strong>Approvals</strong>
-                            <small>Review pending members</small>
                         </a>
 
                         <a href="announcements.html">
@@ -300,12 +274,6 @@ if (sessionStorage.getItem("adminVerified") !== "true") {
                         <span>👥</span>
                         <strong>All Members</strong>
                         <small>View and manage members</small>
-                    </a>
-
-                    <a href="pending-members.html" class="admin-tool">
-                        <span>⏳</span>
-                        <strong>Pending Members</strong>
-                        <small>Approve new registrations</small>
                     </a>
 
                     <a href="online-members.html" class="admin-tool">
@@ -405,15 +373,16 @@ if (sessionStorage.getItem("adminVerified") !== "true") {
 </div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase.js"></script>
-<script src="admin-auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'"></script>
+<script src="supabase.js?v=20260826-0835"></script>
+<script src="rihula-db-guard.js?v=20260826-0835"></script>
+<script src="admin-auth.js?v=20260827-activity"></script>
 <script>
 document.documentElement.style.visibility = "hidden";
 document.addEventListener("DOMContentLoaded", async () => { const admin = await RihulaAdmin.requireAdmin(); if (admin) document.documentElement.style.visibility = "visible"; });
 </script>
-<script src="popups.js"></script>
-<script src="admin.js"></script>
+<script src="popups.js?v=20260826-0835"></script>
+<script src="admin.js?v=20260826-0835"></script>
 
 <script>
 function adminLogout() {
@@ -592,9 +561,9 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
-<script src="v22.js"></script>
+<script src="v22.js?v=20260826-0835"></script>
 
-<script src="finance.js"></script>
-<script src="rihula-v3-ui.js"></script>
+<script src="finance.js?v=20260826-0835"></script>
+<script src="rihula-v3-ui.js?v=20260826-0835"></script>
 </body>
 </html>

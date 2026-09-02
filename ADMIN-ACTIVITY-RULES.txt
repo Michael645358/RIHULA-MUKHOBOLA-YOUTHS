@@ -1,0 +1,18 @@
+RIHULA ADMIN ACTIVITY LOG RULES
+
+Only meaningful administrator actions are recorded:
+
+1. Members: add, approve, reject, delete.
+2. Finance: record/edit/delete contributions and withdrawals.
+3. Community content: post/edit/delete announcements; send/edit/delete notifications; upload/update/delete gallery photos.
+4. Leadership content changes are also recorded as important admin actions.
+
+NOT recorded:
+- Opening Admin Activities
+- Opening/viewing the dashboard or any admin page
+- Normal member profile edits
+- Login/logout
+- Reads/searches/views
+- Generic database INSERT/UPDATE/DELETE on unrelated tables
+
+The database trigger is the main audit mechanism. The frontend no longer creates duplicate approve/reject or logout records.

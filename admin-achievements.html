@@ -10,9 +10,10 @@
 <link rel="stylesheet" href="rihula-modern-design.css">
 </head>
 <body class="admin-dashboard-page">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase.js"></script>
-<script src="admin-auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'"></script>
+<script src="supabase.js?v=20260826-0835"></script>
+<script src="rihula-db-guard.js?v=20260826-0835"></script>
+<script src="admin-auth.js?v=20260827-activity"></script>
 <script>
 document.documentElement.style.visibility = "hidden";
 (async function () {
@@ -30,7 +31,6 @@ document.documentElement.style.visibility = "hidden";
         <nav class="admin-nav">
             <a href="admin.html" class="admin-nav-item"><span>📊</span><span>Dashboard</span></a>
             <a href="all-members.html" class="admin-nav-item"><span>👥</span><span>All Members</span></a>
-            <a href="pending-members.html" class="admin-nav-item"><span>⏳</span><span>Pending Members</span></a>
             <a href="online-members.html" class="admin-nav-item"><span>🟢</span><span>Online Members</span></a>
             <a href="record-contribution.html" class="admin-nav-item"><span>💰</span><span>Record Contribution</span></a>
             <a href="leaderboard.html" class="admin-nav-item"><span>🏆</span><span>Leaderboard</span></a>
@@ -79,10 +79,10 @@ document.documentElement.style.visibility = "hidden";
     </div>
 </div>
 
-<script src="popups.js"></script>
-<script src="v22.js"></script>
-<script src="admin-achievements.js"></script>
-<script src="withdrawal-fix.js"></script>
-<script src="finance.js"></script>
+<script src="popups.js?v=20260826-0835"></script>
+<script src="v22.js?v=20260826-0835"></script>
+<script src="admin-achievements.js?v=20260826-0835"></script>
+<script src="withdrawal-fix.js?v=20260826-0835"></script>
+<script src="finance.js?v=20260826-0835"></script>
 </body>
 </html>
